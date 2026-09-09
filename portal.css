@@ -1,0 +1,322 @@
+/* ============================================================
+   Portal OCW – portal.css
+   Stiluri standalone pentru pagina centrală de portal.
+   Nu depinde de niciun modul. Fiecare modul are propriul CSS.
+   ============================================================ */
+
+:root {
+  --bg:          #f7f8fc;
+  --surface:     #ffffff;
+  --surface-2:   #f0f2f8;
+  --border:      #dde1ef;
+  --text:        #1a1d2e;
+  --text-2:      #4a5068;
+  --text-3:      #8891b0;
+  --accent:      #3d5af1;
+  --accent-light:#e8ecff;
+  --accent-dark: #2640c7;
+  --amber:       #f59e0b;
+  --amber-light: #fef3c7;
+  --green:       #10b981;
+  --green-light: #d1fae5;
+  --red:         #ef4444;
+  --red-light:   #fee2e2;
+  --nav-h:       60px;
+  --radius:      8px;
+  --radius-lg:   14px;
+  --shadow:      0 1px 4px rgba(30,40,100,.08), 0 4px 16px rgba(30,40,100,.06);
+  --sans:        'Inter', system-ui, sans-serif;
+  --serif:       'Lora', Georgia, serif;
+  --mono:        'JetBrains Mono', 'Fira Mono', monospace;
+}
+
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- Nav ---------- */
+.portal-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 2rem; gap: 1.5rem;
+  box-shadow: 0 1px 3px rgba(30,40,100,.06);
+}
+.portal-nav .logo {
+  display: flex; align-items: center; gap: .65rem;
+  font-weight: 800; font-size: .95rem; color: var(--text);
+  text-decoration: none; flex-shrink: 0;
+}
+.portal-nav .logo .badge {
+  background: var(--accent); color: #fff;
+  font-size: .68rem; font-weight: 800;
+  padding: .2rem .5rem; border-radius: 4px;
+  letter-spacing: .04em;
+}
+.portal-nav .inst {
+  font-size: .8rem; color: var(--text-3);
+  border-left: 1px solid var(--border);
+  padding-left: 1.25rem; flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ---------- Layout ---------- */
+.portal-wrap {
+  max-width: 1200px; margin: 0 auto;
+  padding: calc(var(--nav-h) + 2.5rem) 2rem 5rem;
+}
+
+/* ---------- Hero ---------- */
+.portal-hero {
+  background: linear-gradient(135deg, #1a1d2e 0%, #2d3250 100%);
+  border-radius: var(--radius-lg);
+  padding: 3rem 3.5rem;
+  margin-bottom: 3rem;
+  position: relative; overflow: hidden; color: #e0e4f5;
+}
+.portal-hero::after {
+  content: 'OCW';
+  position: absolute; right: 2.5rem; top: 50%;
+  transform: translateY(-50%);
+  font-size: 7rem; font-weight: 900;
+  opacity: .05; color: #fff;
+  pointer-events: none; line-height: 1;
+  font-family: var(--mono);
+}
+.portal-hero .overline {
+  font-size: .72rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: #7c85b0; margin-bottom: .6rem;
+}
+.portal-hero h1 {
+  font-family: var(--serif);
+  font-size: 2.2rem; font-weight: 700;
+  line-height: 1.2; color: #fff; margin-bottom: .85rem;
+}
+.portal-hero p {
+  font-size: .95rem; color: #b0b8d8;
+  max-width: 58ch; line-height: 1.7; margin-bottom: 1.5rem;
+}
+.portal-chips { display: flex; flex-wrap: wrap; gap: .55rem; }
+.portal-chip {
+  font-size: .77rem; font-weight: 600;
+  background: rgba(255,255,255,.09); color: #c5cfff;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 20px; padding: .28rem .8rem;
+}
+
+/* ---------- Stats ---------- */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: .75rem; margin-bottom: 3rem;
+}
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.1rem 1.25rem;
+  text-align: center; box-shadow: var(--shadow);
+}
+.stat-card .val {
+  font-size: 1.9rem; font-weight: 800;
+  color: var(--accent); line-height: 1;
+}
+.stat-card .lbl { font-size: .75rem; color: var(--text-3); margin-top: .3rem; }
+
+/* ---------- Section label ---------- */
+.section-label {
+  font-size: .72rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 1rem;
+  display: flex; align-items: center; gap: .6rem;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ---------- Profesor ---------- */
+.profesor-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 2rem 2.25rem;
+  margin-bottom: 3rem;
+  display: grid; grid-template-columns: 120px 1fr;
+  gap: 2rem; box-shadow: var(--shadow);
+}
+.profesor-avatar {
+  width: 120px; height: 120px; border-radius: 50%;
+  background: var(--accent-light); border: 3px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; color: var(--accent); flex-shrink: 0;
+}
+.profesor-info h2 {
+  font-family: var(--serif);
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--text); margin: 0 0 .2rem;
+}
+.profesor-info .titlu {
+  font-size: .85rem; color: var(--accent);
+  font-weight: 600; margin-bottom: .6rem;
+}
+.profesor-info .institutie {
+  font-size: .83rem; color: var(--text-3);
+  margin-bottom: 1rem;
+  display: flex; align-items: center; gap: .4rem;
+}
+.profesor-info .bio {
+  font-size: .9rem; color: var(--text-2);
+  line-height: 1.7; margin-bottom: 1rem; max-width: 68ch;
+}
+.profesor-meta { display: flex; flex-wrap: wrap; gap: .65rem; }
+.profesor-tag {
+  display: flex; align-items: center; gap: .35rem;
+  font-size: .8rem; color: var(--text-2);
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 20px; padding: .25rem .75rem;
+}
+.profesor-tag i { color: var(--accent); font-size: .75rem; }
+.materii-list { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
+.materie-pill {
+  font-size: .75rem; font-weight: 600;
+  background: var(--accent-light); color: var(--accent);
+  border: 1px solid #c5cfff; border-radius: 20px; padding: .2rem .65rem;
+}
+
+/* ---------- Updates ---------- */
+.updates-list {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 3rem;
+}
+.update-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: .85rem 1.25rem; border-bottom: 1px solid var(--border);
+  font-size: .85rem;
+}
+.update-row:last-child { border-bottom: none; }
+.update-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green); flex-shrink: 0;
+}
+.update-dot.partial { background: var(--accent); }
+.update-module { font-weight: 700; color: var(--text); min-width: 90px; }
+.update-desc { color: var(--text-2); flex: 1; }
+.update-date { color: var(--text-3); flex-shrink: 0; }
+
+/* ---------- Calificări ---------- */
+.calificare-block { margin-bottom: 3rem; }
+.calificare-header {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 1.25rem 1.75rem;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  border-bottom: 2px solid var(--accent);
+}
+.calificare-header h2 {
+  font-family: var(--serif);
+  font-size: 1.2rem; font-weight: 700; color: var(--text); margin: 0;
+}
+.calificare-header .meta { display: flex; gap: .65rem; flex-wrap: wrap; }
+.meta-chip {
+  font-size: .75rem; font-weight: 600;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 20px; padding: .2rem .65rem; color: var(--text-2);
+}
+.meta-chip.accent {
+  background: var(--accent-light); border-color: #c5cfff; color: var(--accent);
+}
+
+/* ---------- Module grid ---------- */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  overflow: hidden;
+}
+.module-tile {
+  background: var(--surface); padding: 1.25rem 1.5rem;
+  display: flex; flex-direction: column; gap: .5rem;
+  transition: background .12s; text-decoration: none; color: inherit;
+}
+.module-tile:hover {
+  background: var(--accent-light); text-decoration: none;
+}
+.module-tile.unavailable {
+  opacity: .5; pointer-events: none; cursor: default;
+}
+.tile-top {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: .5rem;
+}
+.tile-code {
+  font-size: .7rem; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--text-3);
+}
+.tile-status {
+  font-size: .68rem; font-weight: 700;
+  padding: .15rem .5rem; border-radius: 20px;
+}
+.tile-status.disponibil { background: var(--green-light); color: var(--green); }
+.tile-status.partial    { background: var(--accent-light); color: var(--accent); }
+.tile-status.curand     { background: var(--surface-2);    color: var(--text-3); }
+.tile-title {
+  font-size: .95rem; font-weight: 700;
+  color: var(--text); line-height: 1.35;
+}
+.tile-desc { font-size: .8rem; color: var(--text-2); line-height: 1.5; flex: 1; }
+.tile-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: .77rem; color: var(--text-3); margin-top: .25rem;
+  padding-top: .5rem; border-top: 1px solid var(--surface-2);
+}
+.tile-footer .ore { display: flex; align-items: center; gap: .3rem; }
+.tile-arrow {
+  color: var(--accent); font-size: .8rem;
+  opacity: 0; transition: opacity .12s;
+}
+.module-tile:hover .tile-arrow { opacity: 1; }
+
+/* ---------- Placeholder calificare ---------- */
+.calificare-placeholder {
+  background: var(--surface);
+  border: 1px solid var(--border); border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: 2.5rem; text-align: center;
+  color: var(--text-3); font-size: .88rem;
+}
+.calificare-placeholder i {
+  font-size: 1.4rem; margin-bottom: .65rem;
+  display: block; opacity: .3;
+}
+
+/* ---------- Footer ---------- */
+.portal-footer {
+  text-align: center; font-size: .8rem; color: var(--text-3);
+  padding-top: 2rem; border-top: 1px solid var(--border);
+  line-height: 1.8;
+}
+.portal-footer a { color: var(--text-2); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 700px) {
+  .profesor-card { grid-template-columns: 1fr; text-align: center; }
+  .profesor-avatar { margin: 0 auto; }
+  .profesor-meta { justify-content: center; }
+  .materii-list { justify-content: center; }
+  .portal-hero { padding: 2rem 1.5rem; }
+  .portal-hero h1 { font-size: 1.6rem; }
+  .portal-wrap { padding-left: 1rem; padding-right: 1rem; }
+  .update-date { display: none; }
+  .calificare-header { flex-direction: column; align-items: flex-start; }
+}
