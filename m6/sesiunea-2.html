@@ -408,6 +408,35 @@
           <p>Este important să distingem caracterul <code>'7'</code> de numărul întreg <code>7</code>: primul este de tip <code>char</code>, al doilea de tip <code>int</code> – au reprezentări diferite în memorie, chiar dacă la afișare pot arăta asemănător.</p>
 
           <h3>Declararea și inițializarea variabilelor</h3>
+<p>Pentru a putea folosi o variabilă, trebuie mai întâi să treci prin două operații distincte — chiar dacă, în practică, le scrii adesea pe aceeași linie de cod.</p>
+
+<div class="code-annotation">
+  <div class="code-annotation-row">
+    <div class="ca-code">Declarare</div>
+    <div class="ca-expl"><strong>Operația prin care stabilești existența, tipul și numele unei variabile.</strong> Este momentul în care „rezervi cutia" și scrii eticheta pe ea — dar cutia poate fi încă goală.</div>
+  </div>
+  <div class="code-annotation-row">
+    <div class="ca-code">Inițializare</div>
+    <div class="ca-expl"><strong>Operația prin care variabilei i se atribuie prima valoare.</strong> Este momentul în care pui ceva în cutie, pentru prima dată.</div>
+  </div>
+</div>
+
+<div class="code-block">
+  <div class="code-header"><span class="code-lang">C++</span></div>
+  <pre><code><span class="tp">int</span> varsta;      <span class="cm">// doar DECLARARE - cutia exista, dar e goala (valoare nedefinita)</span>
+varsta <span class="op">=</span> <span class="nm">18</span>;    <span class="cm">// acum se face INITIALIZAREA - prima valoare</span>
+
+<span class="tp">int</span> scor <span class="op">=</span> <span class="nm">0</span>; <span class="cm">// DECLARARE + INITIALIZARE intr-o singura linie (varianta recomandata)</span></code></pre>
+</div>
+<div class="callout ok">
+  <span class="callout-icon"></span>
+  <div class="callout-body">
+    <strong>De reținut</strong>
+    <p>Declararea și inițializarea sunt <em>două operații diferite</em>, chiar dacă cel mai adesea le scriem împreună, pe aceeași linie (<code>int varsta = 18;</code>). Poți declara o variabilă fără să o inițializezi imediat — dar, până la prima atribuire, conținutul „cutiei" este nedefinit (vezi avertismentul de mai jos).</p>
+  </div>
+</div>
+
+<p>În sintaxă, cele două operații arată astfel:</p>
           <div class="code-block">
             <div class="code-header"><span class="code-lang">C++ – Sintaxă</span></div>
             <pre><code><span class="cm">// Forma generală:</span>
