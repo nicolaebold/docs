@@ -1495,7 +1495,8 @@ TOTAL DE PLATA : 303.45 lei</code></pre></div>
 
           <!-- Exerciții extra -->
           <h2 id="extra">Exerciții extra</h2>
-          <p>Pentru cei care termină mai repede, două exerciții suplimentare axate pe extragerea și recompunerea cifrelor unui număr.</p>
+          <p>Un bazin mare de aplicații suplimentare, pentru cei care termină mai repede sau vor mai mult exercițiu. Primele sunt reluări simple ale conceptelor din Curs (scrise ca programe complete, cu citire/afișare); ultimele combină mai multe operații și sunt mai solicitante.</p>
+
           <div class="exercise">
             <div class="exercise-header">
               <div class="exercise-num apply">E1</div>
@@ -1522,6 +1523,343 @@ Iesire : 321</code></pre></div>
               <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 379
 Iesire : 397</code></pre></div>
               <details><summary>Indiciu</summary><p>Extrage <code>sute</code>, <code>zeci</code>, <code>unitati</code>, apoi construiește noul număr ca <code>sute * 100 + unitati * 10 + zeci</code> – observă că zecile și unitățile și-au schimbat pozițiile.</p></details>
+            </div>
+          </div>
+
+          <h3>Recapitulare — aplicații de bază</h3>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num warm">E3</div>
+              <div class="exercise-title">Vârsta</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește vârsta unei persoane, exprimată în ani. Afișează un mesaj de forma <code>Ai 18 ani.</code></p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 18
+Iesire : Ai 18 ani.</code></pre></div>
+              <details><summary>Indiciu</summary><p>Citește vârsta într-o variabilă <code>int</code>, apoi afișează textul și valoarea combinate cu <code>&lt;&lt;</code>.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num warm">E4</div>
+              <div class="exercise-title">Două valori</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc două numere întregi <code>a</code> și <code>b</code>. Afișează valorile lor, fiecare pe câte un rând, împreună cu numele variabilei.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>a = 10
+b = 25</code></pre></div>
+              <details><summary>Indiciu</summary><p>Folosește <code>endl</code> sau <code>"\n"</code> pentru a trece pe rândul următor între cele două afișări.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num warm">E5</div>
+              <div class="exercise-title">Schimbarea valorii unei variabile</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Declară o variabilă întreagă <code>x</code> și inițializeaz-o cu 5. Afișează valoarea, modifică-o apoi la 10 și afișeaz-o din nou. Scopul e să observi că variabila rămâne aceeași — doar conținutul ei se schimbă.</p>
+              <details><summary>Indiciu</summary><p>Nu ai nevoie de <code>cin</code> aici — valorile sunt fixe în enunț. Ai nevoie de două instrucțiuni <code>cout</code>, cu o atribuire <code>x = 10;</code> între ele.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num warm">E6</div>
+              <div class="exercise-title">Vârsta anul viitor</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește vârsta actuală a unei persoane. Determină și afișează vârsta pe care o va avea peste un an.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 18
+Iesire : 19</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>varstaViitoare = varsta + 1;</code></p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">E7</div>
+              <div class="exercise-title">Preț și cantitate</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Un produs are prețul <code>p</code> lei, iar un client cumpără <code>n</code> bucăți. Citește prețul și cantitatea și calculează suma totală de plată. Prețul poate avea parte zecimală.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 12.5 4
+Iesire : 50</code></pre></div>
+              <details><summary>Indiciu</summary><p>Prețul trebuie declarat <code>double</code>, nu <code>int</code>, altfel pierzi partea zecimală chiar dacă rezultatul final iese întreg.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num warm">E8</div>
+              <div class="exercise-title">Temperatura</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește temperatura aerului, în grade Celsius. Memorează valoarea într-o variabilă de tip potrivit și afișează <code>Temperatura este 21.5 grade Celsius.</code></p>
+              <details><summary>Indiciu</summary><p>Temperatura poate avea zecimale și poate fi negativă — <code>double</code>, nu <code>int</code>.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num warm">E9</div>
+              <div class="exercise-title">Inițiala</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește inițiala prenumelui unei persoane. Afișează mesajul <code>Initiala este A.</code></p>
+              <details><summary>Indiciu</summary><p>Un singur caracter → tipul <code>char</code>, nu <code>int</code> și nu un șir cu ghilimele duble.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num warm">E10</div>
+              <div class="exercise-title">Prezent sau absent</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Declară o variabilă logică <code>prezent</code>. Inițializeaz-o cu <code>true</code> și afișeaz-o. Modifică apoi valoarea la <code>false</code> și afișeaz-o din nou. Observă cum afișează C++ implicit valorile <code>bool</code>.</p>
+              <details><summary>Indiciu</summary><p><code>cout</code> afișează <code>true</code> ca <code>1</code> și <code>false</code> ca <code>0</code>, nu ca text, decât dacă folosești explicit <code>cout &lt;&lt; boolalpha;</code> înainte.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">E11</div>
+              <div class="exercise-title">Date despre un elev</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Pentru un elev vrem să memorăm: vârsta, media, inițiala numelui și dacă este prezent sau nu. Alege câte o variabilă și un tip potrivit pentru fiecare, inițializeaz-o cu o valoare la alegere și afișează toate datele.</p>
+              <details><summary>Indiciu</summary><p>Patru variabile, patru tipuri diferite: <code>int</code>, <code>double</code>, <code>char</code>, <code>bool</code> — exact tiparul din Exemplul 3 al secțiunii Exemple.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">E12</div>
+              <div class="exercise-title">Date despre un produs</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Pentru un produs se cunosc: numărul de bucăți, prețul unei bucăți, categoria (o literă) și dacă produsul este în stoc. Declară variabilele necesare, cu tipuri potrivite, și afișează informațiile memorate.</p>
+              <details><summary>Indiciu</summary><p><code>int</code> pentru bucăți, <code>double</code> pentru preț, <code>char</code> pentru categorie, <code>bool</code> pentru „în stoc".</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">E13</div>
+              <div class="exercise-title">Curte</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Într-o curte se află <code>n</code> găini și <code>m</code> vaci. Determină numărul total de picioare ale animalelor din curte.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 10 4
+Iesire : 36</code></pre></div>
+              <details><summary>Indiciu</summary><p>O găină are 2 picioare, o vacă are 4: <code>picioare = 2*gaini + 4*vaci;</code></p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num combine">E14</div>
+              <div class="exercise-title">Populație</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Un oraș are în prezent <code>n</code> locuitori. În fiecare an, populația crește cu <code>x</code> locuitori (cu un număr fix, nu cu un procent). Determină populația orașului după <code>y</code> ani.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 100 10 5
+Iesire : 150</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>populatieFinala = n + x * y;</code> — creșterea e liniară (fixă pe an), nu compusă.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num combine">E15</div>
+              <div class="exercise-title">Portofel</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Într-un portofel există <code>n</code> bancnote de <code>a</code> lei, <code>m</code> bancnote de <code>b</code> lei și <code>p</code> bancnote de <code>c</code> lei. Determină suma totală de bani din portofel.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: n=1 m=5 p=10  a=2 b=0 c=10
+Iesire : 102</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>suma = n*a + m*b + p*c;</code> — citește mai întâi cele trei cantități (<code>n, m, p</code>), apoi cele trei valori (<code>a, b, c</code>), în această ordine, ca să obții exemplul de mai sus: <code>1*2 + 5*0 + 10*10 = 102</code>.</p></details>
+            </div>
+          </div>
+
+          <h3>Aplicații suplimentare — mai dificile</h3>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">E16</div>
+              <div class="exercise-title">Ultima cifră</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Afișează ultima cifră a numărului.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 234
+Iesire : 4</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>n % 10</code>.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">E17</div>
+              <div class="exercise-title">Cifra zecilor</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural cu exact trei cifre. Determină cifra zecilor.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 379
+Iesire : 7</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>n / 10 % 10</code>.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">E18</div>
+              <div class="exercise-title">Cifra sutelor</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural cu exact trei cifre. Determină cifra sutelor.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 379
+Iesire : 3</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>n / 100</code>.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num combine">E19</div>
+              <div class="exercise-title">Suma cifrelor</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural cu exact trei cifre. Determină suma celor trei cifre.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 379
+Iesire : 19</code></pre></div>
+              <details><summary>Indiciu</summary><p>Extrage <code>sute</code>, <code>zeci</code>, <code>unitati</code> ca la E17/E18/E16, apoi adună-le. (<code>3+7+9=19</code>)</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num combine">E20</div>
+              <div class="exercise-title">Eliminarea cifrei din mijloc</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural cu exact trei cifre. Elimină cifra zecilor și afișează numărul format din cifra sutelor și cifra unităților.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 132
+Iesire : 12</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>rezultat = sute * 10 + unitati;</code> (fără cifra zecilor din mijloc)</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num hard">E21</div>
+              <div class="exercise-title">Rotirea cifrelor</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural de forma <code>abc</code>, cu exact trei cifre. Construiește numărul de forma <code>bca</code> (cifrele „rotite" cu o poziție).</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 378
+Iesire : 783</code></pre></div>
+              <details><summary>Indiciu</summary><p>Dacă <code>a</code>=sute, <code>b</code>=zeci, <code>c</code>=unități, atunci <code>bca = b*100 + c*10 + a;</code>. Pentru 378: <code>a=3, b=7, c=8</code> → <code>7*100+8*10+3=783</code>.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num combine">E22</div>
+              <div class="exercise-title">Prăjituri</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Daniela are <code>s</code> lei, iar o prăjitură costă <code>n</code> lei (<code>1 ≤ n ≤ s</code>). Determină numărul maxim de prăjituri pe care le poate cumpăra și suma de bani care îi mai trebuie pentru a cumpăra încă una.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 10 3
+Iesire : 3 2</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>nrPrajituri = s / n;</code> (câte poate cumpăra). Bani rămași: <code>s % n</code>. Suma care-i mai trebuie pentru încă una: <code>n - s % n</code>. Pentru 10 și 3: <code>10/3=3</code>, <code>10%3=1</code>, <code>3-1=2</code>.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num combine">E23</div>
+              <div class="exercise-title">Secunde în ore, minute și secunde</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește o durată exprimată printr-un număr total de secunde. Transformă durata în ore, minute și secunde.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 3672
+Iesire : 1 1 12</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>ore = n / 3600;</code> apoi lucrează cu restul: <code>ramase = n % 3600;</code>, <code>minute = ramase / 60;</code>, <code>secunde = ramase % 60;</code>.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">E24</div>
+              <div class="exercise-title">Media a trei valori</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc trei valori reale. Calculează media lor aritmetică. Alege tipul variabilelor astfel încât rezultatul să poată avea parte fracționară.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 7.5 8 9.5
+Iesire : 8.33333</code></pre></div>
+              <details><summary>Indiciu</summary><p>Aceeași idee ca Exemplul 1 din secțiunea Exemple, dar de data asta cu <code>cin</code> în loc de valori fixe în cod: <code>media = (a + b + c) / 3;</code>, cu toate variabilele <code>double</code>.</p></details>
+            </div>
+          </div>
+
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num hard">E25</div>
+              <div class="exercise-title">Schimb de valori</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc două numere întregi <code>a</code> și <code>b</code>. Interschimbă valorile celor două variabile folosind o a treia variabilă.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: a=5 b=8
+Iesire : a=8 b=5</code></pre></div>
+              <details><summary>Indiciu</summary><p>Pentru a muta conținuturile a două cutii fără să pierzi vreo valoare, ai nevoie temporar de o a treia cutie: <code>temp = a; a = b; b = temp;</code>. (Ai văzut și varianta „fără variabilă terță" la exercițiul model 5 din secțiunea de exerciții introductive — dar aceasta e varianta sigură, recomandată.)</p></details>
             </div>
           </div>
 
