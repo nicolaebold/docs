@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>S2 – Variabile și tipuri de date | M6 OCW</title>
+<meta name="description" content="Sesiunea 2: date, tipuri de date fundamentale int/double/char/bool, variabile, constante, citire și afișare cu cin/cout, operatori aritmetici de bază în C++." />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  .ops-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: .75rem; margin: 1rem 0;
+  }
+  .op-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1rem;
+  }
+  .op-card h4 { font-size: .85rem; color: var(--accent); margin-bottom: .5rem; }
+  .op-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono); font-size: .85rem; padding: .2rem 0;
+    border-bottom: 1px solid var(--surface-2);
+  }
+  .op-row:last-child { border-bottom: none; }
+  .op-sym { font-weight: 800; color: var(--text); }
+  .op-desc { font-size: .78rem; color: var(--text-3); font-family: var(--sans); }
+  .op-ex { color: var(--accent-dark); font-size: .8rem; }
+
+  .bug-card { border-radius: var(--radius-lg); overflow: hidden; margin: 1.25rem 0; border: 1px solid var(--border); }
+  .bug-header {
+    padding: .6rem 1rem; font-size: .8rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  .bug-header.wrong { background: var(--red-light); color: var(--red); }
+  .bug-header.right { background: var(--green-light); color: var(--green); }
+  .bug-header.symptom { background: var(--amber-light); color: #92400e; }
+  .bug-body { padding: .9rem 1.1rem; font-size: .9rem; }
+
+  .trace-step { font-family: var(--mono); }
+
+  .cheat-section { margin: 1.5rem 0; }
+
+  /* Quiz-style intro exercises (multiple choice, readable layout) */
+  .quiz-item { margin: 1.35rem 0; padding-bottom: 1.1rem; border-bottom: 1px solid var(--surface-2); }
+  .quiz-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .quiz-item .qnum {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 24px; height: 24px; padding: 0 .3rem;
+    border-radius: 50%; background: var(--accent-light); color: var(--accent-dark);
+    font-size: .78rem; font-weight: 800; margin-right: .5rem;
+  }
+  .choices {
+    list-style: none; padding: 0; margin: .6rem 0 .8rem;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .4rem .6rem;
+  }
+  .choices li {
+    font-family: var(--mono); font-size: .84rem; color: var(--text);
+    background: var(--surface-2); border: 1px solid var(--border);
+    padding: .4rem .65rem; border-radius: 6px;
+  }
+  .quiz-item details { margin-top: .5rem; }
+  .quiz-item summary { background: var(--accent-light); color: var(--accent-dark); font-size: .82rem; }
+  .lang-portrait-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem; margin: 1.25rem 0;
+  }
+  .lang-portrait {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; box-shadow: var(--shadow);
+  }
+  .lang-portrait .lp-name { font-weight: 800; font-size: 1.05rem; margin-bottom: .3rem; color: var(--accent-dark); }
+  .lang-portrait .lp-tag { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); margin-bottom: .5rem; }
+  .lang-portrait p { font-size: .87rem; color: var(--text-2); margin: 0; }
+
+  /* Variable-as-a-box visual */
+  .var-box-row { display: flex; gap: 1.75rem; flex-wrap: wrap; align-items: flex-end; margin: 1.25rem 0; }
+  .var-box { text-align: center; }
+  .var-box .vb-label { font-family: var(--mono); font-size: .85rem; font-weight: 700; color: var(--text-2); margin-bottom: .4rem; }
+  .var-box .vb-content {
+    min-width: 110px; padding: 1rem 1.4rem; background: var(--accent-light);
+    border: 2px solid var(--accent); border-radius: var(--radius);
+    font-family: var(--mono); font-size: 1.3rem; font-weight: 800; color: var(--accent-dark);
+  }
+  .var-box .vb-type { font-size: .7rem; color: var(--text-3); margin-top: .4rem; text-transform: uppercase; letter-spacing: .05em; }
+  .vb-arrow { align-self: center; color: var(--text-3); font-size: 1.4rem; padding-bottom: 1.4rem; }
+
+  @media (max-width: 600px) { .var-box-row { gap: 1rem; } }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">M6</span>Limbaje de Programare</a>
+  <div class="topnav-breadcrumb">
+    <a href="index.html">M6</a><span class="sep">›</span> <span>S2 – Variabile și tipuri de date</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="https://www.onlinegdb.com/online_c++_compiler" target="_blank" class="btn-sm">Compilator online</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <span class="sidebar-label">Această pagină</span>
+    <a class="sidebar-link" href="#intro"><i class="fa-solid fa-book-open fa-fw"></i> Introducere</a>
+    <a class="sidebar-link" href="#prereq"><i class="fa-solid fa-circle-check fa-fw"></i> Prerequisite</a>
+    <a class="sidebar-link" href="#obiective"><i class="fa-solid fa-bullseye fa-fw"></i> Obiective</a>
+    <a class="sidebar-link" href="#paralimbaj"><i class="fa-solid fa-language fa-fw"></i> Dincolo de C++</a>
+    <a class="sidebar-link" href="#concepte"><i class="fa-solid fa-brain fa-fw"></i> Concepte (C++)</a>
+    <a class="sidebar-link" href="#constante"><i class="fa-solid fa-lock fa-fw"></i> Constante</a>
+    <a class="sidebar-link" href="#io"><i class="fa-solid fa-keyboard fa-fw"></i> Citire și afișare</a>
+    <a class="sidebar-link" href="#exemple"><i class="fa-solid fa-lightbulb fa-fw"></i> Exemple</a>
+    <a class="sidebar-link" href="#anatomie"><i class="fa-solid fa-microscope fa-fw"></i> Anatomia codului</a>
+    <a class="sidebar-link" href="#daca"><i class="fa-solid fa-circle-question fa-fw"></i> Ce se întâmplă dacă…</a>
+    <a class="sidebar-link" href="#greseli"><i class="fa-solid fa-triangle-exclamation fa-fw"></i> Greșeli frecvente</a>
+    <a class="sidebar-link" href="#debug"><i class="fa-solid fa-bug fa-fw"></i> Depanare</a>
+    <span class="sidebar-label">Laborator</span>
+    <a class="sidebar-link" href="#introductive"><i class="fa-solid fa-pencil fa-fw"></i> Exerciții introductive</a>
+    <a class="sidebar-link" href="#tracing"><i class="fa-solid fa-chart-line fa-fw"></i> Code tracing</a>
+    <a class="sidebar-link" href="#lab"><i class="fa-solid fa-flask fa-fw"></i> Laborator</a>
+    <a class="sidebar-link" href="#studiu"><i class="fa-solid fa-store fa-fw"></i> Studiu de caz</a>
+    <a class="sidebar-link" href="#extra"><i class="fa-solid fa-plus fa-fw"></i> Exerciții extra</a>
+    <span class="sidebar-label">Referință</span>
+    <a class="sidebar-link" href="#verificare"><i class="fa-solid fa-circle-check fa-fw"></i> Autoevaluare</a>
+    <a class="sidebar-link" href="#rezumat"><i class="fa-solid fa-thumbtack fa-fw"></i> Rezumat</a>
+    <a class="sidebar-link" href="#glosar"><i class="fa-solid fa-book fa-fw"></i> Glosar</a>
+    <a class="sidebar-link" href="#cheat"><i class="fa-solid fa-bolt fa-fw"></i> Cheat sheet</a>
+    <span class="sidebar-label">Sesiuni</span>
+    <a class="sidebar-link" href="sesiunea-0.html">S0 – Syllabus</a>
+    <a class="sidebar-link" href="sesiunea-0b.html">S0b – Istoric limbaje</a>
+    <a class="sidebar-link" href="sesiunea-1.html">S1 – Calculator și C++</a>
+    <a class="sidebar-link active" href="sesiunea-2.html">S2 – Variabile și tipuri de date</a>
+    <a class="sidebar-link" href="index.html">← Înapoi la modul</a>
+  </aside>
+
+  <main class="main">
+    <!-- Hero -->
+    <div class="page-hero">
+      <span class="session-tag">Sesiunea 2 · 6 ore · C++</span>
+      <h1>Variabile și tipuri de date</h1>
+      <div class="hero-meta">
+        <span class="chip">6 ore (4h teorie + 2h laborator)</span>
+        <span class="chip">int · double · char · bool</span>
+        <span class="chip">Variabile · Constante · cin/cout</span>
+        <span class="chip">Operatori aritmetici de bază</span>
+        <span class="chip">C++ · Python · Java</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="t2-curs">Curs</button>
+      <button class="tab-btn" data-tab="t2-exemple">Exemple</button>
+      <button class="tab-btn" data-tab="t2-lab">Laborator</button>
+      <button class="tab-btn" data-tab="t2-cheat">Cheat Sheet</button>
+      <button class="tab-btn" data-tab="t2-autoevaluare">Autoevaluare</button>
+    </div>
+
+    <div class="tab-wrap">
+      <!-- ========================================================= -->
+      <!-- TAB: CURS                                                  -->
+      <!-- ========================================================= -->
+      <div class="tab-pane active" id="t2-curs">
+        <div class="prose">
+
+          <!-- Prereq -->
+          <div class="prereq-box" id="prereq">
+            <h4>Prerequisite – ce trebuie să știi înainte de această sesiune</h4>
+            <ul>
+              <li>Ai parcurs S0 (Syllabus) și S0b (Limbaje de programare – concepte)</li>
+              <li>Ai parcurs S1 – știi să deschizi un fișier .cpp, să compilezi și să rulezi un program simplu</li>
+              <li>Cunoști structura minimă a unui program C++ (<code>#include &lt;iostream&gt;</code>, <code>int main()</code>, <code>return 0;</code>)</li>
+              <li>Ai acces la un compilator (local sau online)</li>
+            </ul>
+          </div>
+
+          <h2 id="intro">Introducere</h2>
+          <p>Orice program lucrează cu date: vârste, temperaturi, prețuri, inițiale, răspunsuri de tipul adevărat/fals. Pentru a lucra cu date, computerul are nevoie să le <strong>memoreze</strong> undeva. Variabilele sunt mecanismul prin care rezervăm spațiu în memorie și îi dăm un nume sugestiv.</p>
+          <p>Dar nu toate datele sunt la fel. Un preț poate avea zecimale, o vârstă de obicei nu. O inițială este un singur caracter, un răspuns este adevărat sau fals. De aceea, în C++, fiecare variabilă are un <strong>tip de date</strong> declarat explicit – computerul trebuie să știe câtă memorie să aloce și cum să interpreteze biții stocați.</p>
+          <p>Iar cu datele memorate putem și <strong>calcula</strong>: adunăm prețuri, calculăm medii, extragem cifrele unui număr. Vom folosi pentru asta câțiva operatori aritmetici de bază – suficient pentru a scrie primele programe utile. Operatorii de comparație, cei logici și modul în care un program <em>ia decizii</em> vor fi aprofundați în sesiunea următoare, după ce stăpânim bine datele asupra cărora aceștia acționează.</p>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Unde apar aceste concepte în programe reale?</strong>
+              <p>Orice aplicație reală – de la un site de comerț electronic la un sistem de rezervări sau o aplicație bancară – stochează date în variabile și le procesează prin calcule. Aceasta este fundația absolută a oricărui program.</p>
+            </div>
+          </div>
+
+          <!-- Obiective -->
+          <div class="objectives" id="obiective">
+            <h3>La finalul acestei sesiuni vei putea să:</h3>
+            <ol>
+              <li><strong>Descrii</strong> ce este o variabilă și cum funcționează în memorie</li>
+              <li><strong>Declari și inițializezi</strong> variabile pentru tipurile fundamentale</li>
+              <li><strong>Identifici</strong> tipul potrivit pentru fiecare categorie de date</li>
+              <li><strong>Diferențiezi</strong> o variabilă de o constantă cu nume</li>
+              <li><strong>Citești</strong> valori de la tastatură cu <code>cin</code> și <strong>afișezi</strong> rezultate cu <code>cout</code></li>
+              <li><strong>Utilizezi</strong> operatori aritmetici de bază, inclusiv împărțirea întreagă și restul împărțirii</li>
+              <li><strong>Identifici și corectezi</strong> greșelile frecvente legate de tipuri</li>
+              <li><strong>Urmărești</strong> execuția unui program prin trasarea valorilor variabilelor</li>
+            </ol>
+          </div>
+
+          <!-- PARA-LIMBAJ -->
+          <h2 id="paralimbaj">Date, variabile și operatori – dincolo de C++</h2>
+          <p>Modulul se numește <strong>Limbaje de Programare</strong>, nu „Limbajul C++". Nu întâmplător: deși în acest curs scriem cod în C++, conceptele din această sesiune – dată, tip de date, variabilă, constantă, operator – nu aparțin lui C++. Ele sunt <strong>concepte universale</strong>, prezente sub o formă sau alta în orice limbaj de programare folosit azi: Python, Java, C#, JavaScript, Rust etc. Ce diferă de la un limbaj la altul este <em>sintaxa</em> (cum se scriu) și câteva <em>reguli</em> (cum se verifică tipurile, ce se întâmplă la împărțire etc.), nu <em>ideea</em> din spate.</p>
+
+          <h3>Trei limbaje, pe scurt</h3>
+          <p>Restul acestei secțiuni compară C++ cu alte două limbaje foarte răspândite azi:</p>
+          <div class="lang-portrait-grid">
+            <div class="lang-portrait">
+              <div class="lp-name">C++</div>
+              <div class="lp-tag">Creat 1985 · Bjarne Stroustrup</div>
+              <p>Extinde limbajul C cu programare orientată pe obiecte. Compilat direct în cod mașină, foarte rapid. Folosit în sisteme de operare, motoare de jocuri, software financiar și orice aplicație unde performanța contează mult.</p>
+            </div>
+            <div class="lang-portrait">
+              <div class="lp-name">Python</div>
+              <div class="lp-tag">Creat 1991 · Guido van Rossum</div>
+              <p>Sintaxă apropiată de limbajul natural, fără multe simboluri obligatorii. Interpretat, nu compilat direct. Foarte popular în știința datelor, inteligență artificială, automatizări și scripting rapid.</p>
+            </div>
+            <div class="lang-portrait">
+              <div class="lp-name">Java</div>
+              <div class="lp-tag">Creat 1995 · James Gosling (Sun Microsystems)</div>
+              <p>Compilat într-un cod intermediar (bytecode) rulat de <em>Java Virtual Machine</em> (JVM) – ideea „scrii o dată, rulezi oriunde". Foarte folosit în aplicații enterprise, sisteme bancare și în dezvoltarea Android.</p>
+            </div>
+          </div>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>De ce contează asta pentru tine</strong>
+              <p>Odată ce înțelegi ce este o variabilă și un tip de date <em>ca idee</em>, poți învăța sintaxa unui limbaj nou mult mai repede – recunoști conceptul, înveți doar „dialectul".</p>
+            </div>
+          </div>
+
+          <h3>Cum arată „blocul" de cod în fiecare limbaj</h3>
+          <p>Înainte de a compara tipuri și operatori, observă o diferență vizibilă imediat: cum marchează fiecare limbaj „acesta e un bloc de instrucțiuni" și „aici se termină o instrucțiune".</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th></th><th>C++</th><th>Python</th><th>Java</th></tr></thead>
+              <tbody>
+                <tr><td>Sfârșit de instrucțiune</td><td>Punct și virgulă <code>;</code> obligatoriu</td><td>Capătul liniei (fără <code>;</code>)</td><td>Punct și virgulă <code>;</code> obligatoriu</td></tr>
+                <tr><td>Delimitarea unui bloc</td><td>Acolade <code>{ }</code></td><td>Indentare (spații/tab-uri consistente)</td><td>Acolade <code>{ }</code></td></tr>
+                <tr><td>Codul trebuie „învelit"?</td><td>Nu, poate sta liber în <code>main()</code></td><td>Nu, poate sta liber în fișier</td><td>Da, obligatoriu într-o clasă</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Iată același mic program – citește o vârstă și afișează un mesaj – scris complet, în toate cele trei limbaje:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="pp">#include</span> <span class="st">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span> varsta;
+    cin <span class="op">&gt;&gt;</span> varsta;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Ai "</span> <span class="op">&lt;&lt;</span> varsta <span class="op">&lt;&lt;</span> <span class="st">" ani."</span>;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copiază</button></div>
+            <pre><code>varsta = <span class="fn">int</span>(<span class="fn">input</span>())
+<span class="fn">print</span>(<span class="st">"Ai"</span>, varsta, <span class="st">"ani."</span>)</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Java</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="pp">import</span> java.util.Scanner;
+
+<span class="kw">public class</span> <span class="fn">Varsta</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="tp">String</span>[] args) {
+        <span class="tp">Scanner</span> citire = <span class="kw">new</span> <span class="tp">Scanner</span>(<span class="tp">System</span>.in);
+        <span class="tp">int</span> varsta = citire.nextInt();
+        <span class="tp">System</span>.out.println(<span class="st">"Ai "</span> <span class="op">+</span> varsta <span class="op">+</span> <span class="st">" ani."</span>);
+    }
+}</code></pre>
+          </div>
+          <p>Observă cât de mult mai „scurt" e Python (2 linii, fără declarare de tip, fără punct și virgulă) față de Java (trebuie importat <code>Scanner</code>, definită o clasă, folosit un obiect pentru citire). C++ se situează undeva la mijloc: cere tip și punct-virgulă, dar nu cere o clasă. Aceasta este o consecință directă a filozofiei fiecărui limbaj — nu are legătură cu „ce e mai bun", ci cu ce priorități a avut echipa care l-a proiectat (viteză de scriere vs. control precis vs. portabilitate pe orice platformă).</p>
+
+          <h3>Tipizare statică vs. tipizare dinamică</h3>
+          <p>C++ și Java folosesc <strong>tipizare statică</strong>: tipul unei variabile se declară explicit în cod și este verificat de compilator <em>înainte</em> ca programul să ruleze. Python folosește <strong>tipizare dinamică</strong>: nu declari tipul variabilei – acesta este asociat cu <em>valoarea</em> curentă și poate fi verificat abia când linia respectivă de cod se execută.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Limbaj</th><th>Tip de tipizare</th><th>Tipul se scrie în cod?</th><th>Când se verifică tipurile</th></tr></thead>
+              <tbody>
+                <tr><td><code>C++</code></td><td>Statică</td><td>Da, obligatoriu</td><td>La compilare</td></tr>
+                <tr><td><code>Java</code></td><td>Statică</td><td>Da, obligatoriu</td><td>La compilare</td></tr>
+                <tr><td><code>Python</code></td><td>Dinamică</td><td>Nu (opțional, ca adnotare)</td><td>La execuție</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Nu există „mai bine", doar „diferit"</strong>
+              <p>Tipizarea statică prinde multe greșeli de tip înainte ca programul să ruleze vreodată, ceea ce ajută la programe mari, cu mulți programatori. Tipizarea dinamică e mai rapidă de scris pentru scripturi mici, dar unele greșeli de tip apar abia când acea linie de cod se execută efectiv (uneori după luni de utilizare a programului).</p>
+            </div>
+          </div>
+
+          <h3>Declararea unei variabile – comparație de sintaxă</h3>
+          <p>Ideea („o cutie cu nume, tip și valoare") este identică. Doar sintaxa diferă:</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Ce vrem</th><th>C++</th><th>Python</th><th>Java</th></tr></thead>
+              <tbody>
+                <tr><td>Întreg</td><td><code>int varsta = 18;</code></td><td><code>varsta = 18</code></td><td><code>int varsta = 18;</code></td></tr>
+                <tr><td>Real (zecimale)</td><td><code>double pret = 9.99;</code></td><td><code>pret = 9.99</code></td><td><code>double pret = 9.99;</code></td></tr>
+                <tr><td>Caracter</td><td><code>char c = 'A';</code></td><td><code>c = "A"</code> <span style="color:var(--text-3);">(nu există tip separat de caracter)</span></td><td><code>char c = 'A';</code></td></tr>
+                <tr><td>Logic</td><td><code>bool activ = true;</code></td><td><code>activ = True</code></td><td><code>boolean activ = true;</code></td></tr>
+                <tr><td>Constantă</td><td><code>const int N = 7;</code></td><td><code>N = 7</code> <span style="color:var(--text-3);">(convenție: majuscule, nu impunere a limbajului)</span></td><td><code>final int N = 7;</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Observă trei lucruri factuale, verificabile în orice documentație a celor trei limbaje:</p>
+          <ul>
+            <li>În <strong>C++</strong> și <strong>Java</strong>, tipul apare explicit înaintea numelui variabilei; în <strong>Python</strong> nu apare deloc – interpretorul deduce tipul din valoarea atribuită.</li>
+            <li><strong>Python</strong> nu are un tip <code>char</code> dedicat pentru un singur caracter; folosește tipul <code>str</code> (șir de caractere) și pentru un singur caracter.</li>
+            <li><strong>Java</strong> nu are o constantă declarată cu <code>const</code> (acel cuvânt-cheie este rezervat, dar nefolosit); echivalentul folosit efectiv este <code>final</code>.</li>
+          </ul>
+
+          <h3>Citirea și afișarea datelor – comparație</h3>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th></th><th>C++</th><th>Python</th><th>Java</th></tr></thead>
+              <tbody>
+                <tr><td>Afișare</td><td><code>cout &lt;&lt; varsta;</code></td><td><code>print(varsta)</code></td><td><code>System.out.println(varsta);</code></td></tr>
+                <tr><td>Citire</td><td><code>cin &gt;&gt; varsta;</code></td><td><code>varsta = int(input())</code></td><td><code>varsta = scanner.nextInt();</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>În Python, <code>input()</code> citește întotdeauna text; dacă vrem un număr întreg, trebuie să îl convertim explicit cu <code>int(...)</code> – o consecință directă a tipizării dinamice. În Java, citirea de la tastatură necesită de regulă un obiect <code>Scanner</code> (din <code>java.util.Scanner</code>), așa cum ai văzut și în exemplul complet de mai sus.</p>
+
+          <h3>Operatorii aritmetici – aproape identici peste tot</h3>
+          <p>Spre deosebire de declararea variabilelor, operatorii aritmetici de bază sunt aproape identici în cele trei limbaje – acesta este un exemplu bun de concept cu adevărat universal:</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Operație</th><th>C++</th><th>Python</th><th>Java</th></tr></thead>
+              <tbody>
+                <tr><td>Adunare, scădere, înmulțire</td><td><code>+ - *</code></td><td><code>+ - *</code></td><td><code>+ - *</code></td></tr>
+                <tr><td>Împărțire reală</td><td><code>/</code> (dacă cel puțin un operand e real)</td><td><code>/</code> (întotdeauna reală, în Python 3)</td><td><code>/</code> (dacă cel puțin un operand e real)</td></tr>
+                <tr><td>Împărțire întreagă</td><td><code>/</code> (dacă ambii operanzi sunt <code>int</code>)</td><td><code>//</code> (operator dedicat)</td><td><code>/</code> (dacă ambii operanzi sunt <code>int</code>)</td></tr>
+                <tr><td>Restul împărțirii</td><td><code>%</code></td><td><code>%</code></td><td><code>%</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Diferența importantă la împărțire</strong>
+              <p>În <strong>C++</strong> și <strong>Java</strong>, operatorul <code>/</code> face fie împărțire reală, fie întreagă, în funcție de tipul operanzilor (exact capcana discutată mai devreme în această sesiune). În <strong>Python 3</strong>, <code>/</code> produce <em>întotdeauna</em> un rezultat real (<code>7 / 2</code> este <code>3.5</code>), iar pentru împărțirea întreagă Python are un operator separat, <code>//</code> (<code>7 // 2</code> este <code>3</code>). Este o alegere de proiectare diferită pentru aceeași nevoie – niciuna „greșită", doar diferită.</p>
+            </div>
+          </div>
+          <p>Un exercițiu bun de reținut: <strong>ideea</strong> „împărțirea între întregi poate să nu dea rezultat întreg" e universală, dar <strong>sintaxa</strong> prin care o exprimi diferă. Dacă vreodată treci de la C++ la Python, acesta e unul dintre primele lucruri de verificat în cod.</p>
+
+          <!-- CONCEPTE -->
+          <h2 id="concepte">Concepte fundamentale în C++</h2>
+          <h3>Ce este o variabilă?</h3>
+          <p>O <strong>variabilă</strong> este o locație numită în memoria calculatorului care stochează o valoare. Poți să o gândești ca pe o „cutie etichetată" – eticheta este numele variabilei, cutia este spațiul din memorie, iar conținutul este valoarea curentă.</p>
+
+          <div class="var-box-row">
+            <div class="var-box">
+              <div class="vb-label">varsta</div>
+              <div class="vb-content">18</div>
+              <div class="vb-type">int</div>
+            </div>
+          </div>
+
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Memorie și adrese</strong>
+              <p>Memoria calculatorului este organizată în milioane de celule numerotate (adrese), grupate în octeți (bytes). Când declari <code>int varsta = 18;</code>, compilatorul rezervă automat 4 octeți la o adresă din memorie și îi asociază eticheta „varsta". Tu nu trebuie să cunoști adresa – folosești doar numele.</p>
+            </div>
+          </div>
+
+          <p>Fiecare variabilă are trei caracteristici obligatorii:</p>
+          <ul>
+            <li><strong>Tip</strong> – ce categorie de date stochează (întreg, număr cu zecimale, caracter etc.)</li>
+            <li><strong>Nume</strong> (identificator) – cum o accesezi în cod</li>
+            <li><strong>Valoare</strong> – datele stocate în acel moment (se poate schimba pe parcursul execuției)</li>
+          </ul>
+
+          <h3>Tipuri de date fundamentale în C++</h3>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Tip</th><th>Ce stochează</th><th>Exemplu de valoare</th><th>Memorie</th><th>Când îl folosești</th></tr></thead>
+              <tbody>
+                <tr><td><code>int</code></td><td>Numere întregi</td><td><code>-5, 0, 100, 2024</code></td><td>4 octeți (uzual)</td><td>Vârste, numărare, ani</td></tr>
+                <tr><td><code>double</code></td><td>Numere cu zecimale (precizie dublă)</td><td><code>3.14, -0.5, 99.99</code></td><td>8 octeți (uzual)</td><td>Prețuri, greutăți, temperaturi</td></tr>
+                <tr><td><code>float</code></td><td>Numere cu zecimale (precizie simplă)</td><td><code>3.14f</code></td><td>4 octeți (uzual)</td><td>Când memoria contează mai mult decât precizia</td></tr>
+                <tr><td><code>char</code></td><td>Un singur caracter</td><td><code>'A', 'z', '7'</code></td><td>1 octet (garantat de standard)</td><td>Inițiale, coduri, caractere individuale</td></tr>
+                <tr><td><code>bool</code></td><td>Valori logice</td><td><code>true, false</code></td><td>1 octet (uzual)</td><td>Condiții, stări active/inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Dimensiuni „uzuale", nu universale</strong>
+              <p>Valorile de mai sus sunt cele întâlnite pe majoritatea compilatoarelor moderne pentru sisteme desktop pe 32/64 de biți (GCC, Clang, MSVC). Standardul C++ garantează explicit doar dimensiunea lui <code>char</code> (1 octet); pentru celelalte tipuri, dimensiunea exactă poate varia pe alte platforme.</p>
+            </div>
+          </div>
+          <p>Este important să distingem caracterul <code>'7'</code> de numărul întreg <code>7</code>: primul este de tip <code>char</code>, al doilea de tip <code>int</code> – au reprezentări diferite în memorie, chiar dacă la afișare pot arăta asemănător.</p>
+
+          <h3>Declararea și inițializarea variabilelor</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Sintaxă</span></div>
+            <pre><code><span class="cm">// Forma generală:</span>
+<span class="tp">tip_date</span> nume_variabila = valoare_initiala;
+
+<span class="cm">// Exemple concrete:</span>
+<span class="tp">int</span> varsta = <span class="nm">18</span>;
+<span class="tp">double</span> pret = <span class="nm">49.99</span>;
+<span class="tp">bool</span> activ = <span class="kw">true</span>;
+<span class="tp">char</span> initiala = <span class="st">'M'</span>;</code></pre>
+          </div>
+          <p>Există câteva variante de declarare pe care trebuie să le cunoști:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Variante de declarare</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="cm">// 1. Declarare + initializare (recomandat)</span>
+<span class="tp">int</span> x = <span class="nm">10</span>;
+
+<span class="cm">// 2. Declarare fara initializare (evitati - valoarea e nedefinita!)</span>
+<span class="tp">int</span> y;
+<span class="cm">// y contine "gunoi" din memorie - riscant sa il folosesti fara atribuire</span>
+
+<span class="cm">// 3. Atribuire dupa declarare</span>
+<span class="tp">int</span> a;
+a = <span class="nm">5</span>; <span class="cm">// OK, dar declarati si initializati in acelasi timp cand puteti</span></code></pre>
+          </div>
+
+          <h3>Reguli pentru numele de variabile</h3>
+          <ul>
+            <li>Poate conține litere (<code>a-z</code>, <code>A-Z</code>), cifre (<code>0-9</code>) și underscore (<code>_</code>)</li>
+            <li><strong>Nu poate începe cu o cifră</strong> – <code>1x</code> e invalid, <code>x1</code> e valid</li>
+            <li>Este <strong>case-sensitive</strong> – <code>Varsta</code> și <code>varsta</code> sunt variabile diferite</li>
+            <li>Nu poate fi un cuvânt rezervat al limbajului (<code>int</code>, <code>if</code>, <code>for</code> etc.)</li>
+            <li>Evitați diacriticele – <code>varsta</code>, nu <code>vârstă</code></li>
+          </ul>
+          <div class="callout ok">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Convenție de denumire</strong>
+              <p>Folosim frecvent <strong>camelCase</strong> pentru variabile: primul cuvânt cu literă mică, fiecare cuvânt următor cu literă mare. Exemple: <code>pretUnitar</code>, <code>numarStudenti</code>, <code>totalFactura</code>. Evitați nume ca <code>x</code>, <code>a</code>, <code>temp</code> dacă puteți alege ceva mai descriptiv.</p>
+            </div>
+          </div>
+
+          <h3>Urmărirea valorii unei variabile</h3>
+          <p>Valoarea unei variabile se poate modifica pe parcursul execuției, fără ca tipul sau numele ei să se schimbe. Este util să urmărești, pas cu pas, cum evoluează fiecare variabilă:</p>
+          <div class="tbl-wrap">
+            <table class="trace-table">
+              <thead><tr><th>Instrucțiune executată</th><th>a</th><th>b</th></tr></thead>
+              <tbody>
+                <tr><td><code>int a = 4;</code></td><td class="highlight">4</td><td>–</td></tr>
+                <tr><td><code>int b = 7;</code></td><td>4</td><td class="highlight">7</td></tr>
+                <tr><td><code>a = 10;</code></td><td class="highlight">10</td><td>7</td></tr>
+                <tr><td><code>b = 3;</code></td><td>10</td><td class="highlight">3</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- CONSTANTE -->
+          <h2 id="constante">Constante</h2>
+          <p>Uneori avem nevoie de valori care trebuie să rămână neschimbate pe parcursul programului: numărul de zile ale unei săptămâni, valoarea aproximativă a lui π, numărul de luni ale unui an. O astfel de valoare se declară ca <strong>constantă</strong>, folosind cuvântul-cheie <code>const</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code><span class="kw">const</span> <span class="tp">int</span> NR_ZILE = <span class="nm">7</span>;
+<span class="kw">const</span> <span class="tp">double</span> PI = <span class="nm">3.14159</span>;</code></pre>
+          </div>
+          <p>Odată inițializată, valoarea unei constante nu se mai poate modifica – o eventuală atribuire ulterioară este o eroare de compilare. Prin convenție (nu prin cerință a limbajului), constantele cu nume se scriu adesea cu litere mari.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th></th><th>Variabilă</th><th>Constantă cu nume</th></tr></thead>
+              <tbody>
+                <tr><td>Are nume și tip</td><td>Da</td><td>Da</td></tr>
+                <tr><td>Valoarea se poate modifica</td><td>Da</td><td>Nu</td></tr>
+                <tr><td>Exemplu</td><td><code>int scor = 10;</code></td><td><code>const int NR_ZILE = 7;</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>O valoare scrisă direct în codul sursă (fără a fi memorată într-o variabilă sau constantă) se numește <strong>literal</strong>: <code>18</code>, <code>3.14</code>, <code>'A'</code> și <code>true</code> sunt toate literali.</p>
+
+          <!-- CITIRE / AFISARE -->
+          <h2 id="io">Citirea și afișarea datelor</h2>
+          <p>Până acum am atribuit valori direct în cod. În multe programe, valorile nu sunt cunoscute în momentul scrierii codului și trebuie introduse de utilizator în timpul execuției. Pentru aceasta folosim <code>cin</code> (citire) și <code>cout</code> (afișare), ambele disponibile prin biblioteca <code>&lt;iostream&gt;</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> varsta;
+cin <span class="op">&gt;&gt;</span> varsta;   <span class="cm">// citeste o valoare de la tastatura</span>
+cout <span class="op">&lt;&lt;</span> <span class="st">"Ai "</span> <span class="op">&lt;&lt;</span> varsta <span class="op">&lt;&lt;</span> <span class="st">" ani."</span> <span class="op">&lt;&lt;</span> endl;</code></pre>
+          </div>
+          <p>Putem citi sau afișa mai multe valori într-o singură instrucțiune, înlănțuind operatorii <code>&gt;&gt;</code>, respectiv <code>&lt;&lt;</code>:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code><span class="tp">int</span> varsta;
+<span class="tp">double</span> inaltime;
+cin <span class="op">&gt;&gt;</span> varsta <span class="op">&gt;&gt;</span> inaltime;
+cout <span class="op">&lt;&lt;</span> <span class="st">"Varsta: "</span> <span class="op">&lt;&lt;</span> varsta <span class="op">&lt;&lt;</span> <span class="st">", Inaltime: "</span> <span class="op">&lt;&lt;</span> inaltime <span class="op">&lt;&lt;</span> endl;</code></pre>
+          </div>
+          <p>Modelul frecvent al unui program simplu este: <strong>citim date → le păstrăm în variabile → le prelucrăm → afișăm rezultatul</strong>.</p>
+
+          <!-- OPERATORI -->
+          <h2>Operatori</h2>
+          <h3>Operatori aritmetici</h3>
+          <div class="ops-grid">
+            <div class="op-card">
+              <h4>Aritmetici de bază</h4>
+              <div class="op-row"><span class="op-sym">+</span><span class="op-desc">Adunare</span><span class="op-ex">5 + 3 = 8</span></div>
+              <div class="op-row"><span class="op-sym">-</span><span class="op-desc">Scădere</span><span class="op-ex">5 - 3 = 2</span></div>
+              <div class="op-row"><span class="op-sym">*</span><span class="op-desc">Înmulțire</span><span class="op-ex">5 * 3 = 15</span></div>
+              <div class="op-row"><span class="op-sym">/</span><span class="op-desc">Împărțire</span><span class="op-ex">6 / 2 = 3</span></div>
+              <div class="op-row"><span class="op-sym">%</span><span class="op-desc">Modulo (rest)</span><span class="op-ex">7 % 3 = 1</span></div>
+            </div>
+            <div class="op-card">
+              <h4>Comparație <span style="font-weight:400;color:var(--text-3);">(referință)</span></h4>
+              <div class="op-row"><span class="op-sym">==</span><span class="op-desc">Egal cu</span><span class="op-ex">5 == 5 → true</span></div>
+              <div class="op-row"><span class="op-sym">!=</span><span class="op-desc">Diferit de</span><span class="op-ex">5 != 3 → true</span></div>
+              <div class="op-row"><span class="op-sym">&gt;</span><span class="op-desc">Mai mare</span><span class="op-ex">5 &gt; 3 → true</span></div>
+              <div class="op-row"><span class="op-sym">&lt;</span><span class="op-desc">Mai mic</span><span class="op-ex">5 &lt; 3 → false</span></div>
+              <div class="op-row"><span class="op-sym">&gt;=</span><span class="op-desc">Mai mare sau egal</span><span class="op-ex">5 &gt;= 5 → true</span></div>
+              <div class="op-row"><span class="op-sym">&lt;=</span><span class="op-desc">Mai mic sau egal</span><span class="op-ex">3 &lt;= 5 → true</span></div>
+            </div>
+            <div class="op-card">
+              <h4>Logici <span style="font-weight:400;color:var(--text-3);">(referință)</span></h4>
+              <div class="op-row"><span class="op-sym">&amp;&amp;</span><span class="op-desc">ȘI logic</span><span class="op-ex">A &amp;&amp; B</span></div>
+              <div class="op-row"><span class="op-sym">||</span><span class="op-desc">SAU logic</span><span class="op-ex">A || B</span></div>
+              <div class="op-row"><span class="op-sym">!</span><span class="op-desc">NU (negație)</span><span class="op-ex">!true → false</span></div>
+            </div>
+            <div class="op-card">
+              <h4>Atribuire scurtă</h4>
+              <div class="op-row"><span class="op-sym">+=</span><span class="op-desc">x = x + val</span><span class="op-ex">x += 5</span></div>
+              <div class="op-row"><span class="op-sym">-=</span><span class="op-desc">x = x - val</span><span class="op-ex">x -= 3</span></div>
+              <div class="op-row"><span class="op-sym">*=</span><span class="op-desc">x = x * val</span><span class="op-ex">x *= 2</span></div>
+              <div class="op-row"><span class="op-sym">++</span><span class="op-desc">Increment (+1)</span><span class="op-ex">x++</span></div>
+              <div class="op-row"><span class="op-sym">--</span><span class="op-desc">Decrement (-1)</span><span class="op-ex">x--</span></div>
+            </div>
+          </div>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>De reținut pentru moment</strong>
+              <p>Cardurile „Comparație" și „Logici" sunt doar o listă de referință, pentru a-i recunoaște atunci când îi întâlnești. Modul în care aceștia se folosesc efectiv pentru a construi <strong>expresii logice</strong> și pentru ca un program să <strong>ia decizii</strong> (instrucțiunea <code>if</code>) este subiectul sesiunii următoare. În această sesiune folosim activ doar operatorii aritmetici și atribuirea.</p>
+            </div>
+          </div>
+
+          <h3>Prioritatea operatorilor aritmetici</h3>
+          <p>Când o expresie conține mai mulți operatori aritmetici, C++ îi evaluează într-o ordine bine definită: <code>*</code>, <code>/</code> și <code>%</code> au prioritate mai mare decât <code>+</code> și <code>-</code>.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Prioritate</th><th>Operatori</th><th>Exemplu</th></tr></thead>
+              <tbody>
+                <tr><td>1 (cel mai mare)</td><td><code>()</code> Paranteze</td><td><code>(2 + 3) * 4 = 20</code></td></tr>
+                <tr><td>2</td><td><code>* / %</code></td><td><code>2 + 3 * 4 → 14</code></td></tr>
+                <tr><td>3 (cel mai mic)</td><td><code>+ -</code></td><td><code>10 - 2 + 3 = 11</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Parantezele pot fi folosite oricând pentru a impune explicit ordinea dorită și pentru a face expresia mai ușor de citit.</p>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Împărțirea întreagă – o capcană frecventă</strong>
+              <p>Dacă ambii operanzi ai <code>/</code> sunt de tip <code>int</code>, rezultatul este și el întreg – zecimalele se pierd (se trunchiază, nu se rotunjesc). <code>7 / 2 = 3</code>, nu 3.5. Pentru a obține zecimale, cel puțin un operand trebuie să fie <code>double</code>: <code>7.0 / 2 = 3.5</code>.</p>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /tab curs -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: EXEMPLE                                               -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t2-exemple">
+        <div class="prose">
+          <h2 id="exemple">Exemple progresive</h2>
+
+          <!-- Exemplul 1 -->
+          <h3>Exemplul 1 – Calculul mediei a trei note</h3>
+          <p><strong>Cerință:</strong> Declară variabile pentru trei note (cu zecimale) și calculează media lor. Afișează fiecare notă și media.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="pp">#include</span> <span class="st">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="cm">// Declara si initializeaza notele</span>
+    <span class="tp">double</span> nota1 = <span class="nm">8.5</span>;
+    <span class="tp">double</span> nota2 = <span class="nm">9.0</span>;
+    <span class="tp">double</span> nota3 = <span class="nm">7.5</span>;
+
+    <span class="cm">// Calculeaza media</span>
+    <span class="tp">double</span> media = (nota1 <span class="op">+</span> nota2 <span class="op">+</span> nota3) <span class="op">/</span> <span class="nm">3</span>;
+
+    <span class="cm">// Afiseaza</span>
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Nota 1: "</span> <span class="op">&lt;&lt;</span> nota1 <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Nota 2: "</span> <span class="op">&lt;&lt;</span> nota2 <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Nota 3: "</span> <span class="op">&lt;&lt;</span> nota3 <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Media: "</span> <span class="op">&lt;&lt;</span> media <span class="op">&lt;&lt;</span> endl;
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre>
+          </div>
+          <p><strong>Rezultat:</strong></p>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Output</span></div><pre><code>Nota 1: 8.5
+Nota 2: 9
+Nota 3: 7.5
+Media: 8.33333</code></pre></div>
+          <p><strong>De ce paranteze la media?</strong> Fără paranteze, <code>nota1 + nota2 + nota3 / 3</code> ar evalua mai întâi <code>nota3 / 3</code> (din cauza priorității operatorilor) și ar produce un rezultat greșit. Parantezele forțează suma înainte de împărțire.</p>
+
+          <p><strong>Același program, în Python și în Java:</strong></p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="cm"># Nu declaram tipul - Python il deduce din valoare</span>
+nota1 = <span class="nm">8.5</span>
+nota2 = <span class="nm">9.0</span>
+nota3 = <span class="nm">7.5</span>
+
+media = (nota1 <span class="op">+</span> nota2 <span class="op">+</span> nota3) <span class="op">/</span> <span class="nm">3</span>
+
+<span class="fn">print</span>(<span class="st">"Nota 1:"</span>, nota1)
+<span class="fn">print</span>(<span class="st">"Nota 2:"</span>, nota2)
+<span class="fn">print</span>(<span class="st">"Nota 3:"</span>, nota3)
+<span class="fn">print</span>(<span class="st">"Media:"</span>, media)</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Java</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="kw">public class</span> <span class="fn">Medie</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="tp">String</span>[] args) {
+        <span class="tp">double</span> nota1 = <span class="nm">8.5</span>;
+        <span class="tp">double</span> nota2 = <span class="nm">9.0</span>;
+        <span class="tp">double</span> nota3 = <span class="nm">7.5</span>;
+
+        <span class="tp">double</span> media = (nota1 <span class="op">+</span> nota2 <span class="op">+</span> nota3) <span class="op">/</span> <span class="nm">3</span>;
+
+        <span class="tp">System</span>.out.println(<span class="st">"Nota 1: "</span> <span class="op">+</span> nota1);
+        <span class="tp">System</span>.out.println(<span class="st">"Nota 2: "</span> <span class="op">+</span> nota2);
+        <span class="tp">System</span>.out.println(<span class="st">"Nota 3: "</span> <span class="op">+</span> nota3);
+        <span class="tp">System</span>.out.println(<span class="st">"Media: "</span> <span class="op">+</span> media);
+    }
+}</code></pre>
+          </div>
+          <p>Cele trei programe fac exact același lucru, în aceeași ordine logică (date → calcul → afișare). Diferă doar sintaxa: Python nu cere tip și nu cere <code>;</code> la final; Java cere ca orice cod să fie „învelit" într-o clasă (<code>public class Medie</code>) – un concept de programare orientată pe obiecte pe care îl vei studia separat.</p>
+
+          <!-- Exemplul 2 -->
+          <h3>Exemplul 2 – Calcul TVA</h3>
+          <p><strong>Cerință:</strong> Un produs are prețul de 250 lei fără TVA. Calculează valoarea TVA (19%) și prețul final.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="pp">#include</span> <span class="st">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">double</span> pretFaraTVA = <span class="nm">250.0</span>;
+    <span class="tp">double</span> cotaTVA = <span class="nm">0.19</span>; <span class="cm">// 19% exprimat ca fractie zecimala</span>
+    <span class="tp">double</span> valoareTVA = pretFaraTVA <span class="op">*</span> cotaTVA;
+    <span class="tp">double</span> pretFinal = pretFaraTVA <span class="op">+</span> valoareTVA;
+
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Pret fara TVA : "</span> <span class="op">&lt;&lt;</span> pretFaraTVA <span class="op">&lt;&lt;</span> <span class="st">" lei"</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"TVA (19%)     : "</span> <span class="op">&lt;&lt;</span> valoareTVA <span class="op">&lt;&lt;</span> <span class="st">" lei"</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Pret final    : "</span> <span class="op">&lt;&lt;</span> pretFinal <span class="op">&lt;&lt;</span> <span class="st">" lei"</span> <span class="op">&lt;&lt;</span> endl;
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre>
+          </div>
+          <p><strong>Rezultat:</strong></p>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Output</span></div><pre><code>Pret fara TVA : 250 lei
+TVA (19%)     : 47.5 lei
+Pret final    : 297.5 lei</code></pre></div>
+
+          <p><strong>Același calcul, în Python și în Java:</strong></p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copiază</button></div>
+            <pre><code>pret_fara_tva = <span class="nm">250.0</span>
+cota_tva = <span class="nm">0.19</span>  <span class="cm"># 19% ca fractie zecimala</span>
+
+valoare_tva = pret_fara_tva <span class="op">*</span> cota_tva
+pret_final = pret_fara_tva <span class="op">+</span> valoare_tva
+
+<span class="fn">print</span>(<span class="st">"Pret fara TVA:"</span>, pret_fara_tva, <span class="st">"lei"</span>)
+<span class="fn">print</span>(<span class="st">"TVA (19%):"</span>, valoare_tva, <span class="st">"lei"</span>)
+<span class="fn">print</span>(<span class="st">"Pret final:"</span>, pret_final, <span class="st">"lei"</span>)</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Java</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="kw">public class</span> <span class="fn">CalculTVA</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="tp">String</span>[] args) {
+        <span class="tp">double</span> pretFaraTVA = <span class="nm">250.0</span>;
+        <span class="tp">double</span> cotaTVA = <span class="nm">0.19</span>;
+
+        <span class="tp">double</span> valoareTVA = pretFaraTVA <span class="op">*</span> cotaTVA;
+        <span class="tp">double</span> pretFinal = pretFaraTVA <span class="op">+</span> valoareTVA;
+
+        <span class="tp">System</span>.out.println(<span class="st">"Pret fara TVA: "</span> <span class="op">+</span> pretFaraTVA <span class="op">+</span> <span class="st">" lei"</span>);
+        <span class="tp">System</span>.out.println(<span class="st">"TVA (19%): "</span> <span class="op">+</span> valoareTVA <span class="op">+</span> <span class="st">" lei"</span>);
+        <span class="tp">System</span>.out.println(<span class="st">"Pret final: "</span> <span class="op">+</span> pretFinal <span class="op">+</span> <span class="st">" lei"</span>);
+    }
+}</code></pre>
+          </div>
+          <p>Observă că formula de calcul – <code>valoareTVA = pret * cota</code> – este identică la nivel de idee în toate cele trei limbaje. Aceasta este dovada că operatorii aritmetici și logica de calcul sunt concepte de programare, nu particularități C++.</p>
+
+          <!-- Urmă execuție -->
+          <h3>Urmă de execuție – Exemplul 2</h3>
+          <div class="tbl-wrap">
+            <table class="trace-table">
+              <thead><tr><th>Pas</th><th>Instrucțiune</th><th>pretFaraTVA</th><th>cotaTVA</th><th>valoareTVA</th><th>pretFinal</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td class="trace-step">pretFaraTVA = 250.0</td><td class="highlight">250.0</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td>2</td><td class="trace-step">cotaTVA = 0.19</td><td>250.0</td><td class="highlight">0.19</td><td>—</td><td>—</td></tr>
+                <tr><td>3</td><td class="trace-step">valoareTVA = 250 * 0.19</td><td>250.0</td><td>0.19</td><td class="highlight">47.5</td><td>—</td></tr>
+                <tr><td>4</td><td class="trace-step">pretFinal = 250 + 47.5</td><td>250.0</td><td>0.19</td><td>47.5</td><td class="highlight">297.5</td></tr>
+                <tr><td>5</td><td class="trace-step">cout (3 linii)</td><td colspan="4" class="out">Output afișat</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Exemplul 3 -->
+          <h3>Exemplul 3 – Combinarea mai multor tipuri</h3>
+          <p><strong>Cerință:</strong> Pentru un produs se cunosc cantitatea în stoc (întreg), prețul unitar (cu zecimale) și categoria (o singură literă). Calculează valoarea totală a stocului.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="pp">#include</span> <span class="st">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span> cantitate = <span class="nm">8</span>;
+    <span class="tp">double</span> pretUnitar = <span class="nm">1200.0</span>;
+    <span class="tp">char</span> categorie = <span class="st">'A'</span>;
+
+    <span class="tp">double</span> valoareStoc = cantitate <span class="op">*</span> pretUnitar;
+
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Categorie      : "</span> <span class="op">&lt;&lt;</span> categorie <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Cantitate      : "</span> <span class="op">&lt;&lt;</span> cantitate <span class="op">&lt;&lt;</span> <span class="st">" buc."</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Pret unitar    : "</span> <span class="op">&lt;&lt;</span> pretUnitar <span class="op">&lt;&lt;</span> <span class="st">" lei"</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Valoare stoc   : "</span> <span class="op">&lt;&lt;</span> valoareStoc <span class="op">&lt;&lt;</span> <span class="st">" lei"</span> <span class="op">&lt;&lt;</span> endl;
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre>
+          </div>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Output</span></div><pre><code>Categorie      : A
+Cantitate      : 8 buc.
+Pret unitar    : 1200 lei
+Valoare stoc   : 9600 lei</code></pre></div>
+
+          <!-- ANATOMIA CODULUI -->
+          <h2 id="anatomie">Anatomia codului – Exemplul 2 detaliat</h2>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Adnotat</span></div>
+            <pre><code><span class="pp">#include</span> <span class="st">&lt;iostream&gt;</span> <span class="cm">// ① Importa biblioteca de I/O (cout, cin, endl)</span>
+<span class="kw">using namespace</span> std; <span class="cm">// ② Permite scrierea cout in loc de std::cout</span>
+
+<span class="tp">int</span> <span class="fn">main</span>() { <span class="cm">// ③ Punctul de intrare al programului</span>
+    <span class="cm">// ④ Sectiunea de DATE - declaram ce informatii avem</span>
+    <span class="tp">double</span> pretFaraTVA = <span class="nm">250.0</span>;
+    <span class="tp">double</span> cotaTVA = <span class="nm">0.19</span>;
+
+    <span class="cm">// ⑤ Sectiunea de CALCUL - derivam informatii noi</span>
+    <span class="tp">double</span> valoareTVA = pretFaraTVA <span class="op">*</span> cotaTVA; <span class="cm">// 250 x 0.19 = 47.5</span>
+    <span class="tp">double</span> pretFinal = pretFaraTVA <span class="op">+</span> valoareTVA; <span class="cm">// 250 + 47.5 = 297.5</span>
+
+    <span class="cm">// ⑥ Sectiunea de OUTPUT - prezentam rezultatele</span>
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Pret fara TVA : "</span> <span class="op">&lt;&lt;</span> pretFaraTVA <span class="op">&lt;&lt;</span> <span class="st">" lei"</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"TVA (19%)     : "</span> <span class="op">&lt;&lt;</span> valoareTVA <span class="op">&lt;&lt;</span> <span class="st">" lei"</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Pret final    : "</span> <span class="op">&lt;&lt;</span> pretFinal <span class="op">&lt;&lt;</span> <span class="st">" lei"</span> <span class="op">&lt;&lt;</span> endl;
+
+    <span class="kw">return</span> <span class="nm">0</span>; <span class="cm">// ⑦ Indica OS-ului ca programul s-a terminat cu succes</span>
+}</code></pre>
+          </div>
+          <p>Structura <strong>Date → Calcul → Output</strong> este un tipar pe care îl vei regăsi în aproape orice program pe care îl vei scrie.</p>
+
+          <!-- CE SE ÎNTÂMPLĂ DACĂ -->
+          <h2 id="daca">Ce se întâmplă dacă…?</h2>
+          <details>
+            <summary>… folosim int în loc de double pentru prețuri?</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> pretFaraTVA = <span class="nm">250</span>;
+<span class="tp">int</span> cotaTVA = <span class="nm">19</span>; <span class="cm">// Gresit! 19 nu e acelasi lucru cu 0.19</span>
+<span class="tp">int</span> valoareTVA = pretFaraTVA <span class="op">*</span> cotaTVA; <span class="cm">// 250 x 19 = 4750, nu 47.5!</span></code></pre></div>
+            <p>Rezultatul ar fi complet greșit. TVA trebuie exprimat ca fracție zecimală (0.19), ceea ce impune folosirea tipului <code>double</code>.</p>
+          </details>
+          <details>
+            <summary>… eliminăm parantezele de la calculul mediei?</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="cm">// GRESIT - fara paranteze:</span>
+<span class="tp">double</span> media = nota1 <span class="op">+</span> nota2 <span class="op">+</span> nota3 <span class="op">/</span> <span class="nm">3</span>;
+<span class="cm">// Se evalueaza: nota1 + nota2 + (nota3 / 3)
+// Adica: 8.5 + 9.0 + (7.5 / 3) = 8.5 + 9.0 + 2.5 = 20.0 -- GRESIT!
+
+// CORECT - cu paranteze:</span>
+<span class="tp">double</span> media = (nota1 <span class="op">+</span> nota2 <span class="op">+</span> nota3) <span class="op">/</span> <span class="nm">3</span>;
+<span class="cm">// Se evalueaza: (8.5 + 9.0 + 7.5) / 3 = 25.0 / 3 = 8.333</span></code></pre></div>
+            <p>Împărțirea are prioritate mai mare decât adunarea, deci fără paranteze se împarte mai întâi ultimul operand la 3.</p>
+          </details>
+          <details>
+            <summary>… împărțim două int-uri și vrem rezultat cu zecimale?</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> a = <span class="nm">7</span>, b = <span class="nm">2</span>;
+
+<span class="tp">int</span> rez1 = a <span class="op">/</span> b;          <span class="cm">// 3 - impartire intreaga</span>
+<span class="tp">double</span> rez2 = a <span class="op">/</span> b;       <span class="cm">// 3 - calculul e int, doar rezultatul e stocat in double</span>
+<span class="tp">double</span> rez3 = <span class="nm">7.0</span> <span class="op">/</span> b;     <span class="cm">// 3.5 - literalul 7.0 forteaza impartire reala</span>
+<span class="tp">double</span> rez4 = a <span class="op">/</span> <span class="nm">2.0</span>;     <span class="cm">// 3.5 - la fel, literalul 2.0 forteaza impartire reala</span></code></pre></div>
+            <p>Tipul rezultatului unei operații aritmetice este determinat de tipurile operanzilor implicați în calcul, nu de tipul variabilei în care este stocat rezultatul.</p>
+          </details>
+          <details>
+            <summary>… atribuim o valoare zecimală unei variabile de tip int?</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> x = <span class="nm">7.9</span>;
+cout <span class="op">&lt;&lt;</span> x; <span class="cm">// afiseaza 7, nu 7.9!</span></code></pre></div>
+            <p>Partea fracționară este trunchiată (eliminată), nu rotunjită. Dacă ai nevoie de valoarea 7.9, variabila trebuie declarată <code>double</code>, nu <code>int</code>.</p>
+          </details>
+
+          <!-- GREȘELI FRECVENTE -->
+          <h2 id="greseli">Greșeli frecvente</h2>
+          <div class="bug-card">
+            <div class="bug-header wrong">Greșeala 1 – Confuzie între = și ==</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+                <pre><code><span class="tp">int</span> x = <span class="nm">10</span>;
+<span class="tp">bool</span> egal = (x <span class="op">=</span> <span class="nm">5</span>); <span class="cm">// GRESIT: atribuie 5 la x, nu compara!</span>
+<span class="cm">// dupa aceasta linie, x devine 5, iar "egal" devine true (pentru ca 5 e nenul)</span></code></pre></div>
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Corect</span></div>
+                <pre><code><span class="tp">int</span> x = <span class="nm">10</span>;
+<span class="tp">bool</span> egal = (x <span class="op">==</span> <span class="nm">5</span>); <span class="cm">// CORECT: compara x cu 5, fara sa modifice x</span></code></pre></div>
+              <p><strong>Explicație:</strong> <code>=</code> este operatorul de atribuire – pune o valoare într-o variabilă. <code>==</code> este operatorul de comparație – verifică dacă două valori sunt egale, fără să modifice nimic. Confuzia lor este una dintre cele mai frecvente greșeli în C++.</p>
+            </div>
+          </div>
+          <div class="bug-card">
+            <div class="bug-header wrong">Greșeala 2 – Variabilă neinițializată</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+                <pre><code><span class="tp">int</span> total; <span class="cm">// declarata, dar neinitializata</span>
+cout <span class="op">&lt;&lt;</span> total; <span class="cm">// afiseaza o valoare nedefinita din memorie!</span></code></pre></div>
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Corect</span></div>
+                <pre><code><span class="tp">int</span> total = <span class="nm">0</span>; <span class="cm">// initializat explicit</span>
+cout <span class="op">&lt;&lt;</span> total; <span class="cm">// afiseaza 0</span></code></pre></div>
+            </div>
+          </div>
+          <div class="bug-card">
+            <div class="bug-header wrong">Greșeala 3 – Confuzie între caracter și literal numeric</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+                <pre><code><span class="tp">char</span> cifra = <span class="nm">7</span>;   <span class="cm">// stocheaza codul numeric 7, nu caracterul '7'</span>
+<span class="tp">int</span> litera = <span class="st">'A'</span>;  <span class="cm">// compileaza, dar stocheaza codul ASCII (65), nu are sens</span></code></pre></div>
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Corect</span></div>
+                <pre><code><span class="tp">char</span> cifra = <span class="st">'7'</span>;  <span class="cm">// caracterul cifra sapte</span>
+<span class="tp">int</span> numar = <span class="nm">7</span>;    <span class="cm">// numarul intreg sapte</span></code></pre></div>
+              <p><strong>Explicație:</strong> <code>'7'</code> (între apostrofuri) este caracterul cifră șapte; <code>7</code> (fără apostrofuri) este numărul întreg șapte. Cele două au reprezentări diferite în memorie.</p>
+            </div>
+          </div>
+          <div class="bug-card">
+            <div class="bug-header wrong">Greșeala 4 – TVA exprimat ca număr întreg</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+                <pre><code><span class="tp">double</span> tva = pret <span class="op">*</span> <span class="nm">19</span>; <span class="cm">// pret x 19 = 4750, nu 47.5!</span></code></pre></div>
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Corect</span></div>
+                <pre><code><span class="tp">double</span> tva = pret <span class="op">*</span> <span class="nm">0.19</span>; <span class="cm">// 19% = 0.19</span></code></pre></div>
+            </div>
+          </div>
+
+          <!-- DEBUGGING -->
+          <h2 id="debug">Exemplu de depanare</h2>
+          <div class="bug-card">
+            <div class="bug-header wrong">Cod cu bug</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+                <pre><code><span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span> pretBase = <span class="nm">100</span>;
+    <span class="tp">int</span> discount = <span class="nm">20</span>; <span class="cm">// intentia: 20%</span>
+    <span class="tp">int</span> pretFinal = pretBase <span class="op">-</span> pretBase <span class="op">*</span> discount;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Pret final: "</span> <span class="op">&lt;&lt;</span> pretFinal;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div>
+            </div>
+          </div>
+          <div class="bug-card">
+            <div class="bug-header symptom">Simptom</div>
+            <div class="bug-body"><p>Programul afișează <code>Pret final: -1900</code> în loc de <code>80</code>.</p></div>
+          </div>
+          <div class="bug-card">
+            <div class="bug-header symptom">Analiză</div>
+            <div class="bug-body">
+              <p><code>pretBase * discount = 100 * 20 = 2000</code>. Programatorul a vrut să calculeze 20% din 100 (adică 20), dar a multiplicat cu 20 în loc de 0.20. Tipul <code>int</code> pentru discount agravează problema.</p>
+            </div>
+          </div>
+          <div class="bug-card">
+            <div class="bug-header right">Corectare</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Corect</span><button class="code-copy">Copiază</button></div>
+                <pre><code><span class="tp">double</span> pretBase = <span class="nm">100.0</span>;
+<span class="tp">double</span> discount = <span class="nm">0.20</span>; <span class="cm">// 20% = 0.20</span>
+<span class="tp">double</span> reducere = pretBase <span class="op">*</span> discount; <span class="cm">// 100 x 0.20 = 20</span>
+<span class="tp">double</span> pretFinal = pretBase <span class="op">-</span> reducere; <span class="cm">// 100 - 20 = 80</span>
+cout <span class="op">&lt;&lt;</span> <span class="st">"Pret final: "</span> <span class="op">&lt;&lt;</span> pretFinal; <span class="cm">// Afiseaza: 80</span></code></pre></div>
+              <p><strong>Concluzie:</strong> Când lucrezi cu procente, verifică întotdeauna că le exprimi ca fracții zecimale (20% = 0.20) și că folosești <code>double</code> pentru calcule cu zecimale.</p>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /tab exemple -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: LABORATOR                                             -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t2-lab">
+        <div class="prose">
+          <h2 id="introductive">Exerciții introductive (fără scriere de cod)</h2>
+          <p>Înainte de a scrie programe, e util să exersezi „pe hârtie" ideile de bază: ce tip are o valoare, ce rezultat are o expresie, ce se întâmplă cu o variabilă după o secvență de atribuiri. Exercițiile din această secțiune sunt inspirate din tipul de teste folosite la evaluările de informatică de gimnaziu/liceu (teste grilă, itemi cu răspuns scurt) și nu cer compilarea niciunui program – doar rezolvare pe hârtie, apoi verificare cu răspunsul.</p>
+
+          <h3>Exerciții model (rezolvate)</h3>
+          <p>Cerința e mereu vizibilă; apasă pe „Vezi rezolvarea" abia după ce ai încercat singur.</p>
+
+          <div class="quiz-item">
+            <p><span class="qnum">1</span><strong>Ce reprezintă o valoare?</strong> Care dintre următoarele reprezintă numere întregi valide în C++?</p>
+            <ul class="choices">
+              <li>a) 23</li><li>b) 23.0</li><li>c) -12</li><li>d) 12,5</li><li>e) +7</li><li>f) 3.0</li>
+            </ul>
+            <details>
+              <summary>Vezi rezolvarea</summary>
+              <p>Sunt întregi: <strong>a) 23, c) -12, e) +7</strong>. Variantele <strong>b) 23.0</strong> și <strong>f) 3.0</strong> au punct zecimal, deci sunt literali de tip <code>double</code>, chiar dacă partea fracționară e zero. Varianta <strong>d) 12,5</strong> nu este un literal numeric valid în C++ – separatorul zecimal este întotdeauna punctul (<code>.</code>), niciodată virgula.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">2</span><strong>Caracter sau șir?</strong> Care dintre următoarele sunt literali <code>char</code> valizi?</p>
+            <ul class="choices">
+              <li>a) 'A'</li><li>b) "A"</li><li>c) '7'</li><li>d) 7</li><li>e) 'AB'</li><li>f) '#'</li>
+            </ul>
+            <details>
+              <summary>Vezi rezolvarea</summary>
+              <p>Sunt <code>char</code> valizi: <strong>a) 'A', c) '7', f) '#'</strong> — toate au exact un caracter între apostrofuri simple. <strong>b) "A"</strong> este scris cu ghilimele duble, deci e un literal șir de caractere, nu <code>char</code>. <strong>d) 7</strong> (fără apostrofuri) e literalul întreg șapte, nu caracterul cifră. <strong>e) 'AB'</strong> este incorect – un <code>char</code> poate conține un singur caracter, nu două.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">3</span><strong>Rezultatul unei împărțiri.</strong> Ce valoare are expresia <code>20 / 10 * 2 + 30 / 15 * 2</code>, știind că toate valorile sunt de tip <code>int</code>?</p>
+            <details>
+              <summary>Vezi rezolvarea</summary>
+              <p>Se evaluează de la stânga la dreapta, între operatori de aceeași prioritate (<code>*</code> și <code>/</code> au aceeași prioritate): <code>20/10=2</code>, apoi <code>2*2=4</code>; separat, <code>30/15=2</code>, apoi <code>2*2=4</code>. În final: <code>4 + 4 = 8</code>. Toate împărțirile sunt exacte (fără rest), deci trunchierea specifică împărțirii întregi nu influențează rezultatul în acest caz.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">4</span><strong>Care expresii dau aceeași valoare?</strong> Fie <code>int a = 45, b = 120;</code>. Care dintre expresiile următoare au valoarea <code>3</code>?</p>
+            <ul class="choices">
+              <li>a) a % 6</li><li>b) a % 10</li><li>c) a - 15</li><li>d) b / 39</li><li>e) b - 2*a</li><li>f) a % 7</li>
+            </ul>
+            <details>
+              <summary>Vezi rezolvarea</summary>
+              <p><code>a % 6</code>: 45 = 7×6 + 3 → <strong>3 ✓</strong>. <code>a % 10</code>: 45 = 4×10 + 5 → 5. <code>a - 15</code> = 30. <code>b / 39</code> (împărțire întreagă): 120 = 3×39 + 3 → câtul e <strong>3 ✓</strong>. <code>b - 2*a</code> = 120 - 90 = 30. <code>a % 7</code>: 45 = 6×7 + 3 → <strong>3 ✓</strong>. Răspuns: <strong>a, d, f</strong>.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">5</span><strong>Urmărirea unei secvențe de atribuiri.</strong> Care sunt valorile finale ale variabilelor <code>a</code> și <code>b</code> după executarea secvenței, dacă inițial <code>a = 10</code> și <code>b = 20</code>?</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code>a = a <span class="op">+</span> b;
+b = a <span class="op">-</span> b;
+a = a <span class="op">-</span> b;</code></pre></div>
+            <details>
+              <summary>Vezi rezolvarea</summary>
+              <div class="tbl-wrap">
+                <table class="trace-table">
+                  <thead><tr><th>Instrucțiune</th><th>a</th><th>b</th></tr></thead>
+                  <tbody>
+                    <tr><td>inițial</td><td>10</td><td>20</td></tr>
+                    <tr><td><code>a = a + b;</code></td><td class="highlight">30</td><td>20</td></tr>
+                    <tr><td><code>b = a - b;</code></td><td>30</td><td class="highlight">10</td></tr>
+                    <tr><td><code>a = a - b;</code></td><td class="highlight">20</td><td>10</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>Rezultat: <code>a = 20</code>, <code>b = 10</code> — <strong>valorile s-au interschimbat</strong>, deși nu am folosit nicio variabilă terță! Este o tehnică clasică, dar riscantă în practică: dacă <code>a</code> și <code>b</code> sunt mari, suma <code>a + b</code> poate depăși domeniul de valori al tipului <code>int</code> (vezi discuția despre domeniul de valori din secțiunea Curs). De aceea, metoda „sigură" folosită în această sesiune rămâne cea cu o a treia variabilă (<code>temp</code>).</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">6</span><strong>Aceeași secvență de biți, interpretări diferite.</strong> Ce se afișează pentru fiecare dintre următoarele două secvențe?</p>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="cm">// Secventa 1</span>
+cout <span class="op">&lt;&lt;</span> (<span class="st">'A'</span> <span class="op">+</span> <span class="nm">1</span>);
+
+<span class="cm">// Secventa 2</span>
+<span class="tp">char</span> c = <span class="st">'A'</span> <span class="op">+</span> <span class="nm">1</span>;
+cout <span class="op">&lt;&lt;</span> c;</code></pre></div>
+            <details>
+              <summary>Vezi rezolvarea</summary>
+              <p>Secvența 1 afișează <strong>66</strong>. Secvența 2 afișează <strong>B</strong>. Explicație: caracterul <code>'A'</code> are codul numeric 65 (ASCII); <code>'A' + 1</code> se calculează ca operație aritmetică între întregi, deci rezultă valoarea întreagă 66. În secvența 1, <code>cout</code> primește această valoare ca <code>int</code> și o afișează ca număr. În secvența 2, rezultatul (66) este stocat într-o variabilă de tip <code>char</code>, iar <code>cout</code> îl interpretează acum ca literă – codul 66 corespunde caracterului <code>'B'</code>. <strong>Aceeași valoare 66, două afișări diferite, în funcție de tipul folosit</strong> — exact ideea discutată în Curs: tipul spune cum trebuie interpretat conținutul.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">7</span><strong>Declarații corecte sau incorecte?</strong> Care dintre următoarele declarații sunt corecte sintactic?</p>
+            <ul class="choices">
+              <li>a) int 2x;</li><li>b) double pret;</li><li>c) int a, b;</li><li>d) bool ok;</li><li>e) int int;</li><li>f) char litera;</li>
+            </ul>
+            <details>
+              <summary>Vezi rezolvarea</summary>
+              <p>Corecte: <strong>b, c, d, f</strong>. <strong>a) int 2x;</strong> este incorectă — identificatorul <code>2x</code> începe cu o cifră. <strong>e) int int;</strong> este incorectă — <code>int</code> este un cuvânt-cheie rezervat al limbajului și nu poate fi folosit ca nume de variabilă.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">8</span><strong>Operatorul % și tipul operanzilor.</strong> Care dintre următoarele expresii sunt corecte sintactic în C++?</p>
+            <ul class="choices">
+              <li>a) 10 + 2.3</li><li>b) 23 % 2.0</li><li>c) 3 + 4 % 2</li><li>d) 10.5 % 2</li>
+            </ul>
+            <details>
+              <summary>Vezi rezolvarea</summary>
+              <p>Corecte: <strong>a) 10 + 2.3</strong> (adunare între <code>int</code> și <code>double</code>, permisă) și <strong>c) 3 + 4 % 2</strong> (întâi <code>4 % 2 = 0</code>, apoi <code>3 + 0 = 3</code>). Sunt <strong>eronate</strong>: <strong>b) 23 % 2.0</strong> și <strong>d) 10.5 % 2</strong> — operatorul <code>%</code> din C++ acceptă <em>doar</em> operanzi de tip întreg; folosit cu un operand <code>double</code>, codul nu compilează. (Pentru restul împărțirii cu numere reale există funcția <code>fmod()</code> din biblioteca <code>&lt;cmath&gt;</code>, dincolo de scopul acestei sesiuni.)</p>
+            </details>
+          </div>
+
+          <h3>Exerciții propuse (de rezolvat)</h3>
+          <p>Un bazin mai mare din care poți exersa oricând, grupat pe categorii. Fiecare întrebare are propriul „Vezi răspunsul" — încearcă înainte de a-l deschide.</p>
+
+          <h4>A. Tipuri de date</h4>
+
+          <div class="quiz-item">
+            <p><span class="qnum">1</span>Care dintre valori sunt literali <code>int</code> valizi?</p>
+            <ul class="choices"><li>a) -45</li><li>b) 45.0</li><li>c) +100</li><li>d) 3,14</li><li>e) 007</li><li>f) 12E2</li></ul>
+            <details><summary>Vezi răspunsul</summary>
+              <p>Valide ca <code>int</code>: <strong>a) -45, c) +100</strong>. Nu sunt <code>int</code>: b) 45.0 (are punct zecimal → <code>double</code>), d) 3,14 (virgula nu e separator valid în C++), f) 12E2 (notația științifică produce întotdeauna un literal <code>double</code>, egal cu 1200.0, niciodată <code>int</code>). Cazul e) 007 este special: <em>este</em> valid ca <code>int</code>, dar atenție — orice literal întreg care începe cu cifra 0 este interpretat de C++ ca literal <strong>octal</strong> (bază 8); „007" are valoarea 7 și în octal și în zecimal, dar coincidența nu se păstrează mereu — „010" valorează 8 în zecimal, nu 10! E o capcană reală, întâlnită des la începători.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">2</span>Care dintre valori sunt literali <code>char</code> valizi?</p>
+            <ul class="choices"><li>a) '9'</li><li>b) "9"</li><li>c) '_'</li><li>d) ''</li><li>e) 'xy'</li><li>f) ' '</li></ul>
+            <details><summary>Vezi răspunsul</summary>
+              <p>Valide: <strong>a) '9', c) '_', f) ' '</strong> (spațiul e un caracter valid). Invalide: b) "9" (ghilimele duble → <code>string</code>, nu <code>char</code>), d) '' (gol, niciun caracter), e) 'xy' (două caractere, un <code>char</code> acceptă exact unul).</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">3</span>Alege tipul potrivit (<code>int</code>, <code>double</code>, <code>char</code> sau <code>bool</code>) pentru fiecare informație:</p>
+            <ul class="choices">
+              <li>a) nr. de scaune dintr-o sală</li>
+              <li>b) greutatea unui colet (kg)</li>
+              <li>c) răspunsul la „a plouat azi?"</li>
+              <li>d) simbolul unei monede („$")</li>
+            </ul>
+            <details><summary>Vezi răspunsul</summary>
+              <p>a) <code>int</code> — numărare, valoare întreagă. b) <code>double</code> — greutatea poate avea zecimale. c) <code>bool</code> — doar două stări posibile. d) <code>char</code> — un singur simbol/caracter.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">4</span>Câți octeți ocupă, de regulă, pe un compilator desktop modern, fiecare dintre <code>char</code>, <code>bool</code>, <code>int</code>, <code>double</code>?</p>
+            <details><summary>Vezi răspunsul</summary>
+              <p><code>char</code>: 1 octet (garantat de standard). <code>bool</code>: 1 octet (uzual). <code>int</code>: 4 octeți (uzual). <code>double</code>: 8 octeți (uzual).</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">5</span>De ce <code>char cifra = 7;</code> nu produce eroare de compilare, deși probabil nu asta și-a dorit programatorul? Ce ar trebui scris în loc?</p>
+            <details><summary>Vezi răspunsul</summary>
+              <p><code>char cifra = 7;</code> compilează pentru că 7 este o valoare întreagă mică, validă ca și cod de caracter (7 este de fapt caracterul de control BEL, nu cifra „7"). Corect ar fi <code>char cifra = '7';</code>, care stochează caracterul cifră șapte.</p>
+            </details>
+          </div>
+
+          <h4>B. Operatori și expresii</h4>
+
+          <div class="quiz-item">
+            <p><span class="qnum">6</span>Calculează (toate valorile fără punct zecimal sunt <code>int</code>):</p>
+            <ul class="choices"><li>a) 15 / 4</li><li>b) 15.0 / 4</li><li>c) 15 % 4</li><li>d) -15 / 4</li><li>e) -15 % 4</li></ul>
+            <details><summary>Vezi răspunsul</summary>
+              <p>a) 3, b) 3.75, c) 3, d) -3 (trunchiere spre zero, garantată din C++11 încoace), e) -3.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">7</span>Ce valoare are expresia <code>3 + 4 * 2 - 6 / 3</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>3 + 8 - 2 = 9</code>.</p></details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">8</span>Ce valoare are expresia <code>(3 + 4) * (2 - 6) / 3</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>7 * (-4) / 3 = -28 / 3 = -9</code> (trunchiere spre zero).</p></details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">9</span>Presupunând că <code>a</code> e <code>int</code> și <code>x</code> e <code>double</code>, care dintre expresii sunt corecte sintactic?</p>
+            <ul class="choices"><li>a) a % 5</li><li>b) x % 5</li><li>c) a / x</li><li>d) x / a</li><li>e) a % x</li></ul>
+            <details><summary>Vezi răspunsul</summary>
+              <p>Corecte: <strong>a, c, d</strong>. Incorecte: <strong>b, e</strong> — operatorul <code>%</code> nu acceptă operanzi <code>double</code> în C++.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">10</span>Fie <code>int n = 8;</code>. Calculează, în ordine: <code>n % 2</code>, <code>(n+1) % 2</code>, <code>n / 2</code>, <code>n * n</code>.</p>
+            <details><summary>Vezi răspunsul</summary><p><code>n%2=0</code>, <code>(n+1)%2=1</code>, <code>n/2=4</code>, <code>n*n=64</code>.</p></details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">11</span>Ce valoare are expresia <code>100 - 10 * 3 + 20 / 4</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>100 - 30 + 5 = 75</code>.</p></details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">12</span>Scrie o expresie C++ care calculează media aritmetică a trei variabile întregi <code>a</code>, <code>b</code>, <code>c</code>, astfel încât rezultatul să păstreze zecimalele.</p>
+            <details><summary>Vezi răspunsul</summary><p><code>(a + b + c) / 3.0</code> — literalul <code>3.0</code> forțează o împărțire reală, chiar dacă <code>a</code>, <code>b</code>, <code>c</code> sunt <code>int</code>.</p></details>
+          </div>
+
+          <h4>C. Atribuire și urmărirea valorilor</h4>
+
+          <div class="quiz-item">
+            <p><span class="qnum">13</span>Fie <code>int x = 5;</code>. Care este valoarea lui <code>x</code> după secvența: <code>x = x + 2; x = x * 3; x = x - 1;</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>x=7</code> → <code>x=21</code> → <code>x=20</code>.</p></details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">14</span>Fie <code>int a = 3, b = 7;</code>. Ce valori au <code>a</code> și <code>b</code> după <code>a = b; b = a;</code>? (Atenție — capcană frecventă!)</p>
+            <details><summary>Vezi răspunsul</summary>
+              <p><code>a = 7, b = 7</code> — <strong>nu</strong> s-a produs un schimb real. După <code>a = b;</code>, <code>a</code> devine 7; valoarea inițială a lui <code>a</code> (3) s-a pierdut deja, deci <code>b = a;</code> pune tot 7 în <code>b</code>. Pentru un schimb corect e nevoie de o variabilă temporară (vezi secțiunea Curs).</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">15</span>Fie <code>int scor = 100;</code>. Care dintre următoarele atribuiri fac ca <code>scor</code> să devină <code>0</code>?</p>
+            <ul class="choices">
+              <li>a) scor = scor - 100;</li>
+              <li>b) scor = scor * 0;</li>
+              <li>c) scor = 0 * scor + 1;</li>
+              <li>d) scor = scor % 100;</li>
+            </ul>
+            <details><summary>Vezi răspunsul</summary>
+              <p>Fac <code>scor</code> să devină 0: <strong>a, b, d</strong>. Varianta <strong>c)</strong> <code>0 * 100 + 1 = 1</code>, deci <code>scor</code> devine 1, nu 0 — o capcană bună de verificat pas cu pas, nu „din ochi".</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">16</span>Fie <code>int n = 247;</code>. Calculează, folosind <code>/</code> și <code>%</code>, cifra unităților, cifra zecilor și cifra sutelor lui <code>n</code>.</p>
+            <details><summary>Vezi răspunsul</summary><p>unități = <code>n % 10 = 7</code>; zeci = <code>n / 10 % 10 = 4</code>; sute = <code>n / 100 = 2</code>.</p></details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">17</span>Fie <code>double pret = 19.5;</code> și <code>int cantitate = 3;</code>. Ce tip are rezultatul lui <code>pret * cantitate</code>? Dar rezultatul lui <code>cantitate * cantitate</code>?</p>
+            <details><summary>Vezi răspunsul</summary>
+              <p><code>pret * cantitate</code> → <code>double</code> (un operand este deja <code>double</code>). <code>cantitate * cantitate</code> → <code>int</code> (ambii operanzi sunt <code>int</code>).</p>
+            </details>
+          </div>
+
+          <h4>D. Declarații și identificatori</h4>
+
+          <div class="quiz-item">
+            <p><span class="qnum">18</span>Care dintre următoarele declarații sunt corecte sintactic?</p>
+            <ul class="choices">
+              <li>a) int 1nota;</li><li>b) double pret_unitar;</li><li>c) bool boolean;</li>
+              <li>d) char c1, c2;</li><li>e) int a-b;</li><li>f) double x, y, z;</li>
+            </ul>
+            <details><summary>Vezi răspunsul</summary>
+              <p>Corecte: <strong>b, c, d, f</strong>. Incorecte: <strong>a)</strong> începe cu o cifră; <strong>e)</strong> conține <code>-</code>, interzis într-un identificator. (<strong>c) bool boolean;</strong> e validă — <code>boolean</code> nu este cuvânt-cheie rezervat în C++, deși e cuvânt-cheie în Java, ceea ce poate crea confuzie.)</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">19</span>Care dintre următorii identificatori sunt corecți?</p>
+            <ul class="choices">
+              <li>a) nrClienti</li><li>b) 2xy</li><li>c) nota_10</li>
+              <li>d) for</li><li>e) _temp</li><li>f) preț</li>
+            </ul>
+            <details><summary>Vezi răspunsul</summary>
+              <p>Corecți: <strong>a, c, e</strong>. Incorecți: <strong>b)</strong> începe cu cifră; <strong>d)</strong> <code>for</code> e cuvânt-cheie rezervat; <strong>f)</strong> conține diacritice, evitate în C++.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">20</span>Explică de ce <code>Varsta</code> și <code>varsta</code> pot fi două variabile diferite, valide simultan, în același program C++.</p>
+            <details><summary>Vezi răspunsul</summary>
+              <p>C++ face diferență între litere mari și mici (<em>case-sensitive</em>), deci <code>Varsta</code> și <code>varsta</code> sunt identificatori distincți din punct de vedere sintactic — deși, din motive de claritate a codului, nu e o practică recomandată să le folosești pe amândouă în același program.</p>
+            </details>
+          </div>
+
+          <div class="quiz-item">
+            <p><span class="qnum">21</span>Scrie o declarație corectă pentru o constantă întreagă numită <code>NR_ZILE_SAPT</code>, cu valoarea 7, care nu poate fi modificată ulterior.</p>
+            <details><summary>Vezi răspunsul</summary><p><code>const int NR_ZILE_SAPT = 7;</code></p></details>
+          </div>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="tracing">Code Tracing – Exerciții</h2>
+          <p>Urmărește execuția programului <strong>fără să îl rulezi</strong>. Scrie valorile variabilelor la fiecare pas și ce se va afișa. Verifică după aceea rulând programul.</p>
+
+          <details>
+            <summary>Exercițiu 1</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> a = <span class="nm">5</span>;
+<span class="tp">int</span> b = <span class="nm">3</span>;
+<span class="tp">int</span> c = a <span class="op">+</span> b <span class="op">*</span> <span class="nm">2</span>;
+cout <span class="op">&lt;&lt;</span> c;</code></pre></div>
+            <p><strong>Soluție:</strong> <code>b * 2 = 6</code>, apoi <code>a + 6 = 11</code>. Se afișează <code>11</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiu 2</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> x = <span class="nm">10</span>;
+<span class="tp">int</span> y = <span class="nm">3</span>;
+cout <span class="op">&lt;&lt;</span> x <span class="op">/</span> y <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> x <span class="op">%</span> y;</code></pre></div>
+            <p><strong>Soluție:</strong> <code>10 / 3 = 3</code> (împărțire întreagă), <code>10 % 3 = 1</code> (restul). Se afișează <code>3 1</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiu 3</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> n = <span class="nm">379</span>;
+<span class="tp">int</span> sute = n <span class="op">/</span> <span class="nm">100</span>;
+<span class="tp">int</span> zeci = n <span class="op">/</span> <span class="nm">10</span> <span class="op">%</span> <span class="nm">10</span>;
+<span class="tp">int</span> unitati = n <span class="op">%</span> <span class="nm">10</span>;
+cout <span class="op">&lt;&lt;</span> sute <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> zeci <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> unitati;</code></pre></div>
+            <p><strong>Soluție:</strong> <code>sute = 379 / 100 = 3</code>, <code>zeci = 379 / 10 % 10 = 37 % 10 = 7</code>, <code>unitati = 379 % 10 = 9</code>. Se afișează <code>3 7 9</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiu 4</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> x = <span class="nm">5</span>;
+x <span class="op">+=</span> <span class="nm">3</span>;
+x <span class="op">*=</span> <span class="nm">2</span>;
+cout <span class="op">&lt;&lt;</span> x;</code></pre></div>
+            <p><strong>Soluție:</strong> <code>x = 5</code>, <code>x += 3 → x = 8</code>, <code>x *= 2 → x = 16</code>. Se afișează <code>16</code>.</p>
+          </details>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="lab">Laborator – 6 exerciții</h2>
+          <p>Exercițiile sunt progresive. Încearcă fiecare singur înainte să deschizi indiciile.</p>
+
+          <!-- Ex 1 -->
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num warm">1</div>
+              <div class="exercise-title">Perimetrul și aria unui dreptunghi</div>
+              <span class="exercise-tag">Nivel: Încălzire</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Scrie un program care declară lungimea și lățimea unui dreptunghi, calculează perimetrul și aria, și le afișează.</p>
+              <p><strong>Date:</strong> lungime = 12.0, lățime = 5.5</p>
+              <p><strong>Rezultat așteptat:</strong></p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Output</span></div><pre><code>Lungime: 12
+Latime: 5.5
+Perimetru: 35
+Arie: 66</code></pre></div>
+              <details><summary>Indiciu</summary><p>Perimetru = 2 × (lungime + lățime). Arie = lungime × lățime. Folosește <code>double</code>.</p></details>
+            </div>
+          </div>
+
+          <!-- Ex 2 -->
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">2</div>
+              <div class="exercise-title">Conversia temperaturii Celsius → Fahrenheit</div>
+              <span class="exercise-tag">Nivel: Aplicativ</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Scrie un program care convertește o temperatură din grade Celsius în grade Fahrenheit.<br>Formula: <code>F = C × 9/5 + 32</code></p>
+              <p><strong>Date:</strong> temperatura = 37.0°C (temperatura corpului)</p>
+              <p><strong>Rezultat așteptat:</strong></p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Output</span></div><pre><code>Celsius: 37
+Fahrenheit: 98.6</code></pre></div>
+              <details><summary>Indiciu</summary><p>Atenție la prioritatea operatorilor: <code>C * 9 / 5 + 32</code>. Folosește <code>9.0 / 5</code> pentru a obține rezultat cu zecimale. Verifică cu 0°C (ar trebui 32°F) și 100°C (ar trebui 212°F).</p></details>
+            </div>
+          </div>
+
+          <!-- Ex 3 -->
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num combine">3</div>
+              <div class="exercise-title">Calculul salariului net</div>
+              <span class="exercise-tag">Nivel: Combinat</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Scrie un program care calculează salariul net pornind de la salariul brut, aplicând un impozit de 16% și contribuții sociale de 10%.</p>
+              <p><strong>Date:</strong> salariu brut = 4500 lei</p>
+              <p><strong>Rezultat așteptat:</strong></p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Output</span></div><pre><code>Salariu brut     : 4500 lei
+Impozit (16%)    : 720 lei
+Contributii(10%) : 450 lei
+Salariu net      : 3330 lei</code></pre></div>
+              <details><summary>Indiciu</summary><p>Calculează fiecare reținere separat (impozit = brut × 0.16, contribuții = brut × 0.10), apoi net = brut - impozit - contribuții. Folosește variabile cu nume clare.</p></details>
+            </div>
+          </div>
+
+          <!-- Ex 4 -->
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num debug">4</div>
+              <div class="exercise-title">Depanare – Găsește și corectează erorile</div>
+              <span class="exercise-tag">Nivel: Debug</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Codul de mai jos conține 3 erori. Identifică-le, explică de ce sunt greșite și rescrie codul corect.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Cu erori</span></div>
+                <pre><code><span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span> x = <span class="nm">7.5</span>; <span class="cm">// Linia 1</span>
+    <span class="tp">int</span> y;
+    cout <span class="op">&lt;&lt;</span> y; <span class="cm">// Linia 2</span>
+    <span class="tp">bool</span> egal = (x <span class="op">=</span> <span class="nm">10</span>); <span class="cm">// Linia 3</span>
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div>
+              <details><summary>Soluție</summary><p><strong>Linia 1:</strong> <code>int x = 7.5</code> — tipul <code>int</code> nu poate stoca zecimale; 7.5 e trunchiat la 7. Corect: <code>double x = 7.5;</code><br><strong>Linia 2:</strong> <code>y</code> neinițializat — afișează valoare nedefinită. Corect: <code>int y = 0;</code><br><strong>Linia 3:</strong> <code>x = 10</code> este atribuire, nu comparație. Corect: <code>bool egal = (x == 10);</code></p></details>
+            </div>
+          </div>
+
+          <!-- Ex 5 -->
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">5</div>
+              <div class="exercise-title">Timp exprimat în minute</div>
+              <span class="exercise-tag">Nivel: Practic</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește o durată exprimată prin ore și minute. Scrie un program care transformă durata în total minute.</p>
+              <p><strong>Date:</strong> ore = 2, minute = 15</p>
+              <p><strong>Rezultat așteptat:</strong></p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Output</span></div><pre><code>Ore: 2
+Minute: 15
+Total minute: 135</code></pre></div>
+              <details><summary>Indiciu</summary><p>Un ceas are 60 de minute. Total minute = ore × 60 + minute.</p></details>
+            </div>
+          </div>
+
+          <!-- Ex 6 -->
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num hard">6</div>
+              <div class="exercise-title">Conversia unei sume în euro și dolari</div>
+              <span class="exercise-tag">Nivel: Provocare</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Scrie un program care convertește o sumă în lei la euro și dolari americani, folosind cursurile date. Calculează și diferența dintre suma exprimată în euro și suma exprimată în dolari.</p>
+              <p><strong>Date:</strong> Sumă = 5000 RON, curs EUR = 4.97, curs USD = 4.52</p>
+              <p><strong>Rezultat așteptat:</strong></p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Output</span></div><pre><code>Suma in RON: 5000
+Suma in EUR: 1006.04
+Suma in USD: 1106.19
+Diferenta (EUR - USD): -100.15</code></pre></div>
+              <details><summary>Indiciu</summary><p>EUR = RON / cursEUR. USD = RON / cursUSD. Diferența = sumaEUR - sumaUSD (poate fi negativă – nu e nevoie să o transformi în valoare pozitivă).</p></details>
+            </div>
+          </div>
+
+          <!-- Studiu de caz -->
+          <h2 id="studiu">Studiu de caz – Factura unui serviciu de curățenie</h2>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Contextul</strong>
+              <p>O firmă de curățenie facturează pe oră. Pentru acest client se aplică o reducere de 15% (client cu abonament), iar la final se adaugă TVA de 19%. Scrie un program care calculează factura completă.</p>
+            </div>
+          </div>
+          <p><strong>Cerințe:</strong></p>
+          <ul>
+            <li>Declară: numărul de ore lucrate și tariful orar</li>
+            <li>Calculează: subtotalul, reducerea de 15%, baza de TVA, TVA-ul și totalul final</li>
+            <li>Afișează o „factură" formatată</li>
+          </ul>
+          <p><strong>Date de test:</strong> 4 ore, tarif 75 lei/oră</p>
+          <p><strong>Rezultat așteptat:</strong></p>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Output</span></div><pre><code>=== FACTURA SERVICII CURATENIE ===
+Ore lucrate    : 4
+Tarif/ora      : 75 lei
+Subtotal       : 300 lei
+Reducere (15%) : 45 lei
+Baza TVA       : 255 lei
+TVA (19%)      : 48.45 lei
+TOTAL DE PLATA : 303.45 lei</code></pre></div>
+          <p><strong>Pași de implementare:</strong></p>
+          <div class="timeline">
+            <div class="timeline-item"><p><strong>Pasul 1</strong> – Declară variabilele de intrare: <code>nrOre</code>, <code>tarifOrar</code></p></div>
+            <div class="timeline-item"><p><strong>Pasul 2</strong> – Calculează subtotalul: <code>subtotal = nrOre * tarifOrar</code></p></div>
+            <div class="timeline-item"><p><strong>Pasul 3</strong> – Calculează reducerea: <code>reducere = subtotal * 0.15</code></p></div>
+            <div class="timeline-item"><p><strong>Pasul 4</strong> – Calculează baza TVA: <code>bazaTVA = subtotal - reducere</code></p></div>
+            <div class="timeline-item"><p><strong>Pasul 5</strong> – Calculează TVA-ul și totalul: <code>tva = bazaTVA * 0.19</code>, <code>total = bazaTVA + tva</code></p></div>
+            <div class="timeline-item"><p><strong>Pasul 6</strong> – Afișează factura, linie cu linie</p></div>
+          </div>
+
+          <!-- Exerciții extra -->
+          <h2 id="extra">Exerciții extra</h2>
+          <p>Pentru cei care termină mai repede, două exerciții suplimentare axate pe extragerea și recompunerea cifrelor unui număr.</p>
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num apply">E1</div>
+              <div class="exercise-title">Numărul invers</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Citește un număr natural cu exact trei cifre și afișează numărul format din aceleași cifre, în ordine inversă.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 123
+Iesire : 321</code></pre></div>
+              <details><summary>Indiciu</summary><p>Extrage cifrele cu <code>/</code> și <code>%</code> (ca la exercițiul de code tracing 3), apoi construiește: <code>invers = unitati * 100 + zeci * 10 + sute;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header">
+              <div class="exercise-num hard">E2</div>
+              <div class="exercise-title">Interschimbarea ultimelor două cifre</div>
+              <span class="exercise-tag">Nivel: Extra</span>
+            </div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Citește un număr natural cu exact trei cifre. Construiește numărul obținut prin interschimbarea cifrei zecilor cu cifra unităților.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 379
+Iesire : 397</code></pre></div>
+              <details><summary>Indiciu</summary><p>Extrage <code>sute</code>, <code>zeci</code>, <code>unitati</code>, apoi construiește noul număr ca <code>sute * 100 + unitati * 10 + zeci</code> – observă că zecile și unitățile și-au schimbat pozițiile.</p></details>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /tab lab -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: CHEAT SHEET                                           -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t2-cheat">
+        <div class="prose">
+          <h2 id="cheat">Fișă rapidă – Sesiunea 2</h2>
+          <p>Referință compactă pentru folosit în laborator.</p>
+          <div class="cheat-grid">
+            <div class="cheat-card">
+              <div class="cheat-card-header">Declarare variabile</div>
+              <pre>int varsta = 20;
+double pret = 49.99;
+char lit = 'A';
+bool activ = true;</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Constante</div>
+              <pre>const int NR_ZILE = 7;
+const double PI = 3.14159;
+// nu se mai poate modifica dupa!</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Citire / afișare</div>
+              <pre>cin &gt;&gt; varsta;
+cin &gt;&gt; a &gt;&gt; b; // citire multipla
+cout &lt;&lt; "text" &lt;&lt; varsta &lt;&lt; endl;</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Operatori aritmetici</div>
+              <pre>a + b // adunare
+a - b // scădere
+a * b // înmulțire
+a / b // împărțire
+a % b // rest (modulo)</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Atribuire rapidă</div>
+              <pre>x += 5; // x = x + 5
+x -= 3; // x = x - 3
+x *= 2; // x = x * 2
+x /= 4; // x = x / 4
+x++;    // x = x + 1
+x--;    // x = x - 1</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Operatori de referință (S3)</div>
+              <pre>== != &gt; &lt; &gt;= &lt;=  // comparatie
+&amp;&amp; || !            // logici
+// folositi practic in S3 (if)</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Tipuri – memorie uzuală</div>
+              <pre>char : 1 octet (garantat)
+bool : 1 octet (uzual)
+int  : 4 octeti (uzual)
+float : 4 octeti (uzual)
+double: 8 octeti (uzual)</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Capcane de reținut</div>
+              <pre>= atribuire, nu comparatie!
+== comparatie
+7 / 2 = 3 (impartire intreaga)
+7.0 / 2 = 3.5 (cu zecimale)
+19% ca fractie = 0.19
+'7' caracter, 7 numar intreg</pre>
+            </div>
+          </div>
+
+          <h3>Comparație rapidă C++ · Python · Java</h3>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th></th><th>C++</th><th>Python</th><th>Java</th></tr></thead>
+              <tbody>
+                <tr><td>Variabilă întreagă</td><td><code>int x = 5;</code></td><td><code>x = 5</code></td><td><code>int x = 5;</code></td></tr>
+                <tr><td>Constantă</td><td><code>const int N = 7;</code></td><td><code>N = 7</code> (convenție)</td><td><code>final int N = 7;</code></td></tr>
+                <tr><td>Afișare</td><td><code>cout &lt;&lt; x;</code></td><td><code>print(x)</code></td><td><code>System.out.println(x);</code></td></tr>
+                <tr><td>Citire</td><td><code>cin &gt;&gt; x;</code></td><td><code>x = int(input())</code></td><td><code>x = scanner.nextInt();</code></td></tr>
+                <tr><td>Împărțire întreagă</td><td><code>7 / 2</code> (dacă ambii sunt int)</td><td><code>7 // 2</code></td><td><code>7 / 2</code> (dacă ambii sunt int)</td></tr>
+                <tr><td>Tipizare</td><td>Statică</td><td>Dinamică</td><td>Statică</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Prioritatea operatorilor aritmetici (de sus = evaluare mai întâi)</h3>
+          <div class="code-block"><div class="code-header"><span class="code-lang">Prioritate</span></div>
+            <pre><code>() ← paranteze - cel mai mare
+* / % ← multiplicativi
++ - ← aditivi - cel mai mic</code></pre>
+          </div>
+        </div>
+      </div><!-- /cheat -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: AUTOEVALUARE                                          -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t2-autoevaluare">
+        <div class="prose">
+          <h2 id="verificare">Întrebări de autoevaluare</h2>
+
+          <details><summary>1. Ce este o variabilă și ce trei lucruri o definesc?</summary>
+            <p>O variabilă este o locație numită în memorie. O definesc: <strong>tipul</strong> (ce fel de date stochează), <strong>numele</strong> (cu ce o accesezi în cod) și <strong>valoarea</strong> (ce conține în acel moment).</p>
+          </details>
+          <details><summary>2. De ce trebuie să declari tipul explicit în C++?</summary>
+            <p>Compilatorul trebuie să știe câtă memorie să aloce și cum să interpreteze biții stocați. Un <code>int</code> ocupă de regulă 4 octeți și e interpretat ca număr întreg; un <code>double</code> ocupă de regulă 8 octeți și e interpretat ca număr în virgulă mobilă.</p>
+          </details>
+          <details><summary>3. Care este diferența dintre o variabilă și o constantă cu nume?</summary>
+            <p>O variabilă își poate schimba valoarea pe parcursul programului. O constantă (declarată cu <code>const</code>) primește o valoare la inițializare, iar apoi aceasta nu se mai poate modifica.</p>
+          </details>
+          <details><summary>4. Ce afișează: int a = 7; int b = 2; cout &lt;&lt; a / b;</summary>
+            <p><code>3</code>. Împărțirea a două <code>int</code>-uri produce un <code>int</code> – zecimalele se pierd. 7 ÷ 2 = 3 rest 1, deci rezultatul este 3.</p>
+          </details>
+          <details><summary>5. Cum obții rezultat cu zecimale la împărțirea 7 / 2?</summary>
+            <p>Cel puțin un operand implicat în calcul trebuie să fie <code>double</code>: <code>7.0 / 2</code> sau <code>7 / 2.0</code>.</p>
+          </details>
+          <details><summary>6. Ce întoarce operatorul % (modulo)?</summary>
+            <p>Restul împărțirii întregi. <code>7 % 3 = 1</code> (7 = 3×2 + 1). Este folosit frecvent pentru extragerea cifrelor unui număr, de exemplu <code>n % 10</code> dă ultima cifră a lui <code>n</code>.</p>
+          </details>
+          <details><summary>7. Care este diferența dintre = și == în C++?</summary>
+            <p><code>=</code> este operatorul de <strong>atribuire</strong> – pune o valoare într-o variabilă. <code>==</code> este operatorul de <strong>comparație</strong> – verifică dacă două valori sunt egale și produce un rezultat de tip <code>bool</code>, fără să modifice nimic.</p>
+          </details>
+          <details><summary>8. Ce greșeală conține: double pret; cout &lt;&lt; pret;</summary>
+            <p>Variabila <code>pret</code> este declarată dar neinițializată. Afișează o valoare nedefinită (ce se afla în acel loc de memorie înainte). Trebuie inițializată: <code>double pret = 0.0;</code></p>
+          </details>
+          <details><summary>9. Alege tipul corect: temperatura zilei în grade Celsius, cu zecimale</summary>
+            <p><code>double</code>. Temperatura poate fi 23.5°C sau -12.3°C – are zecimale și poate fi negativă. <code>int</code> ar trunchia la 23, respectiv -12.</p>
+          </details>
+          <details><summary>10. Ce afișează: int x = 5; x += 3; x *= 2; cout &lt;&lt; x;</summary>
+            <p><code>16</code>. <code>x = 5</code>, <code>x += 3 → x = 8</code>, <code>x *= 2 → x = 16</code>.</p>
+          </details>
+          <details><summary>11. De ce este 'A' diferit de "A" în C++?</summary>
+            <p><code>'A'</code> (apostrofuri) este un literal de tip <code>char</code> – un singur caracter. <code>"A"</code> (ghilimele) este un literal de tip șir de caractere, un concept pe care îl vom aprofunda separat. Pentru un singur caracter, folosește întotdeauna apostrofuri simple.</p>
+          </details>
+          <details><summary>12. Care este diferența dintre tipizarea statică (C++, Java) și cea dinamică (Python)?</summary>
+            <p>La tipizarea <strong>statică</strong>, tipul unei variabile este scris explicit în cod și verificat de compilator înainte ca programul să ruleze. La tipizarea <strong>dinamică</strong>, tipul nu se scrie – este asociat cu valoarea curentă și verificat abia când acea linie de cod se execută.</p>
+          </details>
+          <details><summary>13. De ce <code>7 / 2</code> dă rezultate diferite în C++ și în Python 3?</summary>
+            <p>În C++, dacă ambii operanzi sunt <code>int</code>, <code>/</code> face împărțire întreagă (<code>7 / 2 = 3</code>). În Python 3, <code>/</code> face întotdeauna împărțire reală (<code>7 / 2 = 3.5</code>); pentru împărțire întreagă, Python folosește operatorul separat <code>//</code> (<code>7 // 2 = 3</code>).</p>
+          </details>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="rezumat">Rezumat – De reținut</h2>
+          <div class="callout ok">
+            <span class="callout-icon"></span>
+            <div class="callout-body"><strong>Cele mai importante idei din această sesiune</strong></div>
+          </div>
+          <ol>
+            <li>O <strong>variabilă</strong> rezervă spațiu în memorie cu un nume sugestiv și un tip fix.</li>
+            <li>Tipul se alege în funcție de datele stocate: <code>int</code> pentru întregi, <code>double</code> pentru zecimale, <code>char</code> pentru un singur caracter, <code>bool</code> pentru adevărat/fals.</li>
+            <li>O <strong>constantă</strong> (<code>const</code>) este o valoare care, după inițializare, nu se mai poate modifica.</li>
+            <li>Inițializează <strong>întotdeauna</strong> variabilele la declarare.</li>
+            <li><code>cin</code> citește valori de la tastatură, <code>cout</code> afișează valori și texte pe ecran.</li>
+            <li><code>=</code> este atribuire, <code>==</code> este comparație – confundarea lor produce bug-uri subtile.</li>
+            <li>Împărțirea a două <code>int</code>-uri produce <code>int</code> – zecimalele se pierd. Folosește <code>double</code> pentru rezultate cu zecimale.</li>
+            <li>Procentele se exprimă ca fracții zecimale: 19% = 0.19.</li>
+            <li>Parantezele controlează ordinea evaluării – folosește-le pentru claritate, nu te baza doar pe memorarea priorităților.</li>
+            <li>Operatorii de comparație și cei logici sunt de reținut ca <strong>referință</strong> – folosirea lor practică în decizii (<code>if</code>) urmează în sesiunea 3.</li>
+            <li>Date, variabile, tipuri și operatori aritmetici sunt concepte <strong>universale</strong> de programare – C++, Python și Java le exprimă printr-o sintaxă diferită, dar ideea din spate este aceeași.</li>
+            <li>C++ și Java folosesc <strong>tipizare statică</strong> (tipul se declară și se verifică la compilare); Python folosește <strong>tipizare dinamică</strong> (tipul e asociat cu valoarea, verificat la execuție).</li>
+          </ol>
+
+          <h2 id="glosar">Glosar</h2>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Termen</th><th>Definiție</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Variabilă</strong></td><td>Locație numită în memorie care stochează o valoare de un anumit tip, ce se poate modifica</td></tr>
+                <tr><td><strong>Tip de date</strong></td><td>Categoria de informație stocată (int, double, char, bool)</td></tr>
+                <tr><td><strong>Declarare</strong></td><td>Crearea variabilei cu specificarea tipului și numelui</td></tr>
+                <tr><td><strong>Inițializare</strong></td><td>Atribuirea valorii inițiale, de regulă la declarare</td></tr>
+                <tr><td><strong>Atribuire</strong></td><td>Plasarea unei valori într-o variabilă cu operatorul <code>=</code></td></tr>
+                <tr><td><strong>Constantă (const)</strong></td><td>Valoare cu nume care, după inițializare, nu mai poate fi modificată</td></tr>
+                <tr><td><strong>Literal</strong></td><td>Valoare scrisă direct în codul sursă (ex: <code>18</code>, <code>'A'</code>, <code>true</code>)</td></tr>
+                <tr><td><strong>cin</strong></td><td>Fluxul standard de intrare în C++; citește date de la tastatură</td></tr>
+                <tr><td><strong>cout</strong></td><td>Fluxul standard de ieșire în C++; afișează date pe ecran</td></tr>
+                <tr><td><strong>Operator aritmetic</strong></td><td>Simbol pentru operație matematică: <code>+ - * / %</code></td></tr>
+                <tr><td><strong>Operator de comparație</strong></td><td>Compară două valori și produce true/false: <code>== != &gt; &lt; &gt;= &lt;=</code> (folosire practică în S3)</td></tr>
+                <tr><td><strong>Operator logic</strong></td><td>Combină condiții: <code>&amp;&amp;</code> (ȘI), <code>||</code> (SAU), <code>!</code> (NU) (folosire practică în S3)</td></tr>
+                <tr><td><strong>Modulo (%)</strong></td><td>Restul împărțirii întregi: <code>7 % 3 = 1</code></td></tr>
+                <tr><td><strong>Împărțire întreagă</strong></td><td>Împărțire între doi <code>int</code> care pierde zecimalele: <code>7/2=3</code></td></tr>
+                <tr><td><strong>Prioritatea operatorilor</strong></td><td>Ordinea în care C++ evaluează operatorii într-o expresie</td></tr>
+                <tr><td><strong>Tipizare statică</strong></td><td>Tipul unei variabile este declarat explicit în cod și verificat la compilare (C++, Java)</td></tr>
+                <tr><td><strong>Tipizare dinamică</strong></td><td>Tipul unei variabile nu se declară – este asociat cu valoarea curentă și verificat la execuție (Python)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Ce urmează?</h2>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Sesiunea 3 – Expresii, operatori și structuri de decizie</strong>
+              <p>Acum că știi să declari variabile, să folosești constante, să citești/afișezi date și să faci calcule aritmetice simple, pasul următor este să înveți cum un program poate <strong>lua decizii</strong>: instrucțiunea <code>if</code>, folosirea practică a operatorilor de comparație și logici în condiții, și construirea unor expresii mai complexe.</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- /autoevaluare -->
+
+    </div><!-- /tab-wrap -->
+
+    <footer class="page-footer">
+      <span>M6 · Sesiunea 2 – Variabile și tipuri de date</span>
+      <div class="footer-nav">
+        <a href="sesiunea-1.html" class="footer-link">← S1 Calculator și C++</a>
+        <a href="sesiunea-3.html" class="footer-link fwd">S3 – Expresii și decizii →</a>
+      </div>
+    </footer>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
