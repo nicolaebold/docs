@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>S3 – Expresii și evaluarea expresiilor | M6 OCW</title>
+<meta name="description" content="Sesiunea 3: expresii aritmetice, relaționale și logice, prioritatea și asociativitatea operatorilor, rolul parantezelor, conversii de tip, atribuire, incrementare/decrementare și construirea corectă a expresiilor în C++." />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  .ops-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: .75rem; margin: 1rem 0;
+  }
+  .op-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1rem;
+  }
+  .op-card h4 { font-size: .85rem; color: var(--accent); margin-bottom: .5rem; }
+  .op-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono); font-size: .85rem; padding: .2rem 0;
+    border-bottom: 1px solid var(--surface-2);
+  }
+  .op-row:last-child { border-bottom: none; }
+  .op-sym { font-weight: 800; color: var(--text); }
+  .op-desc { font-size: .78rem; color: var(--text-3); font-family: var(--sans); }
+  .op-ex { color: var(--accent-dark); font-size: .8rem; }
+
+  .bug-card { border-radius: var(--radius-lg); overflow: hidden; margin: 1.25rem 0; border: 1px solid var(--border); }
+  .bug-header {
+    padding: .6rem 1rem; font-size: .8rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  .bug-header.wrong { background: var(--red-light); color: var(--red); }
+  .bug-header.right { background: var(--green-light); color: var(--green); }
+  .bug-header.symptom { background: var(--amber-light); color: #92400e; }
+  .bug-body { padding: .9rem 1.1rem; font-size: .9rem; }
+
+  .trace-step { font-family: var(--mono); }
+
+  /* Quiz-style exercises (multiple choice, readable layout) */
+  .quiz-item { margin: 1.35rem 0; padding-bottom: 1.1rem; border-bottom: 1px solid var(--surface-2); }
+  .quiz-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .quiz-item .qnum {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 24px; height: 24px; padding: 0 .3rem;
+    border-radius: 50%; background: var(--accent-light); color: var(--accent-dark);
+    font-size: .78rem; font-weight: 800; margin-right: .5rem;
+  }
+  .choices {
+    list-style: none; padding: 0; margin: .6rem 0 .8rem;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .4rem .6rem;
+  }
+  .choices li {
+    font-family: var(--mono); font-size: .84rem; color: var(--text);
+    background: var(--surface-2); border: 1px solid var(--border);
+    padding: .4rem .65rem; border-radius: 6px;
+  }
+  .quiz-item details { margin-top: .5rem; }
+  .quiz-item summary { background: var(--accent-light); color: var(--accent-dark); font-size: .82rem; }
+
+  /* Priority ladder visual */
+  .priority-ladder { margin: 1.25rem 0; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+  .priority-row {
+    display: flex; align-items: center; gap: .9rem;
+    padding: .55rem 1.1rem; font-size: .88rem;
+    border-bottom: 1px solid var(--surface-2); background: var(--surface);
+  }
+  .priority-row:last-child { border-bottom: none; }
+  .priority-row .plevel {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    background: var(--accent); color: #fff; font-size: .72rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .priority-row .pops { font-family: var(--mono); font-weight: 800; min-width: 130px; }
+  .priority-row .pcat { color: var(--text-3); font-size: .82rem; }
+  .priority-row.top .plevel { background: var(--green); }
+  .priority-row.bottom .plevel { background: #7c3aed; }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">M6</span>Limbaje de Programare</a>
+  <div class="topnav-breadcrumb">
+    <a href="index.html">M6</a><span class="sep">›</span> <span>S3 – Expresii și evaluarea expresiilor</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="https://www.onlinegdb.com/online_c++_compiler" target="_blank" class="btn-sm">Compilator online</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <span class="sidebar-label">Această pagină</span>
+    <a class="sidebar-link" href="#prereq"><i class="fa-solid fa-circle-check fa-fw"></i> Prerequisite</a>
+    <a class="sidebar-link" href="#intro"><i class="fa-solid fa-book-open fa-fw"></i> Introducere</a>
+    <a class="sidebar-link" href="#obiective"><i class="fa-solid fa-bullseye fa-fw"></i> Obiective</a>
+    <a class="sidebar-link" href="#concepte"><i class="fa-solid fa-brain fa-fw"></i> Concepte fundamentale</a>
+    <a class="sidebar-link" href="#aritmetice"><i class="fa-solid fa-plus-minus fa-fw"></i> Expresii aritmetice</a>
+    <a class="sidebar-link" href="#relationale"><i class="fa-solid fa-code-compare fa-fw"></i> Expresii relaționale</a>
+    <a class="sidebar-link" href="#logice"><i class="fa-solid fa-toggle-on fa-fw"></i> Expresii logice</a>
+    <a class="sidebar-link" href="#evaluare"><i class="fa-solid fa-sort fa-fw"></i> Prioritate și asociativitate</a>
+    <a class="sidebar-link" href="#tipuri"><i class="fa-solid fa-arrows-turn-to-dots fa-fw"></i> Tipuri, conversii, atribuire</a>
+    <a class="sidebar-link" href="#construire"><i class="fa-solid fa-hammer fa-fw"></i> Construirea expresiilor</a>
+    <a class="sidebar-link" href="#exemple"><i class="fa-solid fa-lightbulb fa-fw"></i> Exemple</a>
+    <a class="sidebar-link" href="#anatomie"><i class="fa-solid fa-microscope fa-fw"></i> Anatomia unei expresii</a>
+    <a class="sidebar-link" href="#daca"><i class="fa-solid fa-circle-question fa-fw"></i> Ce se întâmplă dacă…</a>
+    <a class="sidebar-link" href="#greseli"><i class="fa-solid fa-triangle-exclamation fa-fw"></i> Erori frecvente</a>
+    <a class="sidebar-link" href="#comparatie"><i class="fa-solid fa-language fa-fw"></i> Comparație între limbaje</a>
+    <a class="sidebar-link" href="#debug"><i class="fa-solid fa-bug fa-fw"></i> Depanare</a>
+    <span class="sidebar-label">Laborator</span>
+    <a class="sidebar-link" href="#introductive"><i class="fa-solid fa-pencil fa-fw"></i> Exerciții introductive</a>
+    <a class="sidebar-link" href="#tracing"><i class="fa-solid fa-chart-line fa-fw"></i> Code tracing</a>
+    <a class="sidebar-link" href="#lab"><i class="fa-solid fa-flask fa-fw"></i> Laborator</a>
+    <a class="sidebar-link" href="#extra"><i class="fa-solid fa-plus fa-fw"></i> Exerciții extra</a>
+    <span class="sidebar-label">Referință</span>
+    <a class="sidebar-link" href="#verificare"><i class="fa-solid fa-circle-check fa-fw"></i> Autoevaluare</a>
+    <a class="sidebar-link" href="#rezumat"><i class="fa-solid fa-thumbtack fa-fw"></i> Rezumat</a>
+    <a class="sidebar-link" href="#glosar"><i class="fa-solid fa-book fa-fw"></i> Glosar</a>
+    <a class="sidebar-link" href="#cheat"><i class="fa-solid fa-bolt fa-fw"></i> Cheat sheet</a>
+    <span class="sidebar-label">Sesiuni</span>
+    <a class="sidebar-link" href="sesiunea-0.html">S0 – Syllabus</a>
+    <a class="sidebar-link" href="sesiunea-0b.html">S0b – Istoric limbaje</a>
+    <a class="sidebar-link" href="sesiunea-1.html">S1 – Calculator și C++</a>
+    <a class="sidebar-link" href="sesiunea-2.html">S2 – Variabile și tipuri de date</a>
+    <a class="sidebar-link active" href="sesiunea-3.html">S3 – Expresii și evaluarea lor</a>
+    <a class="sidebar-link" href="index.html">← Înapoi la modul</a>
+  </aside>
+
+  <main class="main">
+    <!-- Hero -->
+    <div class="page-hero">
+      <span class="session-tag">Sesiunea 3 · 6 ore · C++</span>
+      <h1>Expresii și evaluarea expresiilor</h1>
+      <div class="hero-meta">
+        <span class="chip">6 ore (4h teorie + 2h laborator)</span>
+        <span class="chip">Aritmetice · Relaționale · Logice</span>
+        <span class="chip">Prioritate · Asociativitate · Paranteze</span>
+        <span class="chip">Conversii de tip · Atribuire · ++/--</span>
+        <span class="chip">C++ · Python · Java</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="t3-curs">Curs</button>
+      <button class="tab-btn" data-tab="t3-exemple">Exemple</button>
+      <button class="tab-btn" data-tab="t3-lab">Laborator</button>
+      <button class="tab-btn" data-tab="t3-cheat">Cheat Sheet</button>
+      <button class="tab-btn" data-tab="t3-autoevaluare">Autoevaluare</button>
+    </div>
+
+    <div class="tab-wrap">
+      <!-- ========================================================= -->
+      <!-- TAB: CURS                                                  -->
+      <!-- ========================================================= -->
+      <div class="tab-pane active" id="t3-curs">
+        <div class="prose">
+
+          <!-- Prereq -->
+          <div class="prereq-box" id="prereq">
+            <h4>Prerequisite – ce trebuie să știi înainte de această sesiune</h4>
+            <ul>
+              <li>Ai parcurs S2 – știi ce este o variabilă, o constantă și un literal</li>
+              <li>Diferențiezi principalele tipuri de date: <code>int</code>, <code>double</code>, <code>char</code>, <code>bool</code></li>
+              <li>Utilizezi operatorii aritmetici <code>+ - * / %</code></li>
+              <li>Recunoști operatorii relaționali <code>&lt; &gt; &lt;= &gt;= == !=</code> și cei logici <code>&amp;&amp; || !</code> (folosiți deocamdată doar ca referință în S2)</li>
+              <li>Citești și afișezi valori cu <code>cin</code> și <code>cout</code></li>
+              <li>Modifici valoarea unei variabile prin atribuire</li>
+            </ul>
+          </div>
+
+          <h2 id="intro">Introducere</h2>
+          <p>În sesiunea anterioară ai lucrat cu date, variabile, constante, tipuri de date și operatori. Ai văzut cum pot fi memorate valori în program și ce operații pot fi efectuate asupra lor.</p>
+          <p>Totuși, în programele reale nu folosim operatorii izolat. Ei sunt combinați cu valori, constante și variabile pentru a forma <strong>expresii</strong>. De exemplu, dacă avem <code>int a = 10;</code> și <code>int b = 3;</code>, operatorul <code>+</code> poate fi utilizat în expresia <code>a + b</code>. Expresia este evaluată, iar în acest caz produce valoarea <code>13</code>. În mod asemănător, expresia <code>a &gt; b</code> nu produce un rezultat numeric obișnuit, ci un rezultat logic: <code>true</code> sau <code>false</code>.</p>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Ideea principală</strong>
+              <p>Un operator precizează ce operație trebuie realizată, iar o expresie precizează asupra căror valori se aplică acea operație și produce un rezultat.</p>
+            </div>
+          </div>
+          <p>Expresiile reprezintă una dintre componentele fundamentale ale unui limbaj de programare. Ele apar aproape peste tot într-un program: în calcule, în atribuiri, în comparații și, așa cum vei vedea în sesiunile următoare, în condițiile utilizate pentru luarea deciziilor.</p>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Ce nu facem încă în această sesiune</strong>
+              <p>Nu introducem încă structurile de control (<code>if</code>, <code>switch</code>). Ne concentrăm exclusiv asupra modului în care sunt construite, evaluate și utilizate expresiile — inclusiv cele logice. Folosirea lor practică pentru ca programul să <em>ia decizii</em> este subiectul sesiunii următoare.</p>
+            </div>
+          </div>
+
+          <!-- Obiective -->
+          <div class="objectives" id="obiective">
+            <h3>La finalul acestei sesiuni vei putea să:</h3>
+            <ol>
+              <li><strong>Explici</strong> ce este o expresie într-un limbaj de programare</li>
+              <li><strong>Identifici</strong> operatorii și operanzii unei expresii</li>
+              <li><strong>Diferențiezi</strong> expresiile aritmetice, relaționale și logice</li>
+              <li><strong>Determini</strong> valoarea și tipul rezultat în urma evaluării unei expresii</li>
+              <li><strong>Aplici</strong> regulile de prioritate și asociativitate ale operatorilor</li>
+              <li><strong>Utilizezi</strong> parantezele pentru a controla și clarifica ordinea de evaluare</li>
+              <li><strong>Explici</strong> diferența dintre împărțirea întreagă și împărțirea reală</li>
+              <li><strong>Utilizezi</strong> conversii simple de tip, atribuiri simple și compuse</li>
+              <li><strong>Utilizezi</strong> operatorii de incrementare și decrementare</li>
+              <li><strong>Urmărești</strong> pas cu pas modificarea valorilor variabilelor</li>
+              <li><strong>Transformi</strong> formule matematice în expresii utilizabile într-un program</li>
+              <li><strong>Identifici și corectezi</strong> erori frecvente în construirea expresiilor</li>
+            </ol>
+          </div>
+
+          <!-- CONCEPTE -->
+          <h2 id="concepte">Concepte fundamentale</h2>
+          <p>Un operator precizează ce operație trebuie realizată, dar pentru ca operația să poată fi efectuată avem nevoie și de valorile asupra cărora acționează acesta. Aceste valori se numesc <strong>operanzi</strong>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code>a <span class="op">+</span> b</code></pre>
+          </div>
+          <p>Operatorul este <code>+</code>, iar <code>a</code> și <code>b</code> sunt operanzii săi.</p>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Definiție</strong>
+              <p>Un <strong>operand</strong> este o valoare, o variabilă, o constantă sau chiar o altă expresie asupra căreia acționează un operator. O <strong>expresie</strong> este o construcție a limbajului formată din unul sau mai mulți operanzi și operatori și care poate fi evaluată pentru a obține un rezultat.</p>
+            </div>
+          </div>
+          <p>Expresiile pot fi foarte simple (<code>5</code>, <code>x</code>, <code>a + b</code>) sau pot fi formate din alte expresii:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code>a <span class="op">*</span> (b <span class="op">+</span> <span class="nm">1</span>)</code></pre>
+          </div>
+          <p>Aici, operatorul <code>*</code> are doi operanzi: variabila <code>a</code> și expresia <code>b + 1</code>. La rândul său, expresia <code>b + 1</code> este formată din operatorul <code>+</code> și operanzii <code>b</code> și <code>1</code>. Prin urmare, o expresie complexă poate fi privită ca o construcție formată din expresii mai simple.</p>
+          <div class="callout ok">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>O expresie nu este obligatoriu un calcul aritmetic</strong>
+              <p>De exemplu, <code>varsta &gt;= 18</code> este tot o expresie, chiar dacă rezultatul său nu este o valoare numerică obișnuită, ci o valoare logică (<code>true</code> sau <code>false</code>).</p>
+            </div>
+          </div>
+          <p>O expresie este utilizată pentru a determina o valoare. Procesul prin care se determină această valoare se numește <strong>evaluarea</strong> expresiei. Dacă într-o expresie apar variabile, rezultatul depinde de valorile pe care acestea le au în momentul evaluării — expresia descrie <em>calculul</em> care trebuie realizat, nu o valoare fixă.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Expresie</th><th>Rezultat</th><th>Tipul rezultatului</th></tr></thead>
+              <tbody>
+                <tr><td><code>5 + 3</code></td><td><code>8</code></td><td><code>int</code></td></tr>
+                <tr><td><code>5.0 + 3</code></td><td><code>8.0</code></td><td><code>double</code></td></tr>
+                <tr><td><code>5 &gt; 3</code></td><td><code>true</code></td><td><code>bool</code></td></tr>
+                <tr><td><code>5 == 3</code></td><td><code>false</code></td><td><code>bool</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Tabelul următor rezumă conceptele cu care lucrăm în această sesiune:</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Concept</th><th>Semnificație</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Expresie</strong></td><td>Combinație de valori, variabile, constante și operatori care poate fi evaluată și care produce un rezultat</td></tr>
+                <tr><td><strong>Operand</strong></td><td>Valoarea sau expresia asupra căreia acționează un operator</td></tr>
+                <tr><td><strong>Operator</strong></td><td>Simbol care indică operația ce trebuie realizată asupra unuia sau mai multor operanzi</td></tr>
+                <tr><td><strong>Evaluare</strong></td><td>Procesul prin care se determină rezultatul unei expresii</td></tr>
+                <tr><td><strong>Rezultat</strong></td><td>Valoarea obținută după evaluarea unei expresii</td></tr>
+                <tr><td><strong>Tipul expresiei</strong></td><td>Tipul de date al rezultatului produs (ex: <code>int</code>, <code>double</code>, <code>bool</code>)</td></tr>
+                <tr><td><strong>Prioritate</strong></td><td>Regula care stabilește ce operatori se aplică mai întâi într-o expresie cu mai multe operații</td></tr>
+                <tr><td><strong>Asociativitate</strong></td><td>Regula care stabilește modul de grupare a operatorilor cu aceeași prioritate</td></tr>
+                <tr><td><strong>Conversie de tip</strong></td><td>Transformarea unei valori dintr-un tip de date în altul</td></tr>
+                <tr><td><strong>Atribuire</strong></td><td>Operația prin care o valoare este memorată într-o variabilă</td></tr>
+                <tr><td><strong>Incrementare / Decrementare</strong></td><td>Creșterea, respectiv scăderea valorii unei variabile, uzual cu o unitate</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Legătura dintre concepte</strong>
+              <p>O expresie este formată din operanzi și operatori. Expresia este evaluată, iar evaluarea produce un rezultat. Rezultatul are întotdeauna un anumit tip de date: <code>operanzi + operatori → expresie → evaluare → rezultat</code>.</p>
+            </div>
+          </div>
+
+          <!-- ARITMETICE -->
+          <h2 id="aritmetice">Expresii aritmetice</h2>
+          <p>O <strong>expresie aritmetică</strong> este o expresie utilizată pentru efectuarea calculelor numerice. Poate conține literali, variabile, constante, mai mulți operatori, paranteze și alte expresii.</p>
+          <div class="ops-grid">
+            <div class="op-card">
+              <h4>Operatori aritmetici</h4>
+              <div class="op-row"><span class="op-sym">+</span><span class="op-desc">Adunare</span><span class="op-ex">a + b</span></div>
+              <div class="op-row"><span class="op-sym">-</span><span class="op-desc">Scădere</span><span class="op-ex">a - b</span></div>
+              <div class="op-row"><span class="op-sym">*</span><span class="op-desc">Înmulțire</span><span class="op-ex">a * b</span></div>
+              <div class="op-row"><span class="op-sym">/</span><span class="op-desc">Împărțire</span><span class="op-ex">a / b</span></div>
+              <div class="op-row"><span class="op-sym">%</span><span class="op-desc">Restul împărțirii întregi</span><span class="op-ex">a % b</span></div>
+            </div>
+          </div>
+          <p>Operatorul <code>%</code> are un rol special: determină restul împărțirii întregi și este utilizat numai cu valori de tip întreg. De exemplu, <code>7 % 3</code> produce valoarea <code>1</code>, deoarece <code>7 = 2 · 3 + 1</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code><span class="cm">// int a = 7; int b = 3;</span>
+a <span class="op">+</span> b  <span class="cm">// 10</span>
+a <span class="op">-</span> b  <span class="cm">// 4</span>
+a <span class="op">*</span> b  <span class="cm">// 21</span>
+a <span class="op">/</span> b  <span class="cm">// 2  (ambii operanzi sunt int)</span>
+a <span class="op">%</span> b  <span class="cm">// 1</span></code></pre>
+          </div>
+          <p>Observă că <code>a / b</code> produce valoarea <code>2</code>, nu <code>2.333...</code>, deoarece ambii operanzi sunt întregi — vom analiza separat împărțirea întreagă în secțiunea despre tipuri.</p>
+
+          <!-- RELATIONALE -->
+          <h2 id="relationale">Expresii relaționale</h2>
+          <p>O <strong>expresie relațională</strong> compară două valori. Rezultatul unei astfel de expresii este întotdeauna o valoare logică: <code>true</code> sau <code>false</code>.</p>
+          <div class="ops-grid">
+            <div class="op-card">
+              <h4>Operatori relaționali</h4>
+              <div class="op-row"><span class="op-sym">&lt;</span><span class="op-desc">Mai mic decât</span><span class="op-ex">a &lt; b</span></div>
+              <div class="op-row"><span class="op-sym">&gt;</span><span class="op-desc">Mai mare decât</span><span class="op-ex">a &gt; b</span></div>
+              <div class="op-row"><span class="op-sym">&lt;=</span><span class="op-desc">Mai mic sau egal cu</span><span class="op-ex">a &lt;= b</span></div>
+              <div class="op-row"><span class="op-sym">&gt;=</span><span class="op-desc">Mai mare sau egal cu</span><span class="op-ex">a &gt;= b</span></div>
+              <div class="op-row"><span class="op-sym">==</span><span class="op-desc">Egal cu</span><span class="op-ex">a == b</span></div>
+              <div class="op-row"><span class="op-sym">!=</span><span class="op-desc">Diferit de</span><span class="op-ex">a != b</span></div>
+            </div>
+          </div>
+          <p>Pentru <code>int a = 10; int b = 4;</code>, expresiile <code>a &gt; b</code>, <code>a == b</code> și <code>a != b</code> produc, în ordine, <code>true</code>, <code>false</code>, <code>true</code>. Putem compara și o variabilă cu o valoare literală: <code>varsta &gt;= 18</code>, <code>temperatura &lt; 0</code>, <code>nota == 10</code>. Aceste expresii nu iau încă nicio decizie în program — ele doar produc un rezultat de tip <code>bool</code>. În sesiunea dedicată structurilor de control vei vedea cum poate fi utilizat acest rezultat pentru a decide ce instrucțiuni trebuie executate.</p>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Atenție la <code>=</code> și <code>==</code></strong>
+              <p>Operatorul <code>=</code> este utilizat pentru atribuire: <code>x = 5;</code> modifică valoarea variabilei <code>x</code>. Operatorul <code>==</code> este utilizat pentru compararea egalității: <code>x == 5</code> verifică dacă valoarea lui <code>x</code> este egală cu 5 și produce rezultatul <code>true</code> sau <code>false</code>, fără să modifice nimic.</p>
+            </div>
+          </div>
+
+          <!-- LOGICE -->
+          <h2 id="logice">Expresii logice</h2>
+          <p>Expresiile logice permit combinarea sau negarea valorilor logice. În C++ sunt utilizați trei operatori logici principali:</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Operator</th><th>Semnificație</th><th>Denumire</th></tr></thead>
+              <tbody>
+                <tr><td><code>&amp;&amp;</code></td><td>Ambele expresii trebuie să fie adevărate</td><td>ȘI logic</td></tr>
+                <tr><td><code>||</code></td><td>Cel puțin una dintre expresii trebuie să fie adevărată</td><td>SAU logic</td></tr>
+                <tr><td><code>!</code></td><td>Inversează valoarea logică</td><td>NU logic</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>A</th><th>B</th><th>A &amp;&amp; B</th><th>A || B</th></tr></thead>
+              <tbody>
+                <tr><td>false</td><td>false</td><td>false</td><td>false</td></tr>
+                <tr><td>false</td><td>true</td><td>false</td><td>true</td></tr>
+                <tr><td>true</td><td>false</td><td>false</td><td>true</td></tr>
+                <tr><td>true</td><td>true</td><td>true</td><td>true</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><code>&amp;&amp;</code> produce <code>true</code> numai dacă ambii operanzi sunt adevărați. <code>||</code> produce <code>true</code> dacă cel puțin unul dintre operanzi este adevărat. <code>!</code> inversează pur și simplu valoarea: <code>!true</code> devine <code>false</code>, <code>!false</code> devine <code>true</code>.</p>
+          <p>Operatorii logici sunt utilizați frecvent pentru a combina expresii relaționale:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code>varsta <span class="op">&gt;=</span> <span class="nm">18</span> <span class="op">&amp;&amp;</span> varsta <span class="op">&lt;=</span> <span class="nm">65</span>   <span class="cm">// adevarata doar daca ambele comparatii sunt adevarate</span>
+nota <span class="op">&lt;</span> <span class="nm">5</span> <span class="op">||</span> absente <span class="op">&gt;</span> <span class="nm">10</span>       <span class="cm">// adevarata daca cel putin una e adevarata</span>
+<span class="op">!</span>activ                            <span class="cm">// valoarea opusa lui activ</span></code></pre>
+          </div>
+          <div class="callout ok">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Cum citim o expresie logică</strong>
+              <p>Expresia <code>varsta &gt;= 18 &amp;&amp; arePermis</code> poate fi citită ca „vârsta este cel puțin 18 ani ȘI persoana are permis". Înainte de a calcula expresia în C++, încearcă să o citești ca pe o propoziție — te ajută să verifici dacă relația logică pe care ai scris-o exprimă ceea ce dorești.</p>
+            </div>
+          </div>
+
+          <!-- EVALUARE -->
+          <h2 id="evaluare">Reguli de evaluare a expresiilor</h2>
+          <p>Atunci când o expresie conține mai mulți operatori, apare o întrebare importantă: <strong>în ce ordine sunt efectuate operațiile?</strong> Într-o expresie precum <code>a + b * c</code> există doi operatori diferiți. Pentru a determina rezultatul corect, limbajul utilizează reguli de <strong>prioritate</strong> și <strong>asociativitate</strong>. Parantezele pot fi utilizate pentru a modifica sau clarifica ordinea de evaluare.</p>
+
+          <h3>Prioritatea operatorilor</h3>
+          <p>Prioritatea operatorilor stabilește care operatori se aplică mai întâi atunci când într-o expresie apar operatori diferiți — la fel ca în matematică, unde <code>2 + 3 · 4 = 2 + 12 = 14</code>, nu <code>5 · 4 = 20</code>. Pentru operatorii utilizați în această etapă a cursului, putem folosi următoarea ordine simplificată (un nivel mai mic înseamnă prioritate mai mare):</p>
+          <div class="priority-ladder">
+            <div class="priority-row top"><span class="plevel">1</span><span class="pops">( )</span><span class="pcat">Paranteze</span></div>
+            <div class="priority-row"><span class="plevel">2</span><span class="pops">! ++ --</span><span class="pcat">Unari</span></div>
+            <div class="priority-row"><span class="plevel">3</span><span class="pops">* / %</span><span class="pcat">Multiplicativi</span></div>
+            <div class="priority-row"><span class="plevel">4</span><span class="pops">+ -</span><span class="pcat">Aditivi</span></div>
+            <div class="priority-row"><span class="plevel">5</span><span class="pops">&lt; &lt;= &gt; &gt;=</span><span class="pcat">Relaționali</span></div>
+            <div class="priority-row"><span class="plevel">6</span><span class="pops">== !=</span><span class="pcat">Egalitate</span></div>
+            <div class="priority-row"><span class="plevel">7</span><span class="pops">&amp;&amp;</span><span class="pcat">ȘI logic</span></div>
+            <div class="priority-row bottom"><span class="plevel">8</span><span class="pops">||</span><span class="pcat">SAU logic</span></div>
+          </div>
+          <p>De exemplu, <code>a + b * c</code> este interpretată ca <code>a + (b * c)</code>, iar <code>a &gt; b &amp;&amp; c &gt; d</code> este interpretată ca <code>(a &gt; b) &amp;&amp; (c &gt; d)</code>, deoarece operatorii relaționali au prioritate mai mare decât operatorul logic <code>&amp;&amp;</code>.</p>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Important</strong>
+              <p>Prioritatea operatorilor nu stabilește „care operator este mai important", ci doar modul în care sunt grupate operațiile într-o expresie. Este util să cunoști regulile de bază, dar nu este recomandat să memorezi mecanic toate nivelurile de prioritate. Dacă expresia devine greu de citit, folosește paranteze.</p>
+            </div>
+          </div>
+
+          <h3>Asociativitatea operatorilor</h3>
+          <p>Ce se întâmplă dacă într-o expresie apar mai mulți operatori cu aceeași prioritate? În acest caz intervine <strong>asociativitatea</strong> — regula care stabilește modul în care sunt grupate operațiile care folosesc operatori cu același nivel de prioritate. Pentru majoritatea operatorilor aritmetici din această sesiune, asociativitatea este <strong>de la stânga la dreapta</strong>.</p>
+          <p>De exemplu, <code>20 - 5 - 3</code> este interpretată ca <code>(20 - 5) - 3</code>: mai întâi <code>20 − 5 = 15</code>, apoi <code>15 − 3 = 12</code>. Rezultatul este <code>12</code>, nu <code>18</code> (care ar rezulta din <code>20 − (5 − 3)</code>). Similar, <code>24 / 6 * 2</code> se grupează <code>(24 / 6) * 2 = 4 · 2 = 8</code>.</p>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Prioritate vs. asociativitate — nu sunt același lucru</strong>
+              <p>Prioritatea este utilizată când operatorii au niveluri diferite. Asociativitatea este utilizată când operatorii au aceeași prioritate. De exemplu, în <code>10 + 8 / 4 * 2</code>: întâi analizăm prioritatea → <code>10 + (8 / 4 * 2)</code>; apoi, cum <code>/</code> și <code>*</code> au aceeași prioritate, aplicăm asociativitatea de la stânga la dreapta → <code>10 + ((8 / 4) * 2)</code>. Obținem <code>8/4=2</code>, <code>2·2=4</code>, <code>10+4=14</code>.</p>
+            </div>
+          </div>
+
+          <h3>Rolul parantezelor</h3>
+          <p>Parantezele permit programatorului să stabilească explicit modul în care trebuie grupată o expresie. De exemplu, <code>2 + 3 * 4</code> produce <code>14</code>, în timp ce <code>(2 + 3) * 4</code> produce <code>20</code>. Două expresii care conțin aceleași valori și aceiași operatori pot produce rezultate diferite dacă gruparea este diferită.</p>
+          <p>Parantezele pot fi utilizate în două scopuri principale: pentru a modifica ordinea implicită stabilită prin prioritatea operatorilor, și pentru a clarifica intenția programatorului, chiar dacă ordinea ar putea fi determinată și fără ele. De exemplu, <code>pret * cantitate - reducere + transport</code> este corectă, dar mai ușor de înțeles ca <code>(pret * cantitate) - reducere + transport</code>. La fel, <code>(varsta &gt;= 18) &amp;&amp; (varsta &lt;= 65)</code> face imediat vizibil faptul că sunt combinate două comparații, deși parantezele nu sunt obligatorii aici.</p>
+          <div class="callout ok">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Recomandare</strong>
+              <p>Nu folosi paranteze numai atunci când sunt obligatorii — folosește-le și atunci când fac expresia mai ușor de citit și reduc riscul unei interpretări greșite. Un program trebuie să fie corect, dar și clar. Trebuie evitat însă și excesul: <code>((((a + b))))</code> este corect sintactic, dar nu aduce nicio informație suplimentară față de <code>a + b</code>.</p>
+            </div>
+          </div>
+
+          <h3>Evaluarea unei expresii pas cu pas</h3>
+          <p>Pentru a determina corect rezultatul unei expresii, este util să o evaluăm în mai multe etape: (1) identificăm parantezele; (2) identificăm operatorii și nivelurile lor de prioritate; (3) aplicăm asociativitatea acolo unde este necesar; (4) efectuăm operațiile în ordinea stabilită; (5) determinăm rezultatul final.</p>
+          <p>Pentru <code>int a = 4; int b = 3; int c = 2;</code> și expresia <code>a + b * c</code>: operatorul <code>*</code> are prioritate mai mare, deci <code>a + (b * c)</code> → <code>b·c = 6</code> → <code>4 + 6 = 10</code>. Pentru aceleași valori, expresia <code>(a + b) * c</code> evaluează întâi paranteza (<code>4+3=7</code>), apoi <code>7·2=14</code> — rezultatul este <code>14</code>, nu <code>10</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Evaluare pas cu pas — 10 + 6 / 3 * 2</span></div>
+            <pre><code>10 + 6 / 3 * 2
+→ 10 + (6 / 3) * 2    <span class="cm">// / si * au prioritate mai mare</span>
+→ 10 + 2 * 2          <span class="cm">// 6/3 = 2</span>
+→ 10 + 4              <span class="cm">// 2*2 = 4</span>
+→ 14</code></pre>
+          </div>
+          <p>Aceeași metodă se aplică și expresiilor logice: pentru <code>5 &gt; 3 &amp;&amp; 10 != 4</code>, evaluăm întâi comparațiile (<code>5&gt;3 → true</code>, <code>10≠4 → true</code>), apoi combinăm <code>true &amp;&amp; true → true</code>. Pentru <code>5 &gt; 8 || 10 == 10</code>: <code>5&gt;8 → false</code>, <code>10==10 → true</code>, deci <code>false || true → true</code>.</p>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Metodă de lucru</strong>
+              <p>Atunci când o expresie pare complicată, nu încerca să determini direct rezultatul final. Redu expresia treptat: <code>expresie inițială → expresie simplificată → expresie simplificată → rezultat</code>. Această metodă va fi utilizată și în exercițiile de code tracing.</p>
+            </div>
+          </div>
+
+          <!-- TIPURI -->
+          <h2 id="tipuri">Tipuri, conversii și modificarea valorilor</h2>
+          <p>Expresiile nu produc doar o valoare — rezultatul lor are și un anumit tip de date. Tipul rezultatului este important deoarece poate influența modul în care este efectuat calculul, valorile care pot fi reprezentate, operațiile care pot fi realizate ulterior și eventualele conversii necesare. Aceste idei apar în multe limbaje de programare, dar regulile concrete pot diferi de la unul la altul; vom folosi C++ ca limbaj principal și vom compara, acolo unde e relevant, cu Python și Java.</p>
+
+          <h3>Tipul rezultatului unei expresii</h3>
+          <p>Tipul rezultatului depinde de tipurile operanzilor, de operatorul utilizat, de regulile limbajului și de eventualele conversii de tip. O expresie aritmetică poate produce o valoare întreagă sau reală, iar o expresie relațională produce, în mod obișnuit, o valoare logică.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Expresie</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td><code>5 + 3</code></td><td><code>int</code></td><td><code>int</code></td><td><code>int</code></td></tr>
+                <tr><td><code>5 + 2.5</code></td><td><code>double</code></td><td><code>double</code></td><td><code>float</code></td></tr>
+                <tr><td><code>5 &gt; 3</code></td><td><code>bool</code></td><td><code>boolean</code></td><td><code>bool</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Observă că numele tipurilor pot fi diferite, chiar dacă ideea reprezentată este asemănătoare. O diferență importantă apare atunci când combinăm valori de tipuri diferite: în C++ și Java, <code>5 + 2.5</code> produce un rezultat real; în Python tipurile sunt gestionate dinamic, dar rezultatul expresiei tot are un anumit tip.</p>
+
+          <h3>Împărțirea între întregi și împărțirea reală</h3>
+          <p>Matematic, <code>7 / 2 = 3.5</code>. Într-un limbaj de programare însă, rezultatul depinde de operator și de tipurile operanzilor.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Operație</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td><code>7 / 2</code></td><td><code>3</code></td><td><code>3</code></td><td><code>3.5</code></td></tr>
+                <tr><td>Împărțire reală</td><td><code>7.0 / 2</code></td><td><code>7.0 / 2</code></td><td><code>7 / 2</code></td></tr>
+                <tr><td>Împărțire întreagă</td><td>operanzi <code>int</code></td><td>operanzi <code>int</code></td><td><code>7 // 2</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>În <strong>C++</strong>: dacă ambii operanzi sunt de tip întreg, <code>7 / 2</code> produce <code>3</code> — partea fracționară este eliminată (trunchiată, nu rotunjită). Pentru un rezultat real, cel puțin unul dintre operanzi trebuie să fie real: <code>7.0 / 2</code> produce <code>3.5</code>. Regula este identică în <strong>Java</strong>. În <strong>Python</strong>, operatorul <code>/</code> realizează întotdeauna împărțire reală (<code>7 / 2 = 3.5</code>); pentru rezultat întreg, Python folosește operatorul separat <code>//</code> (<code>7 // 2 = 3</code>).</p>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Concluzie</strong>
+              <p>Conceptul de împărțire este general, dar operatorii și regulile de evaluare sunt stabilite de fiecare limbaj de programare. Nu presupune că aceeași expresie produce același rezultat în toate limbajele.</p>
+            </div>
+          </div>
+
+          <h3>Conversii de tip</h3>
+          <p>O <strong>conversie de tip</strong> reprezintă transformarea unei valori dintr-un tip de date în altul. Conversiile pot fi <strong>implicite</strong> (realizate automat de limbaj) sau <strong>explicite</strong> (cerute în mod direct de programator).</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Conversie implicită</span></div>
+            <pre><code><span class="tp">int</span> a = <span class="nm">5</span>;
+<span class="tp">double</span> b = a;   <span class="cm">// 5 este convertit automat la 5.0</span></code></pre>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Limbaj</th><th>Exemplu de conversie explicită</th></tr></thead>
+              <tbody>
+                <tr><td>C++</td><td><code>(double)a</code> sau <code>static_cast&lt;double&gt;(a)</code></td></tr>
+                <tr><td>Java</td><td><code>(double)a</code></td></tr>
+                <tr><td>Python</td><td><code>float(a)</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code><span class="tp">int</span> a = <span class="nm">7</span>;
+<span class="tp">int</span> b = <span class="nm">2</span>;
+<span class="tp">double</span> rezultat = (<span class="tp">double</span>)a <span class="op">/</span> b; <span class="cm">// 3.5</span></code></pre>
+          </div>
+          <p>Conversia poate produce și pierdere de informație: o valoare reală convertită la întreg nu mai poate păstra partea fracționară. În C++, <code>double x = 7.8; int y = x;</code> face ca <code>y</code> să devină <code>7</code>. În Java, această conversie trebuie cerută explicit (<code>int y = (int)x;</code>); în Python, echivalentul este <code>y = int(x)</code> — în toate cazurile rezultatul este <code>7</code>.</p>
+
+          <h3>Expresii de atribuire</h3>
+          <p><strong>Atribuirea</strong> reprezintă asocierea sau memorarea unei valori într-o variabilă: <code>expresie → valoare → variabilă</code>. De exemplu, în <code>x = 5 + 3;</code>, mai întâi este evaluată expresia <code>5 + 3 = 8</code>, iar apoi valoarea este memorată în <code>x</code>. Vom utiliza atribuirea în forma sa simplă, cu ordinea: <strong>evaluare → rezultat → atribuire</strong>.</p>
+          <p>Există și forme de atribuire compusă, foarte asemănătoare în C++, Java și Python:</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th></th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td>Adunare</td><td><code>x += 2</code></td><td><code>x += 2</code></td><td><code>x += 2</code></td></tr>
+                <tr><td>Scădere</td><td><code>x -= 2</code></td><td><code>x -= 2</code></td><td><code>x -= 2</code></td></tr>
+                <tr><td>Înmulțire</td><td><code>x *= 2</code></td><td><code>x *= 2</code></td><td><code>x *= 2</code></td></tr>
+                <tr><td>Împărțire</td><td><code>x /= 2</code></td><td><code>x /= 2</code></td><td><code>x /= 2</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>De exemplu, <code>x += 5;</code> poate fi înțeles, la acest nivel, ca <code>x = x + 5;</code>.</p>
+
+          <h3>Incrementare și decrementare</h3>
+          <p>Modificarea unei valori cu o unitate este o operație foarte frecventă în programare. C++ și Java oferă operatorii <code>x++</code>, <code>x--</code>, <code>++x</code>, <code>--x</code>. Python nu are acești operatori — se scrie <code>x += 1</code>, respectiv <code>x -= 1</code>.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Operație</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td>Creștere cu 1</td><td><code>x++</code></td><td><code>x++</code></td><td><code>x += 1</code></td></tr>
+                <tr><td>Scădere cu 1</td><td><code>x--</code></td><td><code>x--</code></td><td><code>x -= 1</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>În C++ și Java există și diferența dintre forma prefixată și cea postfixată atunci când operatorul face parte dintr-o expresie mai mare:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code><span class="tp">int</span> x = <span class="nm">5</span>;
+<span class="tp">int</span> y = x<span class="op">++</span>;  <span class="cm">// y = 5, apoi x devine 6 (postfixat: se foloseste intai valoarea veche)</span>
+
+<span class="tp">int</span> x2 = <span class="nm">5</span>;
+<span class="tp">int</span> y2 = <span class="op">++</span>x2; <span class="cm">// x2 devine 6, apoi y2 = 6 (prefixat: se foloseste valoarea noua)</span></code></pre>
+          </div>
+          <p>Python nu are un echivalent direct pentru această construcție. Pentru programele introductive vom prefera formele simple și clare și vom evita expresiile în care aceeași variabilă este incrementată sau decrementată de mai multe ori.</p>
+
+          <h3>Urmărirea valorilor variabilelor</h3>
+          <p>Urmărirea valorilor variabilelor nu este o particularitate a C++ — este o metodă generală de analiză a unui program. Ideea este simplă: urmărim, în ordinea execuției, modul în care se modifică valorile variabilelor.</p>
+          <div class="tbl-wrap">
+            <table class="trace-table">
+              <thead><tr><th>Instrucțiune</th><th>x</th></tr></thead>
+              <tbody>
+                <tr><td><code>int x = 5;</code></td><td class="highlight">5</td></tr>
+                <tr><td><code>x = x + 2;</code></td><td class="highlight">7</td></tr>
+                <tr><td><code>x *= 3;</code></td><td class="highlight">21</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Metodă generală de code tracing</strong>
+              <p>Indiferent de limbaj: (1) urmărește instrucțiunile în ordinea în care sunt executate; (2) determină valoarea expresiei; (3) observă dacă valoarea unei variabile se modifică; (4) notează noua valoare; (5) utilizează această valoare în pașii următori. Tehnica este utilă atât pentru înțelegerea programelor, cât și pentru identificarea erorilor.</p>
+            </div>
+          </div>
+
+          <!-- CONSTRUIRE -->
+          <h2 id="construire">Construirea și utilizarea corectă a expresiilor</h2>
+          <p>Până acum ai analizat expresii deja scrise și ai urmărit modul în care acestea sunt evaluate. În practică, programatorul trebuie să facă și procesul invers: pornind de la o formulă, o cerință sau o situație reală, trebuie să construiască expresia care reprezintă corect problema. Acest proces presupune: identificarea valorilor necesare, identificarea operațiilor, stabilirea ordinii corecte, alegerea operatorilor potriviți, verificarea tipurilor de date și scrierea expresiei într-o formă clară și corectă.</p>
+
+          <h3>Transcrierea formulelor matematice</h3>
+          <p>O formulă matematică nu poate fi copiată întotdeauna direct într-un limbaj de programare. În matematică, înmulțirea este adesea implicită (<code>2x</code>, <code>3(a+b)</code>); într-un limbaj de programare, operatorul de înmulțire trebuie scris explicit.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Matematică</th><th>Expresie în program</th></tr></thead>
+              <tbody>
+                <tr><td><code>2x</code></td><td><code>2 * x</code></td></tr>
+                <tr><td><code>xy</code></td><td><code>x * y</code></td></tr>
+                <tr><td>(a + b) / 2</td><td><code>(a + b) / 2</code></td></tr>
+                <tr><td>(a + b) / (c + d)</td><td><code>(a + b) / (c + d)</code></td></tr>
+                <tr><td>x²</td><td><code>x * x</code></td></tr>
+                <tr><td>3(a + b)</td><td><code>3 * (a + b)</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Parantezele sunt esențiale atunci când numărătorul sau numitorul unei fracții este o sumă: <code>(x + 1) / (2 * y)</code>, nu <code>(x + 1) / 2y</code> (invalid). Formula mediei a trei valori <code>m = (a+b+c)/3</code> devine <code>(a + b + c) / 3</code>; dacă valorile sunt întregi și dorim un rezultat real, scriem <code>(a + b + c) / 3.0</code> (în Python, <code>/</code> produce deja o împărțire reală).</p>
+
+          <h3>Expresii mixte</h3>
+          <p>O expresie poate combina operatori din categorii diferite — de exemplu calcule aritmetice, comparații și operații logice. <code>a + b &gt; c</code> combină o operație aritmetică (<code>a + b</code>) cu o comparație (<code>&gt;</code>). O expresie mai complexă precum <code>a + b &gt; 10 &amp;&amp; c != 0</code> se înțelege mai ușor scrisă <code>(a + b &gt; 10) &amp;&amp; (c != 0)</code>: mai întâi se calculează <code>a + b</code>, rezultatul se compară cu 10, apoi se evaluează <code>c != 0</code>, iar cele două rezultate logice sunt combinate prin <code>&amp;&amp;</code>.</p>
+          <p>Acest tip de expresie se scrie aproape identic în C++, Java și Python, cu o diferență importantă la operatorii logici:</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th></th><th>C++ / Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td>ȘI</td><td><code>(a &gt; 0) &amp;&amp; (b &gt; 0)</code></td><td><code>(a &gt; 0) and (b &gt; 0)</code></td></tr>
+                <tr><td>SAU</td><td><code>(a &gt; 0) || (b &gt; 0)</code></td><td><code>(a &gt; 0) or (b &gt; 0)</code></td></tr>
+                <tr><td>Negare</td><td><code>!conditie</code></td><td><code>not conditie</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Construirea expresiilor pentru probleme concrete</h3>
+          <p>Atunci când rezolvi o problemă, nu este recomandat să începi direct cu scrierea expresiei. Poți utiliza următorul model: (1) identifici datele de intrare; (2) identifici rezultatul dorit; (3) stabilești relația matematică sau logică; (4) alegi variabilele și tipurile lor; (5) construiești expresia; (6) verifici rezultatul cu valori de test.</p>
+          <p>Un exemplu clasic: dorim o expresie adevărată dacă o vârstă este cuprinsă între 18 și 65 de ani, inclusiv. Matematic scriem <code>18 ≤ varsta ≤ 65</code>, dar în C++ și Java nu putem scrie relația exact așa — trebuie construite două comparații: <code>(varsta &gt;= 18) &amp;&amp; (varsta &lt;= 65)</code>. (În Python este posibilă și forma <code>18 &lt;= varsta &lt;= 65</code> — un exemplu bun în care aceeași relație matematică se exprimă diferit de la un limbaj la altul.)</p>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Întrebare de verificare</strong>
+              <p>Înainte de a considera o expresie corectă, întreabă-te: ce valori intră în calcul? ce rezultat trebuie să obțin? ce operatori reprezintă relația? ordinea operațiilor este corectă? tipurile de date permit rezultatul dorit?</p>
+            </div>
+          </div>
+          <p>Claritatea expresiilor contează la fel de mult ca acuratețea lor. O expresie precum <code>a+b*c-d/e</code> este mai ușor de citit scrisă <code>a + b * c - d / e</code>, iar dacă relațiile dintre operații sunt importante, paranteze suplimentare pot ajuta cititorul să identifice rapid structura, chiar dacă nu sunt strict obligatorii din punctul de vedere al priorității.</p>
+
+        </div>
+      </div><!-- /tab curs -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: EXEMPLE                                               -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t3-exemple">
+        <div class="prose">
+          <h2 id="exemple">Exemple progresive</h2>
+
+          <h3>Exemplul 1 – Analiza unei expresii</h3>
+          <p>Considerăm expresia <code>(a + b) * 2</code>, cu <code>int a = 5; int b = 3;</code>. Subexpresia <code>a + b</code> este evaluată prima, deoarece se află între paranteze: <code>a + b = 5 + 3 = 8</code>, apoi <code>8 · 2 = 16</code>.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Element analizat</th><th>Rezultat</th></tr></thead>
+              <tbody>
+                <tr><td>Operatori</td><td><code>+</code>, <code>*</code></td></tr>
+                <tr><td>Variabile</td><td><code>a</code>, <code>b</code></td></tr>
+                <tr><td>Literal</td><td><code>2</code></td></tr>
+                <tr><td>Prima subexpresie evaluată</td><td><code>a + b</code></td></tr>
+                <tr><td>Rezultat final</td><td><code>16</code></td></tr>
+                <tr><td>Tipul rezultatului</td><td><code>int</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Exemplul 2 – Evaluare pas cu pas</h3>
+          <p>Pentru expresii mai complexe este recomandat să nu încerci să determini direct rezultatul final. Considerăm <code>10 + 8 / 4 * 3 - 2</code>. Operatorii <code>/</code> și <code>*</code> au prioritate mai mare și, având aceeași prioritate între ei, se grupează de la stânga la dreapta:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Evaluare pas cu pas</span></div>
+            <pre><code>10 + 8/4 * 3 - 2
+→ 10 + 2 * 3 - 2
+→ 10 + 6 - 2
+→ 16 - 2
+→ 14</code></pre>
+          </div>
+          <p>Rezultatul este <code>14</code>.</p>
+
+          <h3>Exemplul 3 – Media a trei valori</h3>
+          <p><strong>Cerință:</strong> Se citesc trei valori reale. Să se determine media lor aritmetică.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="pp">#include</span> <span class="st">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="tp">int</span> <span class="fn">main</span>() {
+    <span class="tp">double</span> a, b, c;
+    cin <span class="op">&gt;&gt;</span> a <span class="op">&gt;&gt;</span> b <span class="op">&gt;&gt;</span> c;
+
+    <span class="tp">double</span> media = (a <span class="op">+</span> b <span class="op">+</span> c) <span class="op">/</span> <span class="nm">3.0</span>;
+
+    cout <span class="op">&lt;&lt;</span> media;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre>
+          </div>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Observă</strong>
+              <p>Parantezele sunt importante. Expresia <code>a + b + c / 3.0</code> nu calculează media celor trei valori — ar împărți doar <code>c</code> la 3 înainte de a aduna.</p>
+            </div>
+          </div>
+
+          <h3>Exemplul 4 – Procent dintr-o valoare</h3>
+          <p><strong>Cerință:</strong> Se citesc o valoare <code>s</code> și un procent <code>p</code>. Să se determine cât reprezintă <code>p%</code> din <code>s</code>: <code>rezultat = s · p / 100</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">double</span> s, p;
+cin <span class="op">&gt;&gt;</span> s <span class="op">&gt;&gt;</span> p;
+
+<span class="tp">double</span> rezultat = s <span class="op">*</span> p <span class="op">/</span> <span class="nm">100.0</span>;
+cout <span class="op">&lt;&lt;</span> rezultat;</code></pre>
+          </div>
+
+          <h3>Exemplul 5 – Portofel</h3>
+          <p><strong>Cerință:</strong> Într-un portofel sunt trei categorii de bancnote, cu valorile <code>a</code>, <code>b</code>, <code>c</code> și numărul de bancnote <code>n</code>, <code>m</code>, <code>p</code>. Suma totală este <code>T = a·n + b·m + c·p</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> a, b, c, n, m, p;
+cin <span class="op">&gt;&gt;</span> a <span class="op">&gt;&gt;</span> b <span class="op">&gt;&gt;</span> c;
+cin <span class="op">&gt;&gt;</span> n <span class="op">&gt;&gt;</span> m <span class="op">&gt;&gt;</span> p;
+
+<span class="tp">int</span> total = a <span class="op">*</span> n <span class="op">+</span> b <span class="op">*</span> m <span class="op">+</span> c <span class="op">*</span> p;
+cout <span class="op">&lt;&lt;</span> total;</code></pre>
+          </div>
+
+          <h3>Exemplul 6 – Ultima cifră și cifra zecilor</h3>
+          <p><strong>Cerință:</strong> Se citește un număr natural <code>n</code>. Ultima cifră este restul împărțirii la 10 (<code>n % 10</code>). Cifra zecilor se obține eliminând întâi cifra unităților (<code>n / 10</code>), apoi păstrând ultima cifră a rezultatului (<code>(n / 10) % 10</code>).</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> n;
+cin <span class="op">&gt;&gt;</span> n;
+
+<span class="tp">int</span> ultima = n <span class="op">%</span> <span class="nm">10</span>;
+<span class="tp">int</span> cifraZecilor = n <span class="op">/</span> <span class="nm">10</span> <span class="op">%</span> <span class="nm">10</span>;
+
+cout <span class="op">&lt;&lt;</span> ultima <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> cifraZecilor;</code></pre>
+          </div>
+
+          <h3>Exemplul 7 – Durata în minute</h3>
+          <p><strong>Cerință:</strong> Se cunosc ora și minutul începerii unei activități și ora și minutul terminării acesteia, în aceeași zi. Transformăm fiecare moment în minute (<code>t = 60h + m</code>), iar durata este diferența.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> h1, m1, h2, m2;
+cin <span class="op">&gt;&gt;</span> h1 <span class="op">&gt;&gt;</span> m1;
+cin <span class="op">&gt;&gt;</span> h2 <span class="op">&gt;&gt;</span> m2;
+
+<span class="tp">int</span> inceput = h1 <span class="op">*</span> <span class="nm">60</span> <span class="op">+</span> m1;
+<span class="tp">int</span> sfarsit = h2 <span class="op">*</span> <span class="nm">60</span> <span class="op">+</span> m2;
+<span class="tp">int</span> durata = sfarsit <span class="op">-</span> inceput;
+
+cout <span class="op">&lt;&lt;</span> durata;</code></pre>
+          </div>
+
+          <!-- ANATOMIE -->
+          <h2 id="anatomie">Anatomia unei expresii mixte</h2>
+          <p>Considerăm expresia <code>pret * cantitate &gt;= 100 &amp;&amp; cantitate &gt; 0</code>, care ar putea verifica dacă o comandă îndeplinește un prag minim de valoare și are o cantitate pozitivă:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Adnotat</span></div>
+            <pre><code>pret <span class="op">*</span> cantitate <span class="op">&gt;=</span> <span class="nm">100</span> <span class="op">&amp;&amp;</span> cantitate <span class="op">&gt;</span> <span class="nm">0</span>
+<span class="cm">// ① pret * cantitate       - se calculeaza intai (prioritate cea mai mare)
+// ② (pret*cantitate) >= 100 - rezultatul e comparat cu 100 (bool)
+// ③ cantitate > 0           - a doua comparatie, independenta (bool)
+// ④ (2) && (3)              - cele doua rezultate logice se combina</span></code></pre>
+          </div>
+          <p>Structura <strong>calcul aritmetic → comparație → combinare logică</strong> este un tipar pe care îl vei regăsi în aproape orice condiție mai complexă pe care o vei scrie.</p>
+
+          <!-- CE SE ÎNTÂMPLĂ DACĂ -->
+          <h2 id="daca">Ce se întâmplă dacă…?</h2>
+          <details>
+            <summary>… eliminăm parantezele de la calculul mediei?</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="cm">// GRESIT - fara paranteze:</span>
+<span class="tp">double</span> media = nota1 <span class="op">+</span> nota2 <span class="op">+</span> nota3 <span class="op">/</span> <span class="nm">3</span>;
+<span class="cm">// Se evalueaza: nota1 + nota2 + (nota3 / 3)
+// 8.5 + 9.0 + (7.5/3) = 8.5 + 9.0 + 2.5 = 20.0 -- GRESIT!
+
+// CORECT - cu paranteze:</span>
+<span class="tp">double</span> media = (nota1 <span class="op">+</span> nota2 <span class="op">+</span> nota3) <span class="op">/</span> <span class="nm">3</span>;
+<span class="cm">// (8.5 + 9.0 + 7.5) / 3 = 25.0 / 3 = 8.333</span></code></pre></div>
+            <p>Împărțirea are prioritate mai mare decât adunarea, deci fără paranteze se împarte mai întâi ultimul operand la 3.</p>
+          </details>
+          <details>
+            <summary>… folosim <code>||</code> în loc de <code>&amp;&amp;</code> pentru un interval?</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="cm">// Dorim: x este intre 1 si 10</span>
+<span class="cm">// GRESIT:</span>
+(x <span class="op">&gt;=</span> <span class="nm">1</span>) <span class="op">||</span> (x <span class="op">&lt;=</span> <span class="nm">10</span>)   <span class="cm">// adevarata pentru aproape orice x!</span>
+
+<span class="cm">// CORECT:</span>
+(x <span class="op">&gt;=</span> <span class="nm">1</span>) <span class="op">&amp;&amp;</span> (x <span class="op">&lt;=</span> <span class="nm">10</span>)</code></pre></div>
+            <p>Cu <code>||</code>, e suficient ca una dintre condiții să fie adevărată — iar orice număr este fie <code>&gt;= 1</code>, fie <code>&lt;= 10</code> (sau ambele), deci expresia devine practic mereu adevărată.</p>
+          </details>
+          <details>
+            <summary>… împărțim două int-uri și vrem rezultat cu zecimale?</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> a = <span class="nm">7</span>, b = <span class="nm">2</span>;
+
+<span class="tp">int</span> rez1 = a <span class="op">/</span> b;          <span class="cm">// 3 - impartire intreaga</span>
+<span class="tp">double</span> rez2 = a <span class="op">/</span> b;       <span class="cm">// 3 - calculul e int, doar rezultatul e stocat in double</span>
+<span class="tp">double</span> rez3 = <span class="nm">7.0</span> <span class="op">/</span> b;     <span class="cm">// 3.5 - literalul 7.0 forteaza impartire reala</span></code></pre></div>
+            <p>Tipul rezultatului unei operații aritmetice este determinat de tipurile operanzilor implicați în calcul, nu de tipul variabilei în care este stocat rezultatul.</p>
+          </details>
+
+          <!-- GREȘELI FRECVENTE -->
+          <h2 id="greseli">Erori frecvente</h2>
+          <div class="bug-card">
+            <div class="bug-header wrong">Eroarea 1 – Omiterea operatorului de înmulțire</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+                <pre><code><span class="tp">double</span> rezultat = <span class="nm">2</span>x <span class="op">+</span> <span class="nm">3</span>; <span class="cm">// nu compileaza</span></code></pre></div>
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Corect</span></div>
+                <pre><code><span class="tp">double</span> rezultat = <span class="nm">2</span> <span class="op">*</span> x <span class="op">+</span> <span class="nm">3</span>;</code></pre></div>
+              <p><strong>Explicație:</strong> spre deosebire de notația matematică, unde <code>2x</code> înseamnă <code>2·x</code>, în orice limbaj de programare operatorul de înmulțire trebuie scris explicit.</p>
+            </div>
+          </div>
+          <div class="bug-card">
+            <div class="bug-header wrong">Eroarea 2 – Paranteze lipsă la o sumă împărțită</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+                <pre><code><span class="tp">double</span> media = (a <span class="op">+</span> b <span class="op">+</span> c) <span class="op">/</span> <span class="nm">3.0</span>; <span class="cm">// corect - exemplu de comparatie mai jos</span>
+<span class="tp">double</span> mediaGresita = a <span class="op">+</span> b <span class="op">+</span> c <span class="op">/</span> <span class="nm">3.0</span>; <span class="cm">// GRESIT - imparte doar c la 3</span></code></pre></div>
+              <p><strong>Explicație:</strong> fără paranteze, <code>/</code> are prioritate mai mare decât <code>+</code>, deci se împarte doar ultimul termen, nu suma întreagă.</p>
+            </div>
+          </div>
+          <div class="bug-card">
+            <div class="bug-header wrong">Eroarea 3 – Confuzia dintre atribuire și egalitate</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+                <pre><code><span class="tp">int</span> x = <span class="nm">10</span>;
+<span class="tp">bool</span> egal = (x <span class="op">=</span> <span class="nm">5</span>); <span class="cm">// GRESIT: atribuie 5 la x, nu compara!</span>
+<span class="cm">// dupa aceasta linie, x devine 5, iar "egal" devine true (5 e nenul)</span></code></pre></div>
+              <div class="code-block"><div class="code-header"><span class="code-lang">C++ – Corect</span></div>
+                <pre><code><span class="tp">int</span> x = <span class="nm">10</span>;
+<span class="tp">bool</span> egal = (x <span class="op">==</span> <span class="nm">5</span>); <span class="cm">// CORECT: compara x cu 5, fara sa modifice x</span></code></pre></div>
+            </div>
+          </div>
+          <div class="bug-card">
+            <div class="bug-header wrong">Eroarea 4 – Presupunerea că sintaxa e identică în toate limbajele</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">Greșit în Python</span></div>
+                <pre><code>x<span class="op">++</span>; <span class="cm"># Python nu are operatorul ++</span></code></pre></div>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Python – Corect</span></div>
+                <pre><code>x <span class="op">+=</span> <span class="nm">1</span></code></pre></div>
+              <p><strong>Explicație:</strong> conceptul (creșterea cu 1) este universal, dar sintaxa concretă diferă între limbaje — o sursă frecventă de erori când treci de la un limbaj la altul.</p>
+            </div>
+          </div>
+          <div class="bug-card">
+            <div class="bug-header wrong">Eroarea 5 – Presupunerea că aceeași expresie are aceeași semantică peste tot</div>
+            <div class="bug-body">
+              <div class="code-block"><div class="code-header"><span class="code-lang">7 / 2</span></div>
+                <pre><code>C++  : <span class="nm">3</span>   <span class="cm">// daca operanzii sunt int</span>
+Java : <span class="nm">3</span>   <span class="cm">// daca operanzii sunt int</span>
+Python: <span class="nm">3.5</span> <span class="cm">// "/" e mereu impartire reala</span></code></pre></div>
+              <p><strong>Explicație:</strong> aceeași scriere, <code>7 / 2</code>, produce rezultate diferite în funcție de limbaj — verifică întotdeauna regula împărțirii limbajului cu care lucrezi.</p>
+            </div>
+          </div>
+
+          <!-- COMPARATIE -->
+          <h2 id="comparatie">Comparație între limbaje de programare</h2>
+          <p>Conceptele studiate în această sesiune nu apar numai în C++. Expresiile, operatorii, atribuirile și conversiile sunt întâlnite în numeroase limbaje — sintaxa și unele reguli diferă, ideea din spate rămâne aceeași.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Concept</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td>Expresie aritmetică <code>a + b·2</code></td><td><code>a + b * 2</code></td><td><code>a + b * 2</code></td><td><code>a + b * 2</code></td></tr>
+                <tr><td><code>7 / 2</code></td><td><code>3</code></td><td><code>3</code></td><td><code>3.5</code></td></tr>
+                <tr><td>ȘI logic</td><td><code>&amp;&amp;</code></td><td><code>&amp;&amp;</code></td><td><code>and</code></td></tr>
+                <tr><td>SAU logic</td><td><code>||</code></td><td><code>||</code></td><td><code>or</code></td></tr>
+                <tr><td>Negare logică</td><td><code>!</code></td><td><code>!</code></td><td><code>not</code></td></tr>
+                <tr><td>Incrementare</td><td><code>x++</code></td><td><code>x++</code></td><td><code>x += 1</code></td></tr>
+                <tr><td>Conversie la real</td><td><code>(double)a</code></td><td><code>(double)a</code></td><td><code>float(a)</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Concept general versus sintaxă</strong>
+              <p>Când înveți un limbaj nou, întreabă-te mai întâi „care este conceptul?" și abia apoi „cum se scrie acest concept în limbajul respectiv?" — un concept precum „prioritatea operatorilor" sau „împărțirea întreagă" e universal; sintaxa exactă e a fiecărui limbaj.</p>
+            </div>
+          </div>
+
+          <!-- DEPANARE -->
+          <h2 id="debug">Depanare — Identifică și corectează eroarea</h2>
+          <p>Pentru fiecare expresie de mai jos: identifică problema, explică de ce este o problemă, apoi propune o variantă corectă. Încearcă înainte de a deschide rezolvarea.</p>
+
+          <div class="quiz-item">
+            <p><span class="qnum">1</span><code>double m = a + b / 2.0;</code> — Se dorea media aritmetică a lui <code>a</code> și <code>b</code>.</p>
+            <details><summary>Vezi rezolvarea</summary><p><strong>Problemă:</strong> fără paranteze, doar <code>b</code> este împărțit la 2, apoi rezultatul se adună la <code>a</code>. <strong>Corect:</strong> <code>double m = (a + b) / 2.0;</code></p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">2</span><code>double x = 5 / 2;</code> — Se dorea <code>2.5</code> stocat în <code>x</code>.</p>
+            <details><summary>Vezi rezolvarea</summary><p><strong>Problemă:</strong> <code>5 / 2</code> este calculat între doi operanzi <code>int</code>, deci rezultă <code>2</code> (împărțire întreagă), abia apoi convertit la <code>double</code> (2.0). <strong>Corect:</strong> <code>double x = 5.0 / 2;</code> sau <code>double x = 5 / 2.0;</code></p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">3</span><code>int rezultat = 3a + 2;</code></p>
+            <details><summary>Vezi rezolvarea</summary><p><strong>Problemă:</strong> lipsește operatorul de înmulțire — <code>3a</code> nu este o expresie validă. <strong>Corect:</strong> <code>int rezultat = 3 * a + 2;</code></p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">4</span><code>bool ok = x &gt; 0 || x &lt; 10;</code> — Se dorea verificarea că <code>x</code> este strict pozitiv și, în același timp, mai mic decât 10.</p>
+            <details><summary>Vezi rezolvarea</summary><p><strong>Problemă:</strong> <code>||</code> face expresia adevărată pentru aproape orice <code>x</code> (orice număr e fie &gt;0, fie &lt;10). <strong>Corect:</strong> <code>bool ok = x &gt; 0 &amp;&amp; x &lt; 10;</code></p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">5</span><code>double r = (a + b) / c + d;</code> — Se dorea <code>(a+b) / (c+d)</code>.</p>
+            <details><summary>Vezi rezolvarea</summary><p><strong>Problemă:</strong> parantezele de la numărător sunt corecte, dar lipsesc cele de la numitor — <code>d</code> se adună <em>după</em> împărțire, nu se adună la <code>c</code> înainte. <strong>Corect:</strong> <code>double r = (a + b) / (c + d);</code> — verifică întotdeauna dacă expresia scrisă reprezintă cu adevărat relația matematică dorită, înainte de a o eticheta drept „corectă" sau „greșită" fără context.</p></details>
+          </div>
+
+        </div>
+      </div><!-- /tab exemple -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: LABORATOR                                             -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t3-lab">
+        <div class="prose">
+          <h2 id="introductive">Exerciții introductive (fără scriere de cod)</h2>
+          <p>Rezolvă pe hârtie, apoi verifică cu răspunsul. Nu e nevoie să compilezi niciun program pentru această secțiune.</p>
+
+          <h3>A. Evaluarea expresiilor</h3>
+          <div class="quiz-item">
+            <p><span class="qnum">1</span>Ce valoare are expresia <code>20 / 5 * 2</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>/</code> și <code>*</code> au aceeași prioritate, se aplică de la stânga la dreapta: <code>20/5=4</code>, apoi <code>4*2=8</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">2</span>Ce valoare are expresia <code>20 / (5 * 2)</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>5*2=10</code>, apoi <code>20/10=2</code>. Parantezele schimbă ordinea față de exercițiul anterior.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">3</span>Ce valoare are expresia <code>10 + 6 / 3 * 2</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>6/3=2</code>, <code>2*2=4</code>, <code>10+4=14</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">4</span>Presupunând valori întregi, ce valoare are <code>7 / 2</code>? Dar <code>7.0 / 2</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>7 / 2 = 3</code> (împărțire întreagă). <code>7.0 / 2 = 3.5</code> (cel puțin un operand real).</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">5</span>Ce valoare are <code>17 % 5</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>17 = 3×5 + 2</code>, deci <code>17 % 5 = 2</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">6</span>Ce valoare are <code>17 / 5 * 2</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>17/5=3</code> (împărțire întreagă), apoi <code>3*2=6</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">7</span>Ce valoare are <code>(17 / 5 * 2) * (17 / 5 * 2)</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p>Fiecare paranteză valorează 6 (vezi exercițiul anterior), deci <code>6 * 6 = 36</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">8</span>Ce valoare are <code>5 + 3 * 4 - 2</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>3*4=12</code>, <code>5+12=17</code>, <code>17-2=15</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">9</span>Ce valoare are <code>(5 + 3) * (4 - 2)</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>(5+3)=8</code>, <code>(4-2)=2</code>, <code>8*2=16</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">10</span>Fie <code>int n = 8;</code>. Calculează, în ordine: <code>n % 2</code>, <code>(n+1) % 2</code>, <code>n / 2</code>, <code>n * n</code>.</p>
+            <details><summary>Vezi răspunsul</summary><p><code>n%2=0</code>, <code>(n+1)%2=1</code>, <code>n/2=4</code>, <code>n*n=64</code>.</p></details>
+          </div>
+
+          <h3>B. Expresii logice</h3>
+          <p>Pentru <code>int a = 23; int b = 50;</code>, determină valoarea fiecărei expresii:</p>
+          <div class="quiz-item">
+            <p><span class="qnum">11</span><code>a != b</code></p>
+            <details><summary>Vezi răspunsul</summary><p><code>true</code> — 23 e diferit de 50.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">12</span><code>a &gt; b</code></p>
+            <details><summary>Vezi răspunsul</summary><p><code>false</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">13</span><code>b &gt;= a</code></p>
+            <details><summary>Vezi răspunsul</summary><p><code>true</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">14</span><code>(a + 10 &lt; b) || false</code></p>
+            <details><summary>Vezi răspunsul</summary><p><code>a+10=33</code>, <code>33&lt;50 → true</code>; <code>true || false = true</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">15</span><code>true &amp;&amp; (a != b)</code></p>
+            <details><summary>Vezi răspunsul</summary><p><code>a != b → true</code>; <code>true &amp;&amp; true = true</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">16</span><code>!(a &gt; b)</code></p>
+            <details><summary>Vezi răspunsul</summary><p><code>a &gt; b → false</code>; <code>!false = true</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">17</span><code>(a &lt; b) &amp;&amp; (b &lt; 100)</code></p>
+            <details><summary>Vezi răspunsul</summary><p>Ambele comparații sunt <code>true</code>, deci rezultatul e <code>true</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">18</span><code>(a == 23) || (b == 23)</code></p>
+            <details><summary>Vezi răspunsul</summary><p><code>a == 23 → true</code>, deci întreaga expresie e <code>true</code> (SAU are nevoie de o singură condiție adevărată).</p></details>
+          </div>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="tracing">Code Tracing – Exerciții</h2>
+          <p>Urmărește execuția programului <strong>fără să îl rulezi</strong>. Scrie valorile variabilelor la fiecare pas și ce se va afișa. Verifică după aceea rulând programul.</p>
+
+          <details>
+            <summary>Exercițiul 1</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> x = <span class="nm">3</span>;
+<span class="tp">int</span> y = x <span class="op">+</span> <span class="nm">3</span>;
+x = x <span class="op">-</span> <span class="nm">3</span>;</code></pre></div>
+            <p><strong>Soluție:</strong> <code>x=3</code> → <code>y = 3+3 = 6</code> → <code>x = 3-3 = 0</code>. Valori finale: <code>x=0, y=6</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiul 2</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> a = <span class="nm">82</span>;
+<span class="tp">int</span> b = <span class="nm">24</span>;
+
+a = a <span class="op">%</span> <span class="nm">2</span> <span class="op">+</span> b <span class="op">/</span> <span class="nm">2</span> <span class="op">/</span> <span class="nm">2</span>;
+b = <span class="nm">2</span> <span class="op">*</span> a <span class="op">%</span> <span class="nm">2</span>;
+a = a <span class="op">+</span> b;</code></pre></div>
+            <p><strong>Soluție:</strong> <code>a%2=0</code>, <code>b/2/2=24/2/2=6</code>, deci <code>a=0+6=6</code>. Apoi <code>b = 2*6%2 = 12%2 = 0</code>. În final <code>a = 6+0 = 6</code>. Valori finale: <code>a=6, b=0</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiul 3</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">double</span> x = <span class="nm">22.5</span>;
+<span class="tp">double</span> y;
+
+y = (<span class="tp">int</span>)x <span class="op">+</span> <span class="nm">8</span>;
+x = <span class="nm">2</span> <span class="op">*</span> x;
+y = y <span class="op">+</span> x;</code></pre></div>
+            <p><strong>Soluție:</strong> <code>(int)x = 22</code>, deci <code>y = 22+8 = 30</code>. Apoi <code>x = 2*22.5 = 45.0</code>. În final <code>y = 30+45 = 75</code>. Valori finale: <code>x=45.0, y=75.0</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiul 4</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> x = <span class="nm">5</span>;
+<span class="tp">int</span> y = x<span class="op">++</span>;
+<span class="tp">int</span> z = <span class="op">++</span>x;</code></pre></div>
+            <p><strong>Soluție:</strong> <code>y = x++</code> — se folosește valoarea veche a lui <code>x</code> (5), apoi <code>x</code> devine 6. Deci <code>y=5</code>. <code>z = ++x</code> — <code>x</code> devine 7, apoi se folosește valoarea nouă. Deci <code>z=7</code>. Valori finale: <code>x=7, y=5, z=7</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiul 5</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> a = <span class="nm">5</span>;
+<span class="tp">int</span> b = <span class="nm">2</span>;
+
+a <span class="op">+=</span> <span class="nm">3</span>;
+b <span class="op">*=</span> a;
+a<span class="op">--</span>;
+b = b <span class="op">-</span> a;</code></pre></div>
+            <p><strong>Soluție:</strong> <code>a += 3 → a=8</code>. <code>b *= a → b = 2*8 = 16</code>. <code>a-- → a=7</code>. <code>b = 16-7 = 9</code>. Valori finale: <code>a=7, b=9</code>.</p>
+          </details>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="lab">Laborator – Aplicații de rezolvat</h2>
+          <p>Pentru fiecare problemă: identifică datele de intrare, stabilește variabilele și tipurile lor, scrie relația de calcul, transformă relația într-o expresie C++, scrie programul complet și verifică-l cu cel puțin două seturi de date.</p>
+
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Curte</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Într-o curte sunt <code>n</code> găini și <code>m</code> vaci. Determină numărul total de picioare ale animalelor.</p>
+              <details><summary>Indiciu</summary><p>O găină are 2 picioare, o vacă 4: <code>picioare = 2*n + 4*m;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">2</div><div class="exercise-title">Populație</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Un oraș are inițial <code>n</code> locuitori. În fiecare an populația crește cu <code>x</code> locuitori (număr fix, nu procent). Determină populația după <code>y</code> ani.</p>
+              <details><summary>Indiciu</summary><p><code>populatieFinala = n + x * y;</code> — creșterea e liniară, nu compusă.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">3</div><div class="exercise-title">Preț total</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se cunosc prețul unui produs și numărul de produse cumpărate. Determină suma totală de plată.</p>
+              <details><summary>Indiciu</summary><p><code>total = pret * cantitate;</code>. Prețul trebuie <code>double</code>, nu <code>int</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">4</div><div class="exercise-title">Reducere procentuală</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se cunosc prețul inițial al unui produs și procentul reducerii. Determină valoarea reducerii și prețul final.</p>
+              <details><summary>Indiciu</summary><p><code>reducere = pret * procent / 100.0;</code>, <code>pretFinal = pret - reducere;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">5</div><div class="exercise-title">Pătrat</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește lungimea laturii unui pătrat. Determină perimetrul și aria.</p>
+              <details><summary>Indiciu</summary><p><code>perimetru = 4 * latura;</code>, <code>arie = latura * latura;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">6</div><div class="exercise-title">Dreptunghi</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc lungimea și lățimea unui dreptunghi. Determină aria și perimetrul.</p>
+              <details><summary>Indiciu</summary><p><code>arie = lungime * latime;</code>, <code>perimetru = 2 * (lungime + latime);</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">7</div><div class="exercise-title">Ipotenuză (pătratul lungimii)</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se cunosc lungimile celor două catete ale unui triunghi dreptunghic. Determină pătratul lungimii ipotenuzei: <code>c² = a² + b²</code>. Nu e obligatoriu să calculezi radicalul.</p>
+              <details><summary>Indiciu</summary><p><code>c2 = a*a + b*b;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">8</div><div class="exercise-title">Ultimele două cifre</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code> cu cel puțin trei cifre. Afișează numărul format din ultimele două cifre și suma celor două cifre.</p>
+              <details><summary>Indiciu</summary><p>Ultimele două cifre: <code>n % 100</code>. Suma lor: extrage-le separat cu <code>%10</code> și <code>/10%10</code>, apoi adună-le.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">9</div><div class="exercise-title">Număr de trei cifre</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural cu exact trei cifre. Afișează separat cifra sutelor, cifra zecilor și cifra unităților.</p>
+              <details><summary>Indiciu</summary><p><code>sute = n / 100;</code>, <code>zeci = n / 10 % 10;</code>, <code>unitati = n % 10;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">10</div><div class="exercise-title">Interschimbarea ultimelor două cifre</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural cu exact trei cifre. Construiește numărul obținut prin interschimbarea cifrei zecilor cu cifra unităților.</p>
+              <details><summary>Indiciu</summary><p>Extrage <code>sute</code>, <code>zeci</code>, <code>unitati</code>, apoi construiește <code>sute*100 + unitati*10 + zeci</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">11</div><div class="exercise-title">Eliminarea cifrei zecilor</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural cu exact trei cifre. Construiește numărul format din cifra sutelor și cifra unităților (fără cifra zecilor).</p>
+              <details><summary>Indiciu</summary><p><code>rezultat = sute * 10 + unitati;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">12</div><div class="exercise-title">Bani rămași</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>O persoană are inițial suma <code>s</code> și cumpără trei produse cu prețurile <code>p1</code>, <code>p2</code>, <code>p3</code>. Determină suma rămasă.</p>
+              <details><summary>Indiciu</summary><p><code>ramas = s - p1 - p2 - p3;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num hard">13</div><div class="exercise-title">Cinci salturi</div><span class="exercise-tag">Nivel: Provocare</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Primul salt al unei broscuțe are lungimea <code>p</code>. Fiecare dintre următoarele patru salturi are lungimea dublă față de precedentul. Determină distanța totală parcursă în cele cinci salturi, <strong>fără</strong> a folosi o structură repetitivă — construiește direct expresia.</p>
+              <details><summary>Indiciu</summary><p>Salturile sunt <code>p, 2p, 4p, 8p, 16p</code>. Total: <code>p + 2*p + 4*p + 8*p + 16*p = 31*p</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">14</div><div class="exercise-title">Conversie în secunde</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc numărul de ore, minute și secunde. Determină durata totală exprimată în secunde.</p>
+              <details><summary>Indiciu</summary><p><code>total = ore*3600 + minute*60 + secunde;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">15</div><div class="exercise-title">Conversie din secunde</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește o durată <code>t</code> exprimată în secunde. Determină numărul de minute complete și numărul de secunde rămase.</p>
+              <details><summary>Indiciu</summary><p><code>minute = t / 60;</code>, <code>secundeRamase = t % 60;</code></p></details>
+            </div>
+          </div>
+
+          <h3>Întrebări cu alegere multiplă</h3>
+          <p>Una sau mai multe variante pot fi corecte.</p>
+
+          <div class="quiz-item">
+            <p><span class="qnum">1</span>Care dintre următoarele expresii produc un rezultat de tip <code>int</code> în C++?</p>
+            <ul class="choices"><li>a) 7 / 2</li><li>b) 7.0 / 2</li><li>c) 7 % 2</li><li>d) 7 &gt; 2</li></ul>
+            <details><summary>Vezi răspunsul</summary><p>Produc <code>int</code>: <strong>a) 7/2</strong> și <strong>c) 7%2</strong>. <strong>b)</strong> produce <code>double</code>. <strong>d)</strong> produce <code>bool</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">2</span>Fie <code>int a = 23; int b = 50;</code>. Care dintre următoarele expresii au valoarea <code>true</code>?</p>
+            <ul class="choices"><li>a) a != b</li><li>b) a &gt; b</li><li>c) b &gt;= a</li><li>d) a == b</li></ul>
+            <details><summary>Vezi răspunsul</summary><p>Adevărate: <strong>a, c</strong>. False: <strong>b, d</strong>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">3</span>Care expresie are valoarea <code>3</code>?</p>
+            <ul class="choices"><li>a) 45 % 6</li><li>b) 45 % 10</li><li>c) 120 / 39</li><li>d) 45 % 7</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>a)</strong> <code>45=7×6+3 → 3</code>. <strong>b)</strong> <code>45=4×10+5 → 5</code>. <strong>c)</strong> <code>120=3×39+3 → cât 3</code>. <strong>d)</strong> <code>45=6×7+3 → 3</code>. Răspuns: <strong>a, c, d</strong>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">4</span>Ce valoare produce expresia <code>20 / 10 * 2 + 30 / 15 * 2</code>?</p>
+            <ul class="choices"><li>a) 2</li><li>b) 4</li><li>c) 8</li><li>d) 10</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>c) 8</strong>. <code>20/10=2</code>, <code>2*2=4</code>; separat, <code>30/15=2</code>, <code>2*2=4</code>; <code>4+4=8</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">5</span>Pentru <code>int x = 3; int y = x + 3; x = x - 3;</code>, care sunt valorile finale?</p>
+            <ul class="choices"><li>a) x=0, y=3</li><li>b) x=3, y=0</li><li>c) x=6, y=0</li><li>d) x=0, y=6</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>d) x=0, y=6</strong>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">6</span>Care expresie calculează corect media aritmetică a trei valori <code>a</code>, <code>b</code>, <code>c</code>?</p>
+            <ul class="choices"><li>a) a + b + c / 3.0</li><li>b) (a + b + c) / 3.0</li><li>c) a + (b + c) / 3.0</li><li>d) (a + b) + c / 3.0</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b)</strong> este singura corectă — celelalte împart doar unul dintre termeni la 3.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">7</span>Ce rezultat produce în C++ <code>double x = 7 / 2;</code>?</p>
+            <ul class="choices"><li>a) 2.0</li><li>b) 3.0</li><li>c) 3.5</li><li>d) eroare de compilare</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b) 3.0</strong> — <code>7/2</code> se calculează întâi ca <code>int</code> (rezultat 3), abia apoi e convertit la <code>double</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">8</span>Care dintre următoarele expresii extrage cifra zecilor unui număr natural <code>n</code>?</p>
+            <ul class="choices"><li>a) n % 10</li><li>b) n / 10</li><li>c) n / 10 % 10</li><li>d) n % 100</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>c) n / 10 % 10</strong>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">9</span>Ce valoare are expresia <code>17 / 5 * 2</code> în C++?</p>
+            <ul class="choices"><li>a) 5</li><li>b) 6</li><li>c) 6.8</li><li>d) 7</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b) 6</strong>. <code>17/5=3</code> (întreagă), <code>3*2=6</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">10</span>Care dintre următoarele variante reprezintă corect o comparație de egalitate în C++?</p>
+            <ul class="choices"><li>a) x = 5</li><li>b) x == 5</li><li>c) x := 5</li><li>d) x === 5</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b) x == 5</strong>.</p></details>
+          </div>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="extra">Exerciții extra</h2>
+          <p>Un bazin suplimentar de exersat, pentru cei care termină mai repede sau vor mai multă practică.</p>
+
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">E1</div><div class="exercise-title">Construirea expresiilor</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Scrie câte o expresie C++ pentru: (1) dublul sumei numerelor <code>a</code> și <code>b</code>; (2) jumătatea diferenței dintre <code>x</code> și <code>y</code>; (3) pătratul sumei numerelor <code>a</code> și <code>b</code>; (4) restul împărțirii lui <code>n</code> la 7; (5) cifra unităților lui <code>n</code>; (6) cifra zecilor lui <code>n</code>; (7) numărul format din ultimele două cifre ale lui <code>n</code>.</p>
+              <details><summary>Indiciu</summary><p>(1) <code>2 * (a + b)</code>; (2) <code>(x - y) / 2.0</code>; (3) <code>(a + b) * (a + b)</code>; (4) <code>n % 7</code>; (5) <code>n % 10</code>; (6) <code>n / 10 % 10</code>; (7) <code>n % 100</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num hard">E2</div><div class="exercise-title">Din matematică în program</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Transcrie în C++ și calculează în ordinea corectă: <code>A = 2 + x - y</code>, apoi <code>B = x·A - 2 + y</code>, apoi <code>C = A - 2·B + x</code>.</p>
+              <details><summary>Indiciu</summary><p><code>double A = 2 + x - y; double B = x * A - 2 + y; double C = A - 2 * B + x;</code> — calculează-le strict în această ordine, fiindcă fiecare depinde de cea anterioară.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">E3</div><div class="exercise-title">Prăjituri</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Daniela are <code>s</code> lei, iar o prăjitură costă <code>n</code> lei (<code>1 ≤ n ≤ s</code>). Determină numărul maxim de prăjituri pe care le poate cumpăra și suma de bani care îi mai trebuie pentru a cumpăra încă una.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 10 3
+Iesire : 3 2</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>nrPrajituri = s / n;</code>, bani rămași <code>s % n</code>, suma care mai trebuie: <code>n - s % n</code>. Pentru 10 și 3: <code>10/3=3</code>, <code>10%3=1</code>, <code>3-1=2</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">E4</div><div class="exercise-title">Secunde în ore, minute și secunde</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește o durată exprimată printr-un număr total de secunde. Transformă durata în ore, minute și secunde.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 3672
+Iesire : 1 1 12</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>ore = n / 3600;</code>, <code>ramase = n % 3600;</code>, <code>minute = ramase / 60;</code>, <code>secunde = ramase % 60;</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num hard">E5</div><div class="exercise-title">Rotirea cifrelor</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural de forma <code>abc</code>, cu exact trei cifre. Construiește numărul de forma <code>bca</code> (cifrele „rotite" cu o poziție).</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 378
+Iesire : 783</code></pre></div>
+              <details><summary>Indiciu</summary><p>Dacă <code>a</code>=sute, <code>b</code>=zeci, <code>c</code>=unități, atunci <code>bca = b*100 + c*10 + a;</code>. Pentru 378: <code>a=3,b=7,c=8 → 7*100+8*10+3=783</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">E6</div><div class="exercise-title">Prezice, apoi verifică</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Fără să rulezi programul, scrie rezultatul pe care îl estimezi și tipul lui, apoi verifică folosind un program: <code>5 + 2 * 3</code>, <code>(5 + 2) * 3</code>, <code>15 / 4</code>, <code>15.0 / 4</code>, <code>15 % 4</code>, <code>5 &gt; 3</code>, <code>5 == 3</code>, <code>(5 &gt; 3) &amp;&amp; (2 &lt; 7)</code>.</p>
+              <details><summary>Indiciu</summary><p>Rezultate, în ordine: <code>11</code> (int), <code>21</code> (int), <code>3</code> (int), <code>3.75</code> (double), <code>3</code> (int), <code>true</code> (bool), <code>false</code> (bool), <code>true</code> (bool).</p></details>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /tab lab -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: CHEAT SHEET                                           -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t3-cheat">
+        <div class="prose">
+          <h2 id="cheat">Fișă rapidă – Sesiunea 3</h2>
+          <p>Referință compactă pentru folosit în laborator.</p>
+          <div class="cheat-grid">
+            <div class="cheat-card">
+              <div class="cheat-card-header">Prioritatea operatorilor</div>
+              <pre>() -&gt; cea mai mare
+! ++ --
+* / %
++ -
+&lt; &lt;= &gt; &gt;=
+== !=
+&amp;&amp;
+|| -&gt; cea mai mica</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Asociativitate</div>
+              <pre>Majoritatea operatorilor
+din aceasta sesiune: stanga -&gt; dreapta
+
+20 - 5 - 3 = (20-5)-3 = 12
+24 / 6 * 2 = (24/6)*2 = 8</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Operatori relaționali</div>
+              <pre>&lt;  &lt;=  &gt;  &gt;=  ==  !=
+Rezultat: intotdeauna bool
+Atentie: = e atribuire, == e comparatie</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Operatori logici</div>
+              <pre>&amp;&amp;  ambele adevarate -&gt; true
+||  cel putin una adevarata -&gt; true
+!   inverseaza valoarea
+
+(varsta&gt;=18) &amp;&amp; (varsta&lt;=65)</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Împărțire</div>
+              <pre>7 / 2   = 3   (int / int)
+7.0 / 2 = 3.5 (macar un operand real)
+7 % 2   = 1   (restul, doar la int)</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Conversii de tip</div>
+              <pre>int a = 5;
+double b = a;        // implicita
+double c = (double)a;// explicita
+int y = (int)7.8;    // y = 7 (trunchiere)</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Atribuire &amp; increment</div>
+              <pre>x += 5;  // x = x + 5
+x -= 3;  // x = x - 3
+x *= 2;  // x = x * 2
+x /= 4;  // x = x / 4
+x++; ++x;  // x = x + 1
+x--; --x;  // x = x - 1</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Capcane de reținut</div>
+              <pre>2x        -&gt; 2 * x (scrie inmultirea!)
+a+b+c/3   -&gt; (a+b+c)/3 (paranteze!)
+x&gt;0 || x&lt;10  -&gt; aproape mereu true
+x&gt;0 &amp;&amp; x&lt;10  -&gt; interval corect
+= atribuire, == comparatie</pre>
+            </div>
+          </div>
+
+          <h3>Comparație rapidă C++ · Python · Java</h3>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th></th><th>C++</th><th>Python</th><th>Java</th></tr></thead>
+              <tbody>
+                <tr><td>Împărțire (int/int)</td><td><code>7 / 2 = 3</code></td><td><code>7 / 2 = 3.5</code></td><td><code>7 / 2 = 3</code></td></tr>
+                <tr><td>Împărțire întreagă forțată</td><td>ambii operanzi int</td><td><code>7 // 2</code></td><td>ambii operanzi int</td></tr>
+                <tr><td>ȘI logic</td><td><code>&amp;&amp;</code></td><td><code>and</code></td><td><code>&amp;&amp;</code></td></tr>
+                <tr><td>SAU logic</td><td><code>||</code></td><td><code>or</code></td><td><code>||</code></td></tr>
+                <tr><td>Negare logică</td><td><code>!</code></td><td><code>not</code></td><td><code>!</code></td></tr>
+                <tr><td>Incrementare</td><td><code>x++</code></td><td><code>x += 1</code></td><td><code>x++</code></td></tr>
+                <tr><td>Conversie la real</td><td><code>(double)a</code></td><td><code>float(a)</code></td><td><code>(double)a</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div><!-- /cheat -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: AUTOEVALUARE                                          -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t3-autoevaluare">
+        <div class="prose">
+          <h2 id="verificare">Întrebări de autoevaluare</h2>
+
+          <details><summary>1. Ce este o expresie și din ce este formată?</summary>
+            <p>O expresie este o construcție a limbajului formată din unul sau mai mulți operanzi și operatori, care poate fi evaluată pentru a produce un rezultat.</p>
+          </details>
+          <details><summary>2. Care este diferența dintre un operand și un operator?</summary>
+            <p>Operatorul precizează ce operație trebuie realizată (ex: <code>+</code>); operandul este valoarea, variabila sau expresia asupra căreia acționează operatorul (ex: <code>a</code> și <code>b</code> în <code>a + b</code>).</p>
+          </details>
+          <details><summary>3. Ce afișează: int a = 7; int b = 2; cout &lt;&lt; a / b;</summary>
+            <p><code>3</code>. Împărțirea a două <code>int</code>-uri produce <code>int</code> — zecimalele se pierd (trunchiere, nu rotunjire).</p>
+          </details>
+          <details><summary>4. Cum obții rezultat cu zecimale la împărțirea 7 / 2?</summary>
+            <p>Cel puțin un operand implicat în calcul trebuie să fie <code>double</code>: <code>7.0 / 2</code> sau <code>7 / 2.0</code>.</p>
+          </details>
+          <details><summary>5. Ce este restul împărțirii întregi și cum se calculează?</summary>
+            <p>Restul rămas după împărțirea întreagă a doi întregi, obținut cu operatorul <code>%</code>. <code>7 % 3 = 1</code> (deoarece <code>7 = 2×3 + 1</code>).</p>
+          </details>
+          <details><summary>6. Care este diferența dintre prioritate și asociativitate?</summary>
+            <p>Prioritatea decide ce operator se aplică mai întâi când operatorii dintr-o expresie au niveluri diferite (ex: <code>*</code> înaintea lui <code>+</code>). Asociativitatea decide ordinea de grupare când operatorii au aceeași prioritate (majoritatea, de la stânga la dreapta).</p>
+          </details>
+          <details><summary>7. De ce sunt utile parantezele, dacă prioritatea operatorilor deja stabilește o ordine?</summary>
+            <p>Parantezele pot schimba explicit ordinea implicită dată de prioritate, și pot face o expresie mai clară pentru cititor chiar și atunci când nu sunt strict necesare pentru rezultat.</p>
+          </details>
+          <details><summary>8. Care este diferența dintre = și == în C++?</summary>
+            <p><code>=</code> este operatorul de <strong>atribuire</strong> — pune o valoare într-o variabilă. <code>==</code> este operatorul de <strong>comparație</strong> — verifică dacă două valori sunt egale și produce un rezultat <code>bool</code>, fără să modifice nimic.</p>
+          </details>
+          <details><summary>9. Ce valoare produce (x &gt;= 1) || (x &lt;= 10), pentru orice x, și de ce e o capcană frecventă?</summary>
+            <p>Este practic mereu <code>true</code>, pentru că orice număr este fie ≥1, fie ≤10 (sau ambele). Capcana apare când se dorea de fapt un interval (<code>&amp;&amp;</code>), nu o alternativă largă (<code>||</code>).</p>
+          </details>
+          <details><summary>10. Ce afișează: int x = 5; int y = x++; int z = ++x;</summary>
+            <p><code>y = 5</code> (postfixat: se folosește valoarea veche, apoi x devine 6), <code>z = 7</code> (prefixat: x devine 7, apoi se folosește valoarea nouă).</p>
+          </details>
+          <details><summary>11. Ce este o conversie de tip implicită și ce este una explicită?</summary>
+            <p>Conversia implicită este realizată automat de limbaj (ex: <code>double b = a;</code>, cu <code>a</code> întreg). Conversia explicită este cerută direct de programator (ex: <code>(double)a</code> sau <code>static_cast&lt;double&gt;(a)</code> în C++).</p>
+          </details>
+          <details><summary>12. De ce 7 / 2 dă rezultate diferite în C++ și în Python 3?</summary>
+            <p>În C++, dacă ambii operanzi sunt <code>int</code>, <code>/</code> face împărțire întreagă (<code>7/2=3</code>). În Python 3, <code>/</code> face întotdeauna împărțire reală (<code>7/2=3.5</code>); pentru împărțire întreagă, Python are operatorul separat <code>//</code>.</p>
+          </details>
+          <details><summary>13. Ce greșeală conține: double media = a + b + c / 3.0;?</summary>
+            <p>Lipsesc parantezele — se calculează <code>a + b + (c/3.0)</code>, nu media celor trei. Corect: <code>double media = (a + b + c) / 3.0;</code></p>
+          </details>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="rezumat">Rezumat – De reținut</h2>
+          <div class="callout ok">
+            <span class="callout-icon"></span>
+            <div class="callout-body"><strong>Cele mai importante idei din această sesiune</strong></div>
+          </div>
+          <ol>
+            <li>O <strong>expresie</strong> este formată din operanzi și operatori și, prin evaluare, produce un rezultat care are întotdeauna un anumit tip de date.</li>
+            <li>Expresiile pot fi <strong>aritmetice</strong> (produc un număr), <strong>relaționale</strong> sau <strong>logice</strong> (produc <code>true</code>/<code>false</code>).</li>
+            <li><strong>Prioritatea</strong> stabilește ce operator se aplică mai întâi când operatorii diferă; <strong>asociativitatea</strong> stabilește ordinea când au aceeași prioritate.</li>
+            <li>Parantezele controlează și clarifică ordinea de evaluare — folosește-le pentru claritate, nu te baza doar pe memorarea priorităților.</li>
+            <li>Împărțirea a două <code>int</code>-uri produce <code>int</code> (trunchiere); pentru rezultat real, cel puțin un operand trebuie <code>double</code>.</li>
+            <li>Operatorul <code>%</code> se folosește doar cu operanzi întregi și dă restul împărțirii.</li>
+            <li><code>=</code> este atribuire, <code>==</code> este comparație — confundarea lor produce bug-uri subtile.</li>
+            <li>Conversiile de tip pot fi implicite (automate) sau explicite (cerute de programator), și pot pierde informație (trunchiere).</li>
+            <li>Atribuirea compusă (<code>+=</code>, <code>-=</code> etc.) și incrementarea/decrementarea (<code>++</code>, <code>--</code>) sunt prescurtări pentru operații frecvente.</li>
+            <li>O formulă matematică nu se copiază direct în cod — înmulțirea trebuie scrisă explicit, iar numărătorii/numitorii compuși au nevoie de paranteze.</li>
+            <li>Date, variabile, tipuri, operatori și reguli de evaluare sunt concepte <strong>universale</strong> de programare — C++, Python și Java le exprimă prin sintaxe diferite, dar ideea rămâne aceeași.</li>
+            <li>Folosirea practică a expresiilor logice pentru ca un program să <strong>ia decizii</strong> (<code>if</code>) este subiectul sesiunii următoare.</li>
+          </ol>
+
+          <h2 id="glosar">Glosar</h2>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Termen</th><th>Definiție</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Expresie</strong></td><td>Combinație de valori, variabile, constante și operatori care poate fi evaluată și produce un rezultat</td></tr>
+                <tr><td><strong>Operand</strong></td><td>Valoarea sau expresia asupra căreia acționează un operator</td></tr>
+                <tr><td><strong>Operator</strong></td><td>Simbol care indică operația de realizat asupra unuia sau mai multor operanzi</td></tr>
+                <tr><td><strong>Evaluare</strong></td><td>Procesul prin care se determină rezultatul unei expresii</td></tr>
+                <tr><td><strong>Prioritate</strong></td><td>Regula care stabilește ce operatori se aplică mai întâi</td></tr>
+                <tr><td><strong>Asociativitate</strong></td><td>Regula care stabilește gruparea operatorilor cu aceeași prioritate</td></tr>
+                <tr><td><strong>Expresie mixtă</strong></td><td>Expresie care combină operații aritmetice, relaționale și/sau logice</td></tr>
+                <tr><td><strong>Conversie de tip</strong></td><td>Transformarea unei valori dintr-un tip de date în altul (implicită sau explicită)</td></tr>
+                <tr><td><strong>Atribuire</strong></td><td>Operația prin care o valoare este memorată într-o variabilă, cu <code>=</code></td></tr>
+                <tr><td><strong>Atribuire compusă</strong></td><td>Prescurtare pentru „calculează și atribuie", ex: <code>x += 2</code></td></tr>
+                <tr><td><strong>Incrementare / Decrementare</strong></td><td>Creșterea, respectiv scăderea unei variabile, uzual cu 1 (<code>++</code> / <code>--</code>)</td></tr>
+                <tr><td><strong>Împărțire întreagă</strong></td><td>Împărțire între doi <code>int</code> care pierde zecimalele: <code>7/2=3</code></td></tr>
+                <tr><td><strong>Modulo (%)</strong></td><td>Restul împărțirii întregi: <code>7 % 3 = 1</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Ce urmează?</h2>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Sesiunea 4 – Structuri de decizie</strong>
+              <p>Acum că știi să construiești și să evaluezi corect expresii aritmetice, relaționale și logice, pasul următor este să înveți cum poate un program să <strong>ia decizii</strong> pe baza rezultatului unei expresii logice: instrucțiunea <code>if</code>, <code>if-else</code>, <code>if-else if</code> și <code>switch</code>, și fluxul de control al programului.</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- /autoevaluare -->
+
+    </div><!-- /tab-wrap -->
+
+    <footer class="page-footer">
+      <span>M6 · Sesiunea 3 – Expresii și evaluarea expresiilor</span>
+      <div class="footer-nav">
+        <a href="sesiunea-2.html" class="footer-link">← S2 Variabile și tipuri de date</a>
+        <a href="sesiunea-4.html" class="footer-link fwd">S4 – Structuri de decizie →</a>
+      </div>
+    </footer>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
