@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     headings.forEach(h => observer.observe(h));
   }
 
-     /* ---- Auto-generare "Sesiuni" (navigare intre pagini) ---- */
+      /* ---- Auto-generare "Sesiuni" (navigare intre pagini) ---- */
   const SESSIONS = [
     { file: 'sesiunea-0.html',  label: 'S0 – Syllabus' },
     { file: 'sesiunea-0b.html', label: 'S0b – Limbaje' },
