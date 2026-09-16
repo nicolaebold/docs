@@ -321,12 +321,55 @@ a <span class="op">%</span> b  <span class="cm">// 1</span></code></pre>
               <div class="op-row"><span class="op-sym">!=</span><span class="op-desc">Diferit de</span><span class="op-ex">a != b</span></div>
             </div>
           </div>
-          <p>Pentru <code>int a = 10; int b = 4;</code>, expresiile <code>a &gt; b</code>, <code>a == b</code> și <code>a != b</code> produc, în ordine, <code>true</code>, <code>false</code>, <code>true</code>. Putem compara și o variabilă cu o valoare literală: <code>varsta &gt;= 18</code>, <code>temperatura &lt; 0</code>, <code>nota == 10</code>. Aceste expresii nu iau încă nicio decizie în program — ele doar produc un rezultat de tip <code>bool</code>. În sesiunea dedicată structurilor de control vei vedea cum poate fi utilizat acest rezultat pentru a decide ce instrucțiuni trebuie executate.</p>
+          <p>Fiecare operator relațional produce fie <code>true</code>, fie <code>false</code>, în funcție de valorile comparate. Tabelul următor arată rezultatul tuturor celor șase operatori pentru trei perechi de valori:</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>a</th><th>b</th><th>a&lt;b</th><th>a&gt;b</th><th>a&lt;=b</th><th>a&gt;=b</th><th>a==b</th><th>a!=b</th></tr></thead>
+              <tbody>
+                <tr><td>10</td><td>4</td><td>false</td><td>true</td><td>false</td><td>true</td><td>false</td><td>true</td></tr>
+                <tr><td>4</td><td>10</td><td>true</td><td>false</td><td>true</td><td>false</td><td>false</td><td>true</td></tr>
+                <tr><td>7</td><td>7</td><td>false</td><td>false</td><td>true</td><td>true</td><td>true</td><td>false</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Putem compara și o variabilă cu o valoare literală: <code>varsta &gt;= 18</code>, <code>temperatura &lt; 0</code>, <code>nota == 10</code>. Aceste expresii nu iau încă nicio decizie în program — ele doar produc un rezultat de tip <code>bool</code>. În sesiunea dedicată structurilor de control vei vedea cum poate fi utilizat acest rezultat pentru a decide ce instrucțiuni trebuie executate.</p>
           <div class="callout warn">
             <span class="callout-icon"></span>
             <div class="callout-body">
               <strong>Atenție la <code>=</code> și <code>==</code></strong>
               <p>Operatorul <code>=</code> este utilizat pentru atribuire: <code>x = 5;</code> modifică valoarea variabilei <code>x</code>. Operatorul <code>==</code> este utilizat pentru compararea egalității: <code>x == 5</code> verifică dacă valoarea lui <code>x</code> este egală cu 5 și produce rezultatul <code>true</code> sau <code>false</code>, fără să modifice nimic.</p>
+            </div>
+          </div>
+
+          <h3>Expresii relaționale în C++, Java și Python</h3>
+          <p>Cei șase operatori relaționali se scriu identic în toate cele trei limbaje — este unul dintre puținele locuri unde sintaxa nu diferă deloc:</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Operator</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td>Mai mic / mai mare</td><td><code>&lt;</code> / <code>&gt;</code></td><td><code>&lt;</code> / <code>&gt;</code></td><td><code>&lt;</code> / <code>&gt;</code></td></tr>
+                <tr><td>Mai mic sau egal / mai mare sau egal</td><td><code>&lt;=</code> / <code>&gt;=</code></td><td><code>&lt;=</code> / <code>&gt;=</code></td><td><code>&lt;=</code> / <code>&gt;=</code></td></tr>
+                <tr><td>Egal cu</td><td><code>==</code></td><td><code>==</code></td><td><code>==</code></td></tr>
+                <tr><td>Diferit de</td><td><code>!=</code></td><td><code>!=</code></td><td><code>!=</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Ce diferă însă este <strong>numele tipului</strong> rezultatului și modul în care se scriu valorile logice: în C++ tipul este <code>bool</code>, iar valorile sunt <code>true</code>/<code>false</code> (litere mici); în Java tipul se numește <code>boolean</code> (nu <code>bool</code>), cu aceleași valori <code>true</code>/<code>false</code>; în Python tipul este <code>bool</code>, dar valorile se scriu cu majusculă: <code>True</code>/<code>False</code>.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th></th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td>Numele tipului logic</td><td><code>bool</code></td><td><code>boolean</code></td><td><code>bool</code></td></tr>
+                <tr><td>Valoarea „adevărat"</td><td><code>true</code></td><td><code>true</code></td><td><code>True</code></td></tr>
+                <tr><td>Valoarea „fals"</td><td><code>false</code></td><td><code>false</code></td><td><code>False</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>O particularitate a Python: comparații înlănțuite</strong>
+              <p>Python permite scrierea <code>18 &lt;= varsta &lt;= 65</code> direct, ca o singură expresie echivalentă cu <code>(18 &lt;= varsta) and (varsta &lt;= 65)</code>. C++ și Java <strong>nu</strong> permit această înlănțuire: <code>18 &lt;= varsta &lt;= 65</code> ar fi interpretat greșit (s-ar evalua întâi <code>18 &lt;= varsta</code>, obținând un <code>bool</code>, care ar fi apoi comparat numeric cu 65) — de aceea, în C++ trebuie scrise explicit două comparații legate prin <code>&amp;&amp;</code>.</p>
             </div>
           </div>
 
@@ -343,6 +386,7 @@ a <span class="op">%</span> b  <span class="cm">// 1</span></code></pre>
               </tbody>
             </table>
           </div>
+          <p>Tabelul de adevăr complet pentru <code>&amp;&amp;</code> și <code>||</code>, pentru toate cele patru combinații posibile de A și B:</p>
           <div class="tbl-wrap">
             <table>
               <thead><tr><th>A</th><th>B</th><th>A &amp;&amp; B</th><th>A || B</th></tr></thead>
@@ -351,6 +395,16 @@ a <span class="op">%</span> b  <span class="cm">// 1</span></code></pre>
                 <tr><td>false</td><td>true</td><td>false</td><td>true</td></tr>
                 <tr><td>true</td><td>false</td><td>false</td><td>true</td></tr>
                 <tr><td>true</td><td>true</td><td>true</td><td>true</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Și tabelul de adevăr pentru negație, care are un singur operand:</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>A</th><th>!A</th></tr></thead>
+              <tbody>
+                <tr><td>false</td><td>true</td></tr>
+                <tr><td>true</td><td>false</td></tr>
               </tbody>
             </table>
           </div>
@@ -369,6 +423,65 @@ nota <span class="op">&lt;</span> <span class="nm">5</span> <span class="op">||<
               <p>Expresia <code>varsta &gt;= 18 &amp;&amp; arePermis</code> poate fi citită ca „vârsta este cel puțin 18 ani ȘI persoana are permis". Înainte de a calcula expresia în C++, încearcă să o citești ca pe o propoziție — te ajută să verifici dacă relația logică pe care ai scris-o exprimă ceea ce dorești.</p>
             </div>
           </div>
+
+          <h3>Un exemplu complet: tabel de adevăr pentru o condiție combinată</h3>
+          <p>Considerăm condiția de eligibilitate pentru un abonament: <code>varsta &gt;= 18 &amp;&amp; areCarnet</code>. Pentru câteva persoane de test, urmărim cum se construiește rezultatul pas cu pas:</p>
+          <div class="tbl-wrap">
+            <table class="trace-table">
+              <thead><tr><th>varsta</th><th>areCarnet</th><th>varsta &gt;= 18</th><th>Rezultat final</th></tr></thead>
+              <tbody>
+                <tr><td>16</td><td>false</td><td>false</td><td class="highlight">false</td></tr>
+                <tr><td>16</td><td>true</td><td>false</td><td class="highlight">false</td></tr>
+                <tr><td>20</td><td>false</td><td>true</td><td class="highlight">false</td></tr>
+                <tr><td>20</td><td>true</td><td>true</td><td class="highlight">true</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Observă că rezultatul final este <code>true</code> într-un singur caz din cele patru — exact cazul în care <strong>ambele</strong> condiții sunt îndeplinite, așa cum arată și tabelul de adevăr al lui <code>&amp;&amp;</code>.</p>
+
+          <h3>Evaluarea în scurt-circuit</h3>
+          <p>C++ (la fel ca Java) evaluează expresiile <code>&amp;&amp;</code> și <code>||</code> „în scurt-circuit": operanzii sunt evaluați de la stânga la dreapta, iar evaluarea se oprește imediat ce rezultatul final poate fi determinat, fără a mai calcula operandul din dreapta.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code><span class="cm">// daca x este 0, x != 0 este false, deci intreaga expresie
+// este garantat false - a doua parte nici nu se mai evalueaza</span>
+(x <span class="op">!=</span> <span class="nm">0</span>) <span class="op">&amp;&amp;</span> (<span class="nm">10</span> <span class="op">/</span> x <span class="op">&gt;</span> <span class="nm">2</span>)</code></pre>
+          </div>
+          <p>Aici, dacă <code>x</code> este <code>0</code>, prima condiție <code>(x != 0)</code> este deja <code>false</code>, iar <code>&amp;&amp;</code> are nevoie ca <strong>ambele</strong> condiții să fie adevărate — rezultatul e sigur <code>false</code>, indiferent ce ar da a doua parte. C++ profită de acest lucru și <strong>nu mai evaluează deloc</strong> <code>10 / x</code>, evitând astfel o împărțire la zero. Regula simetrică există și pentru <code>||</code>: dacă prima condiție este deja <code>true</code>, a doua nu mai este evaluată, pentru că rezultatul e oricum <code>true</code>.</p>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Diferență de comportament în Python</strong>
+              <p>Python evaluează <code>and</code>/<code>or</code> tot în scurt-circuit, dar cu o particularitate: nu returnează neapărat <code>True</code>/<code>False</code>, ci <strong>valoarea efectivă</strong> a unuia dintre cei doi operanzi. De exemplu, <code>0 or "implicit"</code> returnează șirul <code>"implicit"</code> (nu <code>True</code>), pentru că <code>0</code> este considerat fals, iar Python evaluează și întoarce al doilea operand. Acesta e un comportament specific limbajului, dincolo de scopul acestei sesiuni — în C++, rezultatul lui <code>&amp;&amp;</code>/<code>||</code> este întotdeauna strict <code>bool</code>.</p>
+            </div>
+          </div>
+
+          <h3>Operatorii logici în C++, Java și Python</h3>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Operator</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td>ȘI logic</td><td><code>&amp;&amp;</code></td><td><code>&amp;&amp;</code></td><td><code>and</code></td></tr>
+                <tr><td>SAU logic</td><td><code>||</code></td><td><code>||</code></td><td><code>or</code></td></tr>
+                <tr><td>Negare</td><td><code>!</code></td><td><code>!</code></td><td><code>not</code></td></tr>
+                <tr><td>Evaluare în scurt-circuit</td><td>Da</td><td>Da</td><td>Da (dar întoarce operandul, nu doar bool)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Aceeași condiție de eligibilitate, scrisă în cele trei limbaje:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code><span class="tp">bool</span> eligibil = (varsta <span class="op">&gt;=</span> <span class="nm">18</span>) <span class="op">&amp;&amp;</span> areCarnet;</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Java</span></div>
+            <pre><code><span class="tp">boolean</span> eligibil = (varsta <span class="op">&gt;=</span> <span class="nm">18</span>) <span class="op">&amp;&amp;</span> areCarnet;</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Python</span></div>
+            <pre><code>eligibil = (varsta <span class="op">&gt;=</span> <span class="nm">18</span>) <span class="kw">and</span> areCarnet</code></pre>
+          </div>
+          <p>Structura este identică — doar cuvintele-cheie și numele tipului diferă. Aceasta este exact ideea centrală a modulului: conceptele de „expresie logică" și „ȘI logic" sunt universale, sintaxa e specifică fiecărui limbaj.</p>
 
           <!-- EVALUARE -->
           <h2 id="evaluare">Reguli de evaluare a expresiilor</h2>
@@ -720,6 +833,45 @@ cin <span class="op">&gt;&gt;</span> h2 <span class="op">&gt;&gt;</span> m2;
 cout <span class="op">&lt;&lt;</span> durata;</code></pre>
           </div>
 
+          <h3>Exemplul 8 – O expresie logică, în trei limbaje</h3>
+          <p><strong>Cerință:</strong> Un magazin acordă un cod de discount clienților care au minimum 3 comenzi <strong>și</strong> valoarea totală a comenzilor de minimum 200 lei. Construiește expresia logică <code>eligibilDiscount</code>.</p>
+          <div class="tbl-wrap">
+            <table class="trace-table">
+              <thead><tr><th>nrComenzi</th><th>totalComenzi</th><th>nrComenzi&gt;=3</th><th>totalComenzi&gt;=200</th><th>eligibilDiscount</th></tr></thead>
+              <tbody>
+                <tr><td>2</td><td>350</td><td>false</td><td>true</td><td class="highlight">false</td></tr>
+                <tr><td>5</td><td>120</td><td>true</td><td>false</td><td class="highlight">false</td></tr>
+                <tr><td>4</td><td>210</td><td>true</td><td>true</td><td class="highlight">true</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> nrComenzi;
+<span class="tp">double</span> totalComenzi;
+cin <span class="op">&gt;&gt;</span> nrComenzi <span class="op">&gt;&gt;</span> totalComenzi;
+
+<span class="tp">bool</span> eligibilDiscount = (nrComenzi <span class="op">&gt;=</span> <span class="nm">3</span>) <span class="op">&amp;&amp;</span> (totalComenzi <span class="op">&gt;=</span> <span class="nm">200</span>);
+cout <span class="op">&lt;&lt;</span> eligibilDiscount;</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Java</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> nrComenzi = citire.nextInt();
+<span class="tp">double</span> totalComenzi = citire.nextDouble();
+
+<span class="tp">boolean</span> eligibilDiscount = (nrComenzi <span class="op">&gt;=</span> <span class="nm">3</span>) <span class="op">&amp;&amp;</span> (totalComenzi <span class="op">&gt;=</span> <span class="nm">200</span>);
+<span class="tp">System</span>.out.println(eligibilDiscount);</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copiază</button></div>
+            <pre><code>nrComenzi = <span class="fn">int</span>(<span class="fn">input</span>())
+totalComenzi = <span class="fn">float</span>(<span class="fn">input</span>())
+
+eligibilDiscount = (nrComenzi <span class="op">&gt;=</span> <span class="nm">3</span>) <span class="kw">and</span> (totalComenzi <span class="op">&gt;=</span> <span class="nm">200</span>)
+<span class="fn">print</span>(eligibilDiscount)</code></pre>
+          </div>
+          <p>Toate trei afișează, pentru ultima linie a tabelului, valoarea logică echivalentă cu „adevărat" — dar scrisă diferit: <code>1</code> în C++ (dacă nu ceri explicit <code>boolalpha</code>), <code>true</code> în Java, <code>True</code> în Python.</p>
+
           <!-- ANATOMIE -->
           <h2 id="anatomie">Anatomia unei expresii mixte</h2>
           <p>Considerăm expresia <code>pret * cantitate &gt;= 100 &amp;&amp; cantitate &gt; 0</code>, care ar putea verifica dacă o comandă îndeplinește un prag minim de valoare și are o cantitate pozitivă:</p>
@@ -961,6 +1113,35 @@ Python: <span class="nm">3.5</span> <span class="cm">// "/" e mereu impartire re
             <p><span class="qnum">18</span><code>(a == 23) || (b == 23)</code></p>
             <details><summary>Vezi răspunsul</summary><p><code>a == 23 → true</code>, deci întreaga expresie e <code>true</code> (SAU are nevoie de o singură condiție adevărată).</p></details>
           </div>
+          <div class="quiz-item">
+            <p><span class="qnum">19</span>Construiește tabelul de adevăr complet pentru expresia <code>!(a &gt; b) || (a == b)</code>, folosind toate cele patru combinații posibile pentru condițiile de bază <code>P: a &gt; b</code> și <code>Q: a == b</code> (adevărat/fals, adevărat/fals).</p>
+            <details><summary>Vezi răspunsul</summary>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>P (a&gt;b)</th><th>Q (a==b)</th><th>!P</th><th>!P || Q</th></tr></thead>
+                  <tbody>
+                    <tr><td>false</td><td>false</td><td>true</td><td>true</td></tr>
+                    <tr><td>false</td><td>true</td><td>true</td><td>true</td></tr>
+                    <tr><td>true</td><td>false</td><td>false</td><td>false</td></tr>
+                    <tr><td>true</td><td>true</td><td>false</td><td>true</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>Rezultatul e <code>false</code> într-un singur caz: când <code>a &gt; b</code> este adevărată și <code>a == b</code> este falsă — adică exact atunci când <code>a</code> este strict mai mare decât <code>b</code>. În toate celelalte cazuri (inclusiv <code>a &lt; b</code>), expresia e <code>true</code>. Practic, <code>!(a&gt;b) || (a==b)</code> este echivalentă cu <code>a &lt;= b</code>.</p>
+            </details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">20</span>Fie <code>int x = 0;</code>. Ce se întâmplă la evaluarea expresiei <code>(x != 0) &amp;&amp; (10 / x &gt; 2)</code> în C++? Se produce o eroare de împărțire la zero?</p>
+            <details><summary>Vezi răspunsul</summary><p>Nu. Datorită evaluării în scurt-circuit a lui <code>&amp;&amp;</code>, dacă prima condiție <code>(x != 0)</code> este <code>false</code>, C++ nu mai evaluează deloc a doua condiție — deci <code>10 / x</code> nici nu se calculează, și nu apare împărțire la zero. Rezultatul întregii expresii este direct <code>false</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">21</span>Traduceți în Python expresia C++ <code>bool ok = (varsta &gt;= 18) &amp;&amp; (varsta &lt;= 65);</code>.</p>
+            <details><summary>Vezi răspunsul</summary><p><code>ok = (varsta &gt;= 18) and (varsta &lt;= 65)</code> — sau, folosind particularitatea Python de comparații înlănțuite: <code>ok = 18 &lt;= varsta &lt;= 65</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">22</span>Traduceți în Java expresia C++ <code>bool gasit = (cod == 0) || (cod == -1);</code>. Ce se schimbă, în afară de <code>||</code> care rămâne identic?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>boolean gasit = (cod == 0) || (cod == -1);</code> — singura diferență e numele tipului: <code>boolean</code> în loc de <code>bool</code>. Operatorul <code>||</code>, valorile <code>true</code>/<code>false</code> și restul sintaxei rămân identice cu C++.</p></details>
+          </div>
 
           <hr style="margin:2rem 0;border-color:var(--border);">
           <h2 id="tracing">Code Tracing – Exerciții</h2>
@@ -1026,27 +1207,27 @@ b = b <span class="op">-</span> a;</code></pre></div>
           <p>Pentru fiecare problemă: identifică datele de intrare, stabilește variabilele și tipurile lor, scrie relația de calcul, transformă relația într-o expresie C++, scrie programul complet și verifică-l cu cel puțin două seturi de date.</p>
 
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Curte</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Media ponderată a două note</div><span class="exercise-tag">Nivel: Încălzire</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Într-o curte sunt <code>n</code> găini și <code>m</code> vaci. Determină numărul total de picioare ale animalelor.</p>
-              <details><summary>Indiciu</summary><p>O găină are 2 picioare, o vacă 4: <code>picioare = 2*n + 4*m;</code></p></details>
+              <p>Se citesc două note și ponderile lor (de exemplu, o notă de la teză cu pondere 0.6 și o notă din activitate cu pondere 0.4). Determină media ponderată.</p>
+              <details><summary>Indiciu</summary><p><code>media = nota1*pondere1 + nota2*pondere2;</code> — dacă ponderile sunt subunitare și însumează 1, nu mai e nevoie de împărțire suplimentară. Verifică totuși cu paranteze dacă preferi forma generală <code>(nota1*pondere1 + nota2*pondere2) / (pondere1+pondere2);</code></p></details>
             </div>
           </div>
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num apply">2</div><div class="exercise-title">Populație</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-header"><div class="exercise-num apply">2</div><div class="exercise-title">Verificare interval printr-o expresie logică</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Un oraș are inițial <code>n</code> locuitori. În fiecare an populația crește cu <code>x</code> locuitori (număr fix, nu procent). Determină populația după <code>y</code> ani.</p>
-              <details><summary>Indiciu</summary><p><code>populatieFinala = n + x * y;</code> — creșterea e liniară, nu compusă.</p></details>
+              <p>Se citește un număr <code>x</code>. Construiește o variabilă logică <code>inInterval</code> care este <code>true</code> dacă <code>x</code> este cuprins între 10 și 20, inclusiv, și <code>false</code> altfel. Afișeaz-o (nu folosi încă <code>if</code>).</p>
+              <details><summary>Indiciu</summary><p><code>bool inInterval = (x &gt;= 10) &amp;&amp; (x &lt;= 20);</code>. <code>cout</code> va afișa <code>1</code> pentru <code>true</code> și <code>0</code> pentru <code>false</code>, dacă nu folosești <code>boolalpha</code>.</p></details>
             </div>
           </div>
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num warm">3</div><div class="exercise-title">Preț total</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-header"><div class="exercise-num warm">3</div><div class="exercise-title">Aria unui trapez</div><span class="exercise-tag">Nivel: Încălzire</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Se cunosc prețul unui produs și numărul de produse cumpărate. Determină suma totală de plată.</p>
-              <details><summary>Indiciu</summary><p><code>total = pret * cantitate;</code>. Prețul trebuie <code>double</code>, nu <code>int</code>.</p></details>
+              <p>Se citesc lungimile celor două baze ale unui trapez (<code>B</code>, <code>b</code>) și înălțimea <code>h</code>. Determină aria, folosind formula <code>A = (B + b) · h / 2</code>.</p>
+              <details><summary>Indiciu</summary><p><code>arie = (B + b) * h / 2.0;</code> — parantezele de la sumă sunt obligatorii; <code>2.0</code> asigură un rezultat cu zecimale.</p></details>
             </div>
           </div>
           <div class="exercise">
@@ -1066,11 +1247,13 @@ b = b <span class="op">-</span> a;</code></pre></div>
             </div>
           </div>
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num warm">6</div><div class="exercise-title">Dreptunghi</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-header"><div class="exercise-num combine">6</div><div class="exercise-title">Rest la cumpărături, în bancnote</div><span class="exercise-tag">Nivel: Combinat</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Se citesc lungimea și lățimea unui dreptunghi. Determină aria și perimetrul.</p>
-              <details><summary>Indiciu</summary><p><code>arie = lungime * latime;</code>, <code>perimetru = 2 * (lungime + latime);</code></p></details>
+              <p>Se citește restul de dat unui client, în lei (un număr natural). Determină, folosind doar <code>/</code> și <code>%</code> (fără structuri repetitive), câte bancnote de 10 lei, apoi câte de 5 lei și câte monede de 1 leu sunt necesare, în această ordine, pentru a forma exact restul.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 37
+Iesire : 3 1 2</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>b10 = rest / 10; ramas1 = rest % 10; b5 = ramas1 / 5; b1 = ramas1 % 5;</code> — același lanț de <code>/</code> și <code>%</code> ca la extragerea cifrelor unui număr, aplicat aici asupra unor valori de monedă, nu de poziții zecimale.</p></details>
             </div>
           </div>
           <div class="exercise">
@@ -1082,35 +1265,35 @@ b = b <span class="op">-</span> a;</code></pre></div>
             </div>
           </div>
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num apply">8</div><div class="exercise-title">Ultimele două cifre</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-header"><div class="exercise-num apply">8</div><div class="exercise-title">Viteza medie</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Se citește un număr natural <code>n</code> cu cel puțin trei cifre. Afișează numărul format din ultimele două cifre și suma celor două cifre.</p>
-              <details><summary>Indiciu</summary><p>Ultimele două cifre: <code>n % 100</code>. Suma lor: extrage-le separat cu <code>%10</code> și <code>/10%10</code>, apoi adună-le.</p></details>
+              <p>Se citesc distanța parcursă (în km) și timpul de parcurgere (în ore, poate avea zecimale). Determină viteza medie, în km/h: <code>v = d / t</code>.</p>
+              <details><summary>Indiciu</summary><p><code>double viteza = distanta / timp;</code> — declară ambele variabile <code>double</code>, chiar dacă introduci valori întregi la testare.</p></details>
             </div>
           </div>
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num apply">9</div><div class="exercise-title">Număr de trei cifre</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-header"><div class="exercise-num apply">9</div><div class="exercise-title">Procentaj dintr-un total</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Se citește un număr natural cu exact trei cifre. Afișează separat cifra sutelor, cifra zecilor și cifra unităților.</p>
-              <details><summary>Indiciu</summary><p><code>sute = n / 100;</code>, <code>zeci = n / 10 % 10;</code>, <code>unitati = n % 10;</code></p></details>
+              <p>Într-o clasă sunt <code>x</code> fete și <code>y</code> băieți. Determină ce procent din totalul elevilor reprezintă fetele: <code>p = x / (x + y) · 100</code>.</p>
+              <details><summary>Indiciu</summary><p><code>double p = (double)x / (x + y) * 100;</code> — dacă nu convertești <code>x</code> la <code>double</code> înainte de împărțire, calculul se face întreg și pierzi zecimalele.</p></details>
             </div>
           </div>
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num combine">10</div><div class="exercise-title">Interschimbarea ultimelor două cifre</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-header"><div class="exercise-num combine">10</div><div class="exercise-title">Un raport cu paranteze pe ambele părți</div><span class="exercise-tag">Nivel: Combinat</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Se citește un număr natural cu exact trei cifre. Construiește numărul obținut prin interschimbarea cifrei zecilor cu cifra unităților.</p>
-              <details><summary>Indiciu</summary><p>Extrage <code>sute</code>, <code>zeci</code>, <code>unitati</code>, apoi construiește <code>sute*100 + unitati*10 + zeci</code>.</p></details>
+              <p>Se citesc patru numere reale <code>a</code>, <code>b</code>, <code>c</code>, <code>d</code>, cu <code>c ≠ d</code>. Calculează <code>R = (a + b) / (c - d)</code>.</p>
+              <details><summary>Indiciu</summary><p><code>double R = (a + b) / (c - d);</code> — ambele paranteze sunt necesare: fără ele, prioritatea lui <code>/</code> ar grupa greșit termenii.</p></details>
             </div>
           </div>
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num combine">11</div><div class="exercise-title">Eliminarea cifrei zecilor</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-header"><div class="exercise-num warm">11</div><div class="exercise-title">Verificare paritate printr-o expresie</div><span class="exercise-tag">Nivel: Încălzire</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Se citește un număr natural cu exact trei cifre. Construiește numărul format din cifra sutelor și cifra unităților (fără cifra zecilor).</p>
-              <details><summary>Indiciu</summary><p><code>rezultat = sute * 10 + unitati;</code></p></details>
+              <p>Se citește un număr întreg <code>n</code>. Construiește o variabilă logică <code>parNumar</code> care este <code>true</code> dacă <code>n</code> este par, și afișeaz-o (fără <code>if</code>).</p>
+              <details><summary>Indiciu</summary><p><code>bool parNumar = (n % 2 == 0);</code></p></details>
             </div>
           </div>
           <div class="exercise">
@@ -1143,6 +1326,24 @@ b = b <span class="op">-</span> a;</code></pre></div>
               <p class="cerinta">Cerință</p>
               <p>Se citește o durată <code>t</code> exprimată în secunde. Determină numărul de minute complete și numărul de secunde rămase.</p>
               <details><summary>Indiciu</summary><p><code>minute = t / 60;</code>, <code>secundeRamase = t % 60;</code></p></details>
+            </div>
+          </div>
+
+          <h3>Expresii relaționale și logice — trei exerciții combinate</h3>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">16</div><div class="exercise-title">Verificarea unui triunghi valid</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc trei numere reale <code>a</code>, <code>b</code>, <code>c</code>, reprezentând lungimile a trei segmente. Construiește o singură expresie logică <code>triunghiValid</code>, adevărată dacă și numai dacă cele trei segmente pot forma un triunghi (suma oricăror două laturi trebuie să fie strict mai mare decât a treia). Afișeaz-o, fără <code>if</code>.</p>
+              <details><summary>Indiciu</summary><p><code>bool triunghiValid = (a + b &gt; c) &amp;&amp; (b + c &gt; a) &amp;&amp; (a + c &gt; b);</code> — sunt trei condiții, toate trebuie îndeplinite simultan, deci se combină cu <code>&amp;&amp;</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">17</div><div class="exercise-title">Notă de trecere sau corigență</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește nota unui elev la o materie (număr real, între 1 și 10) și numărul de absențe nemotivate. Elevul este declarat „corigent" dacă nota este sub 5 <strong>sau</strong> dacă are peste 20 de absențe nemotivate, chiar dacă nota este peste 5. Construiește expresia logică <code>corigent</code> și afișeaz-o. Scrie apoi aceeași expresie și în Python.</p>
+              <details><summary>Indiciu</summary><p>C++: <code>bool corigent = (nota &lt; 5) || (absente &gt; 20);</code>. Python: <code>corigent = (nota &lt; 5) or (absente &gt; 20)</code> — doar cuvântul-cheie <code>or</code> diferă față de <code>||</code>.</p></details>
             </div>
           </div>
 
@@ -1208,8 +1409,8 @@ b = b <span class="op">-</span> a;</code></pre></div>
             <div class="exercise-header"><div class="exercise-num apply">E1</div><div class="exercise-title">Construirea expresiilor</div><span class="exercise-tag">Nivel: Extra</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Scrie câte o expresie C++ pentru: (1) dublul sumei numerelor <code>a</code> și <code>b</code>; (2) jumătatea diferenței dintre <code>x</code> și <code>y</code>; (3) pătratul sumei numerelor <code>a</code> și <code>b</code>; (4) restul împărțirii lui <code>n</code> la 7; (5) cifra unităților lui <code>n</code>; (6) cifra zecilor lui <code>n</code>; (7) numărul format din ultimele două cifre ale lui <code>n</code>.</p>
-              <details><summary>Indiciu</summary><p>(1) <code>2 * (a + b)</code>; (2) <code>(x - y) / 2.0</code>; (3) <code>(a + b) * (a + b)</code>; (4) <code>n % 7</code>; (5) <code>n % 10</code>; (6) <code>n / 10 % 10</code>; (7) <code>n % 100</code>.</p></details>
+              <p>Scrie câte o expresie C++ pentru: (1) dublul sumei numerelor <code>a</code> și <code>b</code>; (2) jumătatea diferenței dintre <code>x</code> și <code>y</code>, cu rezultat real; (3) pătratul sumei numerelor <code>a</code> și <code>b</code>; (4) restul împărțirii lui <code>n</code> la 7; (5) o valoare logică adevărată dacă <code>n</code> este multiplu de 3; (6) media aritmetică a patru valori întregi, cu rezultat real; (7) o valoare logică adevărată dacă <code>x</code> este strict între <code>-10</code> și <code>10</code>.</p>
+              <details><summary>Indiciu</summary><p>(1) <code>2 * (a + b)</code>; (2) <code>(x - y) / 2.0</code>; (3) <code>(a + b) * (a + b)</code>; (4) <code>n % 7</code>; (5) <code>n % 3 == 0</code>; (6) <code>(a + b + c + d) / 4.0</code>; (7) <code>(x &gt; -10) &amp;&amp; (x &lt; 10)</code>.</p></details>
             </div>
           </div>
           <div class="exercise">
@@ -1221,33 +1422,33 @@ b = b <span class="op">-</span> a;</code></pre></div>
             </div>
           </div>
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num apply">E3</div><div class="exercise-title">Prăjituri</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-header"><div class="exercise-num apply">E3</div><div class="exercise-title">Bacșiș la restaurant</div><span class="exercise-tag">Nivel: Extra</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Daniela are <code>s</code> lei, iar o prăjitură costă <code>n</code> lei (<code>1 ≤ n ≤ s</code>). Determină numărul maxim de prăjituri pe care le poate cumpăra și suma de bani care îi mai trebuie pentru a cumpăra încă una.</p>
-              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 10 3
-Iesire : 3 2</code></pre></div>
-              <details><summary>Indiciu</summary><p><code>nrPrajituri = s / n;</code>, bani rămași <code>s % n</code>, suma care mai trebuie: <code>n - s % n</code>. Pentru 10 și 3: <code>10/3=3</code>, <code>10%3=1</code>, <code>3-1=2</code>.</p></details>
+              <p>Se citesc valoarea unei note de plată și procentul de bacșiș dorit. Determină suma bacșișului și totalul de plată.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 120 10
+Iesire : 12 132</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>bacsis = nota * procent / 100.0;</code>, <code>total = nota + bacsis;</code>. Reține procentul ca fracție zecimală, la fel ca la calculul TVA.</p></details>
             </div>
           </div>
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num combine">E4</div><div class="exercise-title">Secunde în ore, minute și secunde</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-header"><div class="exercise-num combine">E4</div><div class="exercise-title">Consum mediu de combustibil</div><span class="exercise-tag">Nivel: Extra</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Se citește o durată exprimată printr-un număr total de secunde. Transformă durata în ore, minute și secunde.</p>
-              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 3672
-Iesire : 1 1 12</code></pre></div>
-              <details><summary>Indiciu</summary><p><code>ore = n / 3600;</code>, <code>ramase = n % 3600;</code>, <code>minute = ramase / 60;</code>, <code>secunde = ramase % 60;</code>.</p></details>
+              <p>Se citesc distanța parcursă, în km, și cantitatea de combustibil consumată, în litri. Determină consumul mediu la 100 km.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 450 36
+Iesire : 8</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>consum = cantitate / distanta * 100;</code> — verifică ordinea operațiilor: dacă inversezi împărțirea cu înmulțirea, riști o împărțire întreagă accidentală dacă variabilele nu sunt <code>double</code>.</p></details>
             </div>
           </div>
           <div class="exercise">
-            <div class="exercise-header"><div class="exercise-num hard">E5</div><div class="exercise-title">Rotirea cifrelor</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-header"><div class="exercise-num hard">E5</div><div class="exercise-title">Vârsta aproximativă în zile</div><span class="exercise-tag">Nivel: Extra</span></div>
             <div class="exercise-body">
               <p class="cerinta">Cerință</p>
-              <p>Se citește un număr natural de forma <code>abc</code>, cu exact trei cifre. Construiește numărul de forma <code>bca</code> (cifrele „rotite" cu o poziție).</p>
-              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 378
-Iesire : 783</code></pre></div>
-              <details><summary>Indiciu</summary><p>Dacă <code>a</code>=sute, <code>b</code>=zeci, <code>c</code>=unități, atunci <code>bca = b*100 + c*10 + a;</code>. Pentru 378: <code>a=3,b=7,c=8 → 7*100+8*10+3=783</code>.</p></details>
+              <p>Se citește vârsta unei persoane, în ani întregi. Determină, aproximativ, de câte zile a trăit, considerând un an cu 365.25 zile (pentru a ține cont, în medie, de anii bisecți).</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 20
+Iesire : 7305</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>double zile = varsta * 365.25;</code> — dacă vrei un număr întreg de zile, trunchiază explicit cu o conversie: <code>int ziZile = (int)zile;</code></p></details>
             </div>
           </div>
           <div class="exercise">
@@ -1293,15 +1494,34 @@ din aceasta sesiune: stanga -&gt; dreapta
               <div class="cheat-card-header">Operatori relaționali</div>
               <pre>&lt;  &lt;=  &gt;  &gt;=  ==  !=
 Rezultat: intotdeauna bool
-Atentie: = e atribuire, == e comparatie</pre>
+Atentie: = e atribuire, == e comparatie
+Identici in C++ / Java / Python</pre>
             </div>
             <div class="cheat-card">
-              <div class="cheat-card-header">Operatori logici</div>
-              <pre>&amp;&amp;  ambele adevarate -&gt; true
-||  cel putin una adevarata -&gt; true
-!   inverseaza valoarea
+              <div class="cheat-card-header">Tabel de adevăr && / ||</div>
+              <pre>A     B     A&amp;&amp;B   A||B
+false false false  false
+false true  false  true
+true  false false  true
+true  true  true   true
 
-(varsta&gt;=18) &amp;&amp; (varsta&lt;=65)</pre>
+!true = false   !false = true</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Operatori logici pe limbaje</div>
+              <pre>       C++/Java   Python
+SI     &amp;&amp;         and
+SAU    ||         or
+NU     !          not
+
+Scurt-circuit: da, in toate trei</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">bool / boolean / True-False</div>
+              <pre>       tip        adevarat  fals
+C++    bool       true      false
+Java   boolean    true      false
+Python bool       True      False</pre>
             </div>
             <div class="cheat-card">
               <div class="cheat-card-header">Împărțire</div>
@@ -1345,6 +1565,9 @@ x&gt;0 &amp;&amp; x&lt;10  -&gt; interval corect
                 <tr><td>ȘI logic</td><td><code>&amp;&amp;</code></td><td><code>and</code></td><td><code>&amp;&amp;</code></td></tr>
                 <tr><td>SAU logic</td><td><code>||</code></td><td><code>or</code></td><td><code>||</code></td></tr>
                 <tr><td>Negare logică</td><td><code>!</code></td><td><code>not</code></td><td><code>!</code></td></tr>
+                <tr><td>Numele tipului logic</td><td><code>bool</code></td><td><code>bool</code></td><td><code>boolean</code></td></tr>
+                <tr><td>Valori logice</td><td><code>true / false</code></td><td><code>True / False</code></td><td><code>true / false</code></td></tr>
+                <tr><td>Comparații înlănțuite</td><td>nu (scrie <code>&amp;&amp;</code>)</td><td><code>18&lt;=x&lt;=65</code></td><td>nu (scrie <code>&amp;&amp;</code>)</td></tr>
                 <tr><td>Incrementare</td><td><code>x++</code></td><td><code>x += 1</code></td><td><code>x++</code></td></tr>
                 <tr><td>Conversie la real</td><td><code>(double)a</code></td><td><code>float(a)</code></td><td><code>(double)a</code></td></tr>
               </tbody>
