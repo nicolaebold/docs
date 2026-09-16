@@ -81,5 +81,27 @@ document.addEventListener('DOMContentLoaded', () => {
     headings.forEach(h => observer.observe(h));
   }
 
+     /* ---- Auto-generare "Sesiuni" (navigare intre pagini) ---- */
+  const SESSIONS = [
+    { file: 'sesiunea-0.html',  label: 'S0 – Syllabus' },
+    { file: 'sesiunea-0b.html', label: 'S0b – Limbaje' },
+    { file: 'sesiunea-1.html',  label: 'S1 – Calculator și C++' },
+    { file: 'sesiunea-2.html',  label: 'S2 – Variabile și tipuri' },
+    { file: 'sesiunea-3.html',  label: 'S3 – Expresii și evaluarea lor' },
+    // adaugi aici o linie noua de fiecare data cand apare o sesiune noua
+  ];
+
+  const sessionNav = document.getElementById('sessionNav');
+  if (sessionNav) {
+    const currentFile = location.pathname.split('/').pop() || 'index.html';
+    let html = '<span class="sidebar-label">Sesiuni</span>';
+    SESSIONS.forEach(s => {
+      const activeClass = s.file === currentFile ? ' active' : '';
+      html += `<a class="sidebar-link${activeClass}" href="${s.file}">${s.label}</a>`;
+    });
+    html += '<a class="sidebar-link" href="index.html">← Înapoi la modul</a>';
+    sessionNav.innerHTML = html;
+  }
+
   
 });
