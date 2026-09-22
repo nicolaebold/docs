@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sisteme de Operare | Portal Didactic</title>
+<meta name="description" content="Documentație de laborator pentru disciplina Sisteme de Operare — proiectul PitOS, elemente inițiale, evaluare și resurse." />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+
+<!-- ========== TOP NAV ========== -->
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">SO</span> Sisteme de Operare</a>
+  <div class="topnav-breadcrumb">
+    <span>Matematică-Informatică</span><span class="sep">›</span><span>Nivel licență</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="#initiale" onclick="event.preventDefault();" class="btn-sm primary" data-jump="initiale">Începe aici</a>
+  </div>
+</nav>
+
+<!-- ========== LAYOUT ========== -->
+<div class="shell">
+  <!-- LEFT SIDEBAR — session nav -->
+  <aside class="sidebar">
+    <span class="sidebar-label">Modul</span>
+    <a class="sidebar-link active" href="index.html">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zm0 6a1 1 0 011-1h6a1 1 0 010 2H4a1 1 0 01-1-1z"/></svg>
+      Prezentare generală
+    </a>
+
+    <span class="sidebar-label">Sesiuni de laborator</span>
+    <a class="sidebar-link is-upcoming" href="#" style="opacity:.6;pointer-events:none;">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      S1 – Mediu și procese <span class="sidebar-tag upcoming"></span>
+    </a>
+    <a class="sidebar-link is-upcoming" href="#" style="opacity:.6;pointer-events:none;">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      S3 – Fire de execuție <span class="sidebar-tag upcoming"></span>
+    </a>
+    <a class="sidebar-link is-upcoming" href="#" style="opacity:.6;pointer-events:none;">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      S5 – Sincronizare și impas <span class="sidebar-tag upcoming"></span>
+    </a>
+    <a class="sidebar-link is-upcoming" href="#" style="opacity:.6;pointer-events:none;">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      S7 – Gestiunea memoriei <span class="sidebar-tag upcoming"></span>
+    </a>
+    <a class="sidebar-link is-upcoming" href="#" style="opacity:.6;pointer-events:none;">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      S9 – Sisteme de fișiere <span class="sidebar-tag upcoming"></span>
+    </a>
+    <a class="sidebar-link is-upcoming" href="#" style="opacity:.6;pointer-events:none;">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      S11 – Planificare I/O <span class="sidebar-tag upcoming"></span>
+    </a>
+    <a class="sidebar-link is-upcoming" href="#" style="opacity:.6;pointer-events:none;">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      S13 – Proiect de integrare <span class="sidebar-tag upcoming"></span>
+    </a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="hero-index">
+      <div class="overline">Facultate · Matematică-Informatică · Sisteme de Operare</div>
+      <h1>Sisteme de Operare<br>cu proiectul PitOS</h1>
+      <p>Nu memorezi definiții — construiești, bucată cu bucată, un mic sistem de operare educațional, în C, peste Linux. Fiecare sesiune adaugă ceva peste ce ai făcut deja.</p>
+      <div class="hero-chips">
+        <span class="hero-chip">Linux / C / POSIX</span>
+        <span class="hero-chip">7 sesiuni × laborator</span>
+        <span class="hero-chip">Docker (mediu standard)</span>
+        <span class="hero-chip">Proiect cumulativ</span>
+      </div>
+    </div>
+
+    <div class="overview-grid">
+      <div class="ov-card"><div class="ov-number">7</div><div class="ov-label">Sesiuni de laborator</div></div>
+      <div class="ov-card"><div class="ov-number">5p+5p</div><div class="ov-label">Laborator + examen</div></div>
+      <div class="ov-card"><div class="ov-number">Linux/C</div><div class="ov-label">Stack tehnic</div></div>
+      <div class="ov-card"><div class="ov-number">VPL</div><div class="ov-label">Predare &amp; testare automată</div></div>
+    </div>
+
+    <!-- TAB BAR -->
+    <div class="tabbar" role="tablist" aria-label="Secțiuni SO">
+      <button class="tab active" role="tab" aria-selected="true" data-tab="prezentare">Prezentarea disciplinei</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="initiale">Pregătire tehnică</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="evaluare">Evaluare</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="resurse">Resurse</button>
+    </div>
+
+    <!-- ===================== TAB: PREZENTAREA DISCIPLINEI ===================== -->
+    <section class="tabpanel active" id="tab-prezentare" role="tabpanel">
+
+      <div class="section-header"><h2>Despre disciplină</h2></div>
+      <div class="prose">
+        <p>
+          Sistemele de Operare sunt stratul de software care stă între programele pe care le scrii și hardware-ul
+          real al calculatorului — procesor, memorie, disc, dispozitive de intrare/ieșire. Orice program pe care
+          îl rulezi, de la un simplu „Hello, world!" până la un joc complex, depinde de deciziile pe care le ia
+          sistemul de operare: cui îi dă procesorul acum, unde stochează datele în memorie, în ce ordine
+          răspunde la cererile de citire a unui fișier. Disciplina te învață exact aceste decizii — de ce există,
+          ce probleme rezolvă și ce se întâmplă când nu sunt rezolvate corect (blocaje, coruperea datelor,
+          încetiniri inexplicabile).
+        </p>
+        <p>
+          Este o disciplină predominant practică: teoria e scurtă și e mereu urmată imediat de un experiment pe
+          care îl rulezi și îl observi tu însuți. Scopul nu este să memorezi definiții, ci să ajungi să te simți
+          confortabil citind și scriind cod care interacționează direct cu sistemul de operare — o abilitate
+          folosită zilnic de orice programator care lucrează la nivel de sistem, rețea, baze de date sau
+          infrastructură.
+        </p>
+      </div>
+
+      <div class="section-header"><h2>Ce vei studia — rezumat</h2></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Temă</th><th>Ce înveți concret</th></tr></thead>
+          <tbody>
+            <tr><td>Procese</td><td>Cum pornește un program, cum „naște" un proces altul (<code>fork</code>), cum se termină</td></tr>
+            <tr><td>Fire de execuție</td><td>Cum rulează mai multe fluxuri de cod în paralel, în același proces</td></tr>
+            <tr><td>Sincronizare și impas</td><td>Cum previi coruperea datelor când mai multe fire lucrează pe aceleași date, și ce e un blocaj (deadlock)</td></tr>
+            <tr><td>Gestiunea memoriei</td><td>Cum împarte sistemul memoria RAM între programe, ce e memoria virtuală</td></tr>
+            <tr><td>Sisteme de fișiere</td><td>Cum sunt organizate datele pe disc, ce înseamnă un fișier „din interior"</td></tr>
+            <tr><td>Planificare I/O</td><td>În ce ordine sunt servite cererile către un disc, și de ce contează ordinea</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-header"><h2>Ce este PitOS</h2></div>
+      <div class="prose">
+        <p>
+          PitOS este numele proiectului pe care îl construiești, treptat, de-a lungul semestrului, în loc să
+          rezolvi 7 teme complet separate. La S1 scrii primele linii de cod care pornesc procese; la S3 acel cod
+          capătă fire de execuție; la S5 înveți să le sincronizezi; și tot așa, până la S13, când sistemul tău —
+          cu procese, fire de execuție, memorie, fișiere și planificare I/O — este integrat într-un singur
+          proiect, pe care îl prezinți și îl aperi oral.
+        </p>
+      </div>
+      <div class="box warning">
+        <div class="box-title"><i class="fa-solid fa-triangle-exclamation"></i> Precizare tehnică importantă</div>
+        <p>
+          PitOS <strong>nu este un sistem de operare propriu-zis</strong> — nu are propriul kernel. E un proiect
+          în spațiul utilizator (user-space), scris în C, peste apelurile de sistem ale kernelului Linux — la fel
+          ca orice program obișnuit. Un kernel real, de la zero, depășește cu mult ce se poate face pedagogic
+          într-un semestru. Numele „sistem de operare" e o narațiune care leagă laboratoarele, nu o afirmație
+          tehnică literală — vei înțelege exact diferența chiar din prima sesiune.
+        </p>
+      </div>
+
+      <div class="section-header">
+        <h2>Sesiunile de laborator</h2>
+        <span class="count">7 sesiuni · o dată la două săptămâni</span>
+      </div>
+      <div class="prose">
+        <p>
+          Ordinea urmărește ce ai nevoie să știi înainte de pasul următor: firele de execuție (S3) vin după
+          procese (S1) pentru că depind de ele; sincronizarea (S5) vine imediat după fire de execuție, pentru că
+          fără fire de execuție n-ai ce sincroniza. Memoria, fișierele și I/O-ul pot veni în orice ordine unele
+          față de altele, așa că sunt grupate ca să nu sari de la un subiect la altul.
+        </p>
+      </div>
+      <div class="modules-grid">
+        <div class="module-card">
+          <div class="card-session">Sesiunea 1</div>
+          <div class="card-title">Mediu și procese</div>
+          <div class="card-desc">Shell, apeluri de sistem, descriptori de fișiere, <code>fork</code>/<code>exec</code>/<code>wait</code>.</div>
+          <div class="card-footer"><div class="card-status upcoming"><span class="dot"></span>În pregătire</div></div>
+        </div>
+        <div class="module-card">
+          <div class="card-session">Sesiunea 3</div>
+          <div class="card-title">Fire de execuție</div>
+          <div class="card-desc"><code>pthreads</code> — creare, așteptare, memorie partajată.</div>
+          <div class="card-footer"><div class="card-status upcoming"><span class="dot"></span>În pregătire</div></div>
+        </div>
+        <div class="module-card">
+          <div class="card-session">Sesiunea 5</div>
+          <div class="card-title">Sincronizare și impas</div>
+          <div class="card-desc">Mutex, semafoare, filosofii la masă, algoritmul bancherului.</div>
+          <div class="card-footer"><div class="card-status upcoming"><span class="dot"></span>În pregătire</div></div>
+        </div>
+        <div class="module-card">
+          <div class="card-session">Sesiunea 7</div>
+          <div class="card-title">Gestiunea memoriei</div>
+          <div class="card-desc">Paginare, memorie virtuală, algoritmi de înlocuire a paginilor.</div>
+          <div class="card-footer"><div class="card-status upcoming"><span class="dot"></span>În pregătire</div></div>
+        </div>
+        <div class="module-card">
+          <div class="card-session">Sesiunea 9</div>
+          <div class="card-title">Sisteme de fișiere</div>
+          <div class="card-desc">Structuri pe disc, operații POSIX pe fișiere și directoare.</div>
+          <div class="card-footer"><div class="card-status upcoming"><span class="dot"></span>În pregătire</div></div>
+        </div>
+        <div class="module-card">
+          <div class="card-session">Sesiunea 11</div>
+          <div class="card-title">Planificare I/O</div>
+          <div class="card-desc">FCFS, SSTF, SCAN — ordinea cererilor către disc.</div>
+          <div class="card-footer"><div class="card-status upcoming"><span class="dot"></span>În pregătire</div></div>
+        </div>
+        <div class="module-card" style="border-color:var(--accent);">
+          <div class="card-session">Sesiunea 13 · <span style="color:var(--accent)">Capstone</span></div>
+          <div class="card-title">Proiect de integrare — Release Day</div>
+          <div class="card-desc">Sistemul complet, predat și susținut oral.</div>
+          <div class="card-footer"><div class="card-status upcoming"><span class="dot"></span>În pregătire</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TAB: ELEMENTE INIȚIALE ===================== -->
+    <section class="tabpanel" id="tab-initiale" role="tabpanel">
+
+      <div class="prose">
+        <p>Tot ce trebuie pregătit <strong>înainte</strong> de prima sesiune — cont, unelte, mediu de lucru. Parcurge-le în ordine, o singură dată.</p>
+      </div>
+
+      <div class="section-header"><h2>1. Contul de Moodle</h2></div>
+      <div class="prose">
+        <ul>
+          <li>Verifică accesul la platforma oficială Moodle a facultății, cu contul tău de student.</li>
+          <li>Caută disciplina <strong>Sisteme de Operare</strong> în lista de cursuri și înscrie-te (auto-enrol sau cu cheia dată la curs).</li>
+          <li>În pagina disciplinei vei găsi: materialele de curs, Dockerfile-ul, câte o activitate <strong>VPL</strong> pentru fiecare din sesiunile S1–S11, și un assignment obișnuit pentru proiectul final (S13).</li>
+        </ul>
+      </div>
+      <div class="box danger">
+        <div class="box-title"><i class="fa-solid fa-shield-halved"></i> Nu ai nevoie de niciun alt cont</div>
+        <p>
+          Nu folosim GitHub, Discord sau alt serviciu extern pentru predarea lucrărilor — totul trece prin Moodle,
+          conform politicii instituției privind protecția datelor. Singurul instrument extern e Docker, care rulează
+          strict local, pe calculatorul tău, și nu trimite nimic nicăieri.
+        </p>
+      </div>
+
+      <div class="section-header"><h2>2. Prerechizite</h2></div>
+      <div class="prose">
+        <ul>
+          <li><strong>C, la nivel de bază</strong> — funcții, pointeri, alocare de memorie. Dacă îți sunt vagi, nu e o problemă — sunt reluate în context, cu exemple, chiar din S1.</li>
+          <li><strong>Linia de comandă</strong> — să știi să navighezi între directoare (<code>cd</code>, <code>ls</code>) și să editezi un fișier text simplu.</li>
+          <li><strong>Un calculator propriu</strong>, cu cel puțin 4 GB RAM disponibili și ~5 GB spațiu liber pe disc, pentru mediul de lucru.</li>
+        </ul>
+      </div>
+
+      <div class="section-header"><h2>3. Mediul de lucru</h2></div>
+      <div class="prose">
+        <p>
+          Ai nevoie de un mediu Linux în care să compilezi și să rulezi codul C pe care îl scrii la fiecare
+          sesiune — același mediu (aceleași versiuni de <code>gcc</code>, <code>glibc</code>, <code>pthread</code>)
+          în care VPL îți compilează și îți testează automat lucrarea pe Moodle. Diferențele de versiune sunt cea
+          mai frecventă cauză de „la mine mergea” — de-asta recomandăm <strong>Docker</strong> ca soluție implicită:
+          garantează exact același mediu pentru toată seria, indiferent ce sistem de operare ai pe calculatorul
+          personal. Mai jos ai instrucțiuni pas cu pas pentru Docker, pe fiecare sistem de operare, plus trei
+          alternative complete dacă preferi alt mod de lucru.
+        </p>
+      </div>
+
+      <h3 style="font-size:1.05rem;margin:1.4rem 0 .6rem;">3.1 Docker — instalare pas cu pas (recomandat)</h3>
+      <div class="prose">
+        <p><strong>Pe Windows:</strong></p>
+        <ol>
+          <li>Verifică dacă ai Windows 10 (versiunea 2004+) sau Windows 11 — Docker Desktop are nevoie de WSL2 ca back-end.</li>
+          <li>Descarcă <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener">Docker Desktop pentru Windows</a> și rulează instalatorul; lasă bifată opțiunea „Use WSL 2 instead of Hyper-V”.</li>
+          <li>Repornește calculatorul când ți se cere — pasul este obligatoriu la prima instalare.</li>
+          <li>Deschide Docker Desktop și așteaptă să apară „Engine running” în colțul din stânga jos.</li>
+          <li>Deschide PowerShell sau Windows Terminal și rulează <code>docker --version</code> — dacă vezi un număr de versiune, instalarea a reușit.</li>
+        </ol>
+        <p><strong>Pe macOS:</strong></p>
+        <ol>
+          <li>Verifică arhitectura procesorului: meniul Apple → „About This Mac” → dacă scrie „Apple M1/M2/M3”, ai chip Apple Silicon; altfel ai Intel.</li>
+          <li>Descarcă <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener">Docker Desktop pentru Mac</a> — versiunea corespunzătoare arhitecturii tale (Apple Silicon sau Intel).</li>
+          <li>Deschide fișierul <code>.dmg</code> descărcat și trage iconița Docker în folderul Applications.</li>
+          <li>Pornește Docker din Applications; la prima pornire ți se poate cere parola de administrator (pentru a instala componentele de rețea).</li>
+          <li>Deschide Terminal și rulează <code>docker --version</code> ca să confirmi instalarea.</li>
+        </ol>
+        <p><strong>Pe Linux (Docker Engine, fără Docker Desktop):</strong></p>
+        <ol>
+          <li>Urmează <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener">instrucțiunile oficiale</a> pentru distribuția ta exactă (Ubuntu, Fedora, Debian etc.) — pașii diferă puțin de la o distribuție la alta.</li>
+          <li>După instalare, adaugă-ți contul de utilizator în grupul <code>docker</code>, ca să nu fii nevoit să rulezi fiecare comandă cu <code>sudo</code>:
+            <div class="tbl-wrap" style="padding:12px 16px; font-family:var(--mono); font-size:.82rem; background:#0d1117; color:#e6edf3; border:none; margin:8px 0;">sudo usermod -aG docker $USER</div>
+          </li>
+          <li>Delogează-te și reloghează-te (sau repornește), apoi verifică cu <code>docker --version</code> și <code>docker run hello-world</code>.</li>
+        </ol>
+      </div>
+
+      <div class="prose">
+        <p>Odată instalat, în folderul unde ai pus Dockerfile-ul primit pe Moodle:</p>
+      </div>
+      <div class="tbl-wrap" style="padding:16px 18px; font-family:var(--mono); font-size:.85rem; background:#0d1117; color:#e6edf3; border:none;">
+<span style="color:#8b949e"># o singură dată</span><br>
+docker build -t pitos-lab .<br><br>
+<span style="color:#8b949e"># de fiecare dată când lucrezi</span><br>
+docker run -it --rm -v "$(pwd)":/pitos -w /pitos pitos-lab
+      </div>
+      <div class="prose">
+        <p>
+          Prima comandă construiește imaginea (durează câteva minute, o singură dată). A doua pornește un
+          container temporar (<code>--rm</code> îl șterge automat la ieșire) și îți leagă folderul curent de pe
+          calculator de folderul <code>/pitos</code> din interior (<code>-v</code>), astfel încât fișierele pe care
+          le editezi cu editorul tău obișnuit (VS Code, de exemplu) sunt exact cele pe care le compilezi în
+          container. Ieși din container cu <code>exit</code> — fișierele rămân pe disc, containerul dispare.
+        </p>
+      </div>
+
+      <h3 style="font-size:1.05rem;margin:1.6rem 0 .6rem;">3.2 Alternative la Docker</h3>
+      <div class="prose">
+        <p>
+          Dacă nu vrei să folosești Docker, oricare din cele trei variante de mai jos este la fel de acceptată —
+          condiția unică este să ai versiunile de compilator și biblioteci cerute de curs (aceleași instalate în
+          Dockerfile-ul primit, care poate fi citit ca listă de referință chiar dacă nu îl rulezi).
+        </p>
+      </div>
+
+      <p style="font-weight:700;font-size:.92rem;margin:1.1rem 0 .3rem;">Opțiunea A — WSL2 (Windows Subsystem for Linux), doar pe Windows</p>
+      <div class="prose">
+        <ol>
+          <li>Deschide PowerShell ca administrator și rulează:
+            <div class="tbl-wrap" style="padding:12px 16px; font-family:var(--mono); font-size:.82rem; background:#0d1117; color:#e6edf3; border:none; margin:8px 0;">wsl --install -d Ubuntu-22.04</div>
+          </li>
+          <li>Repornește calculatorul dacă ți se cere; la prima pornire a Ubuntu-ului ți se cere să alegi un utilizator și o parolă pentru mediul Linux (independente de contul Windows).</li>
+          <li>În terminalul Ubuntu deschis, actualizează pachetele și instalează uneltele de bază:
+            <div class="tbl-wrap" style="padding:12px 16px; font-family:var(--mono); font-size:.82rem; background:#0d1117; color:#e6edf3; border:none; margin:8px 0;">sudo apt update && sudo apt install -y build-essential gdb valgrind git manpages-posix-dev</div>
+          </li>
+          <li>Verifică versiunea de compilator cu <code>gcc --version</code> și compar-o cu cea din Dockerfile-ul primit pe Moodle.</li>
+          <li>Editează fișierele fie direct din terminalul WSL (<code>vim</code>/<code>nano</code>), fie cu VS Code, instalând extensia „WSL” — deschizi folderul cu <code>code .</code> din terminalul Ubuntu.</li>
+        </ol>
+      </div>
+
+      <p style="font-weight:700;font-size:.92rem;margin:1.1rem 0 .3rem;">Opțiunea B — Linux instalat nativ pe calculator</p>
+      <div class="prose">
+        <p>Dacă ai deja Linux ca sistem de operare principal (sau dual-boot), nu ai nevoie de Docker sau WSL — instalezi direct uneltele:</p>
+        <ol>
+          <li>Deschide un terminal și rulează (exemplu pentru distribuții bazate pe Ubuntu/Debian):
+            <div class="tbl-wrap" style="padding:12px 16px; font-family:var(--mono); font-size:.82rem; background:#0d1117; color:#e6edf3; border:none; margin:8px 0;">sudo apt update && sudo apt install -y build-essential gdb valgrind git manpages-posix-dev</div>
+          </li>
+          <li>Pe alte distribuții (Fedora, Arch etc.), folosește managerul de pachete propriu — caută echivalentele <code>gcc</code>, <code>make</code>, <code>gdb</code>, <code>valgrind</code>.</li>
+          <li>Verifică versiunea de <code>gcc</code> instalată și compar-o cu cea folosită de VPL (indicată în Dockerfile).</li>
+        </ol>
+      </div>
+
+      <p style="font-weight:700;font-size:.92rem;margin:1.1rem 0 .3rem;">Opțiunea C — Mașină virtuală cu Ubuntu</p>
+      <div class="prose">
+        <ol>
+          <li>Instalează un hypervisor gratuit: <a href="https://www.virtualbox.org/wiki/Downloads" target="_blank" rel="noopener">VirtualBox</a> sau VMware Workstation Player.</li>
+          <li>Descarcă imaginea ISO <a href="https://ubuntu.com/download/desktop" target="_blank" rel="noopener">Ubuntu 22.04 LTS Desktop</a>.</li>
+          <li>Creează o mașină virtuală nouă (minimum 2 GB RAM alocați, 20 GB disc), atașează ISO-ul și parcurge instalarea grafică a Ubuntu.</li>
+          <li>După instalare, instalează „Guest Additions” (VirtualBox) pentru clipboard partajat și rezoluție corectă a ecranului.</li>
+          <li>În terminalul Ubuntu din mașina virtuală, instalează uneltele exact ca la Opțiunea B (<code>build-essential</code>, <code>gdb</code>, <code>valgrind</code> etc.).</li>
+        </ol>
+        <p>
+          Această variantă e cea mai „grea” din punct de vedere al resurselor calculatorului, dar oferă cel mai
+          realist mediu Linux complet — util dacă vrei, mai târziu, să explorezi și subiecte care nu încap în
+          laborator (compilarea unui kernel real, de exemplu).
+        </p>
+      </div>
+
+      <div class="box note">
+        <div class="box-title"><i class="fa-solid fa-circle-info"></i> Care variantă să aleg?</div>
+        <p>
+          Docker — dacă vrei cel mai puțin efort de întreținere și garanția că mediul e identic cu cel de pe VPL.
+          WSL2 — dacă lucrezi pe Windows și vrei un terminal Linux „la îndemână”, integrat cu VS Code. Linux nativ —
+          dacă deja ai Linux, nu adaugi nimic în plus. Mașină virtuală — dacă preferi izolare completă sau vrei să
+          experimentezi mai mult decât cere laboratorul. Toate patru sunt acceptate la predare; alegerea nu
+          influențează nota.
+        </p>
+      </div>
+
+      <div class="section-header"><h2>4. Predarea prin VPL</h2></div>
+      <div class="prose">
+        <p>
+          VPL (Virtual Programming Lab) este un modul Moodle care compilează și rulează automat codul tău,
+          imediat după ce îl încarci — nu aștepți corectarea manuală ca să știi dacă merge.
+        </p>
+        <ol>
+          <li>Scrii și testezi codul local, în containerul Docker.</li>
+          <li>Deschizi activitatea VPL corespunzătoare sesiunii curente, pe Moodle.</li>
+          <li>Încarci fișierele sursă cerute (de regulă doar codul <code>.c</code>/<code>.h</code>).</li>
+          <li>VPL compilează și rulează testele — vezi imediat ce a trecut și ce nu, plus punctajul.</li>
+          <li>Dacă mai sunt încercări permise înainte de termen, corectezi și retrimiți.</li>
+        </ol>
+      </div>
+
+      <div class="section-header"><h2>5. Proiectul final și susținerea</h2></div>
+      <div class="prose">
+        <p>
+          La S13 predai sistemul integrat complet printr-un assignment obișnuit de Moodle (nu VPL) și susții
+          oral, obligatoriu, deciziile de design pe tot parcursul sistemului — detaliile complete sunt în tab-ul
+          <strong>Evaluare</strong>.
+        </p>
+      </div>
+
+      <div class="box tip">
+        <div class="box-title"><i class="fa-solid fa-clipboard-check"></i> Ești gata de S1 dacă...</div>
+        <p>
+          ai acces la Moodle și vezi disciplina în listă · ai instalat Docker (sau o alternativă echivalentă) și
+          ai rulat cu succes <code>docker build</code> · știi unde e activitatea VPL pentru S1 · ai citit precizarea
+          tehnică despre PitOS din tab-ul „Prezentarea disciplinei".
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== TAB: EVALUARE ===================== -->
+    <section class="tabpanel" id="tab-evaluare" role="tabpanel">
+      <div class="section-header"><h2>Structura notei</h2></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Componentă</th><th>Punctaj</th><th>Când</th><th>Format</th></tr></thead>
+          <tbody>
+            <tr><td>Examen scris</td><td>5p</td><td>La finalul semestrului</td><td>Subiecte teoretice + probleme aplicate</td></tr>
+            <tr><td>Activitate de laborator</td><td>2,5p</td><td>La fiecare sesiune, S1–S11</td><td>Cod, verificat automat (VPL)</td></tr>
+            <tr><td>Proiect final + susținere</td><td>2p</td><td>Sesiunea 13</td><td>Cod integrat + explicație orală</td></tr>
+            <tr><td>Prezență fizică</td><td>0,5p</td><td>Continuu</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-header"><h2>Formula de calcul</h2></div>
+      <div class="prose">
+        <p>
+          Nota de laborator (max. 5p) se compune din trei termeni independenți, calculați separat și adunați.
+          Nota finală a disciplinei este suma dintre nota de laborator și nota de examen — nu o medie ponderată,
+          deci fiecare punct obținut la laborator contează integral, indiferent de nota de la examen.
+        </p>
+      </div>
+      <div class="formula-flow">
+        <div class="formula-card" style="--card-accent:var(--accent)">
+          <div class="fc-label">Activitate laborator</div>
+          <div class="fc-formula">media notelor VPL<br>(S1+S3+S5+S7+S9+S11) / 10</div>
+          <div class="fc-max">pondere max. <strong>2.5p</strong></div>
+        </div>
+        <div class="formula-op">+</div>
+        <div class="formula-card" style="--card-accent:var(--purple)">
+          <div class="fc-label">Proiect final</div>
+          <div class="fc-formula">nota manuală de la<br>susținerea S13 / 10</div>
+          <div class="fc-max">pondere max. <strong>2p</strong></div>
+        </div>
+        <div class="formula-op">+</div>
+        <div class="formula-card" style="--card-accent:var(--green)">
+          <div class="fc-label">Prezență</div>
+          <div class="fc-formula">sesiuni prezente / 7</div>
+          <div class="fc-max">pondere max. <strong>0.5p</strong></div>
+        </div>
+        <div class="formula-op">=</div>
+        <div class="formula-card total">
+          <div class="fc-label">Nota laborator</div>
+          <div class="fc-formula">suma celor trei termeni</div>
+          <div class="fc-max">max. <strong>5p</strong></div>
+        </div>
+      </div>
+      <div class="formula-flow">
+        <div class="formula-card total" style="flex:1 1 220px;">
+          <div class="fc-label">Nota laborator</div>
+          <div class="fc-formula">calculată mai sus</div>
+          <div class="fc-max">max. <strong>5p</strong></div>
+        </div>
+        <div class="formula-op">+</div>
+        <div class="formula-card" style="--card-accent:var(--amber); flex:1 1 220px;">
+          <div class="fc-label">Nota examen</div>
+          <div class="fc-formula">subiecte teoretice + probleme aplicate</div>
+          <div class="fc-max">max. <strong>5p</strong></div>
+        </div>
+        <div class="formula-op">=</div>
+        <div class="formula-card total" style="flex:1 1 220px;">
+          <div class="fc-label">Nota finală</div>
+          <div class="fc-formula">nota disciplinei</div>
+          <div class="fc-max">max. <strong>10p</strong></div>
+        </div>
+      </div>
+      <div class="prose">
+        <p>
+          Fiecare cartelă arată formula de calcul și ponderea maximă pe care o poate aduce acel termen — nu o notă
+          fixă. Rezultatul depinde exclusiv de ce faci tu la fiecare componentă în parte.
+        </p>
+      </div>
+
+      <div class="section-header"><h2>Cum se calculează activitatea de laborator (VPL)</h2></div>
+      <div class="prose">
+        <p>
+          Fiecare din cele 6 sesiuni cu predare prin VPL (S1, S3, S5, S7, S9, S11) are propria activitate VPL, notată
+          automat de la 0 la 10, pe baza testelor configurate. Notele VPL au aceeași pondere între ele — nu sunt
+          sesiuni „mai importante” decât altele — iar media lor aritmetică, transformată din scara 0–10 în scara de
+          2,5 puncte, dă <code>Nota_activitate</code>.
+        </p>
+        <p>
+          Testele nu verifică doar sesiunea curentă: începând cu S3, fiecare activitate VPL rulează și testele
+          sesiunilor anterioare peste codul tău actualizat — aceasta este verificarea de <strong>non-regresie</strong>.
+          Dacă adaugi fire de execuție la S3 și, făcând asta, strici ceva ce funcționa la procesele din S1, testele
+          de non-regresie din S3 semnalează exact acest lucru. Scopul e să te obișnuiești cu o disciplină reală de
+          dezvoltare: codul nou nu are voie să strice codul vechi.
+        </p>
+        <ul>
+          <li>Ai voie la un număr limitat de reîncercări per activitate VPL, până la termenul-limită afișat pe Moodle — verifică regulamentul exact al fiecărei activități, poate diferi ușor de la o sesiune la alta.</li>
+          <li>Depășirea termenului fără nicio predare înseamnă 0 la acea activitate VPL, cu excepția cazurilor de recuperare (vezi mai jos).</li>
+          <li>O predare parțială (care compilează, dar trece doar unele teste) primește punctaj parțial — VPL nu funcționează „totul sau nimic”.</li>
+        </ul>
+      </div>
+
+      <div class="section-header"><h2>Cum se calculează proiectul final</h2></div>
+      <div class="prose">
+        <p>
+          Nota de la S13 nu vine din VPL, ci este acordată manual de titular/asistent, direct în timpul susținerii
+          orale, pe baza a trei elemente:
+        </p>
+        <ul>
+          <li><strong>Funcționarea sistemului integrat</strong> — toate componentele construite la S1–S11 rulează împreună, fără regresii, într-un singur proiect coerent.</li>
+          <li><strong>Capacitatea de a explica propriile decizii</strong> — de ce ai ales o structură de date, un algoritm de sincronizare sau o strategie de planificare I/O anume, nu doar „așa a mers”.</li>
+          <li><strong>Reacția la întrebări live</strong> — ești rugat, pe loc, să modifici o mică parte din cod sau să explici ce s-ar întâmpla dacă o condiție s-ar schimba (ex. „ce se întâmplă dacă elimini acest mutex?”). Scopul e să distingem înțelegerea reală de codul copiat fără să fie parcurs.</li>
+        </ul>
+      </div>
+
+      <div class="section-header"><h2>Exemplu de calcul</h2></div>
+      <div class="prose">
+        <p>Un student cu notele VPL 8, 7, 9, 6, 8, 7 (S1→S11), notat cu 8/10 la susținerea S13, prezent la 6 din 7 sesiuni și cu 8p la examenul scris:</p>
+      </div>
+      <div class="grade-bar-wrap">
+        <div class="grade-bar">
+          <div class="seg activitate" style="width:18.75%">1.88</div>
+          <div class="seg proiect" style="width:16%">1.6</div>
+          <div class="seg prezenta" style="width:4.3%"></div>
+          <div class="seg examen" style="width:40%">4.0</div>
+          <div class="seg" style="width:20.95%; background:var(--surface-2);"></div>
+        </div>
+        <div class="grade-legend">
+          <div class="gl-item">
+            <span class="gl-dot activitate"></span>
+            <span class="gl-text"><strong>Activitate: 1.875p</strong> — media VPL (8+7+9+6+8+7)/6 = 7.5 → 7.5/10 × 2.5</span>
+          </div>
+          <div class="gl-item">
+            <span class="gl-dot proiect"></span>
+            <span class="gl-text"><strong>Proiect final: 1.6p</strong> — 8/10 × 2 (nota S13)</span>
+          </div>
+          <div class="gl-item">
+            <span class="gl-dot prezenta"></span>
+            <span class="gl-text"><strong>Prezență: 0.43p</strong> — 6/7 × 0.5 (6 din 7 sesiuni)</span>
+          </div>
+          <div class="gl-item">
+            <span class="gl-dot examen"></span>
+            <span class="gl-text"><strong>Examen: 4.0p</strong> — 8p obținut, adus la scara de 5p</span>
+          </div>
+          <div class="gl-item">
+            <span class="gl-dot" style="background:var(--surface-2); border:1px solid var(--border);"></span>
+            <span class="gl-text" style="color:var(--text-3);">Puncte neobținute din maximul de 10p</span>
+          </div>
+        </div>
+        <div class="grade-total-card">
+          <span class="gt-label">Nota finală</span>
+          <span class="gt-value">≈ 7.9 / 10</span>
+        </div>
+      </div>
+      <div class="prose">
+        <p>
+          Exemplul e ilustrativ — verifică întotdeauna varianta oficială, publicată pe Moodle la începutul
+          semestrului, pentru rotunjiri și eventuale ajustări ale examenului la scara finală.
+        </p>
+      </div>
+
+      <div class="section-header"><h2>Condiții de parcurgere</h2></div>
+      <div class="prose">
+        <ul>
+          <li>predarea artefactului fiecărei sesiuni și trecerea testelor de non-regresie în VPL;</li>
+          <li>prezența la susținerea orală finală (S13) — condiție obligatorie, nu opțională; absența la S13 înseamnă 0 la <code>Nota_proiect</code>, indiferent de codul predat;</li>
+          <li>artefactele bonus rămân opționale și nu condiționează parcurgerea;</li>
+          <li>examenul rămâne obligatoriu, indiferent de nota obținută la laborator.</li>
+        </ul>
+      </div>
+
+      <div class="section-header"><h2>Politica de recuperare</h2></div>
+      <div class="prose">
+        <p>
+          Dacă un increment eșuează (de exemplu sincronizarea la S5), primești o implementare de referință pentru
+          acel pas, ca să poți continua la sesiunile următoare fără să rămâi blocat. Nota pentru acel pas reflectă
+          faptul că nu a fost cod propriu — credit parțial, nu zero — iar sesiunile ulterioare sunt evaluate normal,
+          pe baza codului tău construit peste implementarea de referință primită.
+        </p>
+        <p>
+          Recuperarea unei activități VPL ratate (fără implementare de referință, doar cu întârziere) se face doar
+          în fereastra de recuperare anunțată pe Moodle — de regulă înainte de S13 — și este condiționată de un
+          motiv întemeiat, documentat conform regulamentului facultății.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== TAB: RESURSE ===================== -->
+    <section class="tabpanel" id="tab-resurse" role="tabpanel">
+      <div class="section-header"><h2>Resurse recomandate</h2></div>
+      <div class="prose">
+        <ul class="resource-list">
+          <li><span class="ricon"><i class="fa-solid fa-book"></i></span> <a href="https://man7.org/linux/man-pages/" target="_blank" rel="noopener">man7.org</a> — paginile de manual Linux, căutabile direct din browser</li>
+          <li><span class="ricon"><i class="fa-solid fa-file-lines"></i></span> <a href="https://pubs.opengroup.org/onlinepubs/9699919799/" target="_blank" rel="noopener">POSIX.1-2017</a> — standardul care definește apelurile de sistem pe care le folosim</li>
+          <li><span class="ricon"><i class="fa-brands fa-linux"></i></span> <a href="https://www.kernel.org/doc/html/latest/" target="_blank" rel="noopener">kernel.org</a> — documentația oficială a kernelului Linux</li>
+          <li><span class="ricon"><i class="fa-solid fa-microchip"></i></span> <a href="https://godbolt.org/" target="_blank" rel="noopener">Compiler Explorer</a> — vezi codul mașină generat de compilator, în timp real</li>
+          <li><span class="ricon"><i class="fa-solid fa-terminal"></i></span> <a href="https://explainshell.com/" target="_blank" rel="noopener">explainshell.com</a> — explică, cuvânt cu cuvânt, orice comandă de shell</li>
+          <li><span class="ricon"><i class="fa-solid fa-code"></i></span> <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">Visual Studio Code</a> — editor recomandat, cu extensia C/C++ instalată</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <span>Sisteme de Operare · Departamentul Matematică-Informatică · Universitatea din Pitești</span>
+      <div class="footer-nav"><a href="#" class="footer-link fwd" data-jump="initiale">Pregătire tehnică →</a></div>
+    </footer>
+
+  </main>
+
+  <!-- RIGHT SIDEBAR — student progress panel -->
+  <aside class="sidebar-right">
+    <div class="sr-title">Progresul tău</div>
+    <div class="sr-box">
+      <p>Introdu codul tău (dat de titular pe Moodle — nu numele real) ca să-ți vezi progresul PitOS.</p>
+      <div class="sr-input-row">
+        <input type="text" id="srCodeInput" placeholder="ex. demo-01" />
+        <button id="srSearchBtn">Caută</button>
+      </div>
+      <div class="sr-result" id="srResult"></div>
+      <div class="sr-empty" id="srEmpty">Niciun rezultat căutat încă.</div>
+      <div class="sr-note">Datele se încarcă din <code>progres.csv</code>, actualizat periodic de titular din exportul Moodle. Nu se trimite nimic — totul rulează local, în browser.</div>
+    </div>
+
+    <div class="sr-title">Clasament (Uptime)</div>
+    <div class="sr-box">
+      <ul class="sr-lead" id="srLeaderboard"><li class="sr-empty">Se încarcă…</li></ul>
+    </div>
+  </aside>
+</div>
+
+<script src="script.js"></script>
+<script>
+  document.querySelectorAll('[data-jump]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      e.preventDefault();
+      document.querySelector('.tabbar .tab[data-tab="' + el.dataset.jump + '"]').click();
+    });
+  });
+</script>
+</body>
+</html>
