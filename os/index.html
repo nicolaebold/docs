@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sisteme de Operare (SO) — Portal Didactic</title>
+<meta name="description" content="Documentație de laborator pentru disciplina Sisteme de Operare — proiectul PitOS, cerințe, evaluare și resurse.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="masthead">
+  <div class="container breadcrumb">
+    <a href="../index.html">Portal Didactic</a>
+    <span class="sep">›</span>
+    <a href="../index.html#laborator">Discipline de laborator</a>
+    <span class="sep">›</span>
+    <span class="current">Sisteme de Operare</span>
+  </div>
+</div>
+
+<main>
+  <div class="container hero">
+    <span class="code-badge">SO</span>
+    <h1>Sisteme de Operare</h1>
+    <p class="lead">
+      Documentație de laborator construită în jurul PitOS — un sistem de operare
+      educațional, dezvoltat incremental de-a lungul semestrului, în spațiul
+      utilizator, peste Linux.
+    </p>
+
+    <div class="stat-row">
+      <div class="stat"><span class="n">7</span><span class="l">sesiuni de laborator</span></div>
+      <div class="stat"><span class="n">Linux / C / POSIX</span><span class="l">stack tehnic</span></div>
+      <div class="stat"><span class="n">5p + 5p</span><span class="l">laborator + examen</span></div>
+      <div class="stat"><span class="n">0 / 7</span><span class="l">module publicate</span></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="tabbar" role="tablist" aria-label="Secțiuni SO">
+      <button class="tab active" role="tab" aria-selected="true" data-tab="general">Prezentare generală</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="cerinte">Cerințe</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="evaluare">Evaluare</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="resurse">Resurse</button>
+    </div>
+  </div>
+
+  <!-- ===================== TAB: PREZENTARE GENERALĂ ===================== -->
+  <section class="tabpanel active container" id="tab-general" role="tabpanel">
+
+    <div class="block-inner">
+      <h2>Despre PitOS</h2>
+      <p class="section-sub">
+        Un cadru de proiect, nu doar o listă de teme — sistemul se construiește
+        incremental, o singură dată, de-a lungul întregului semestru.
+      </p>
+      <div class="callout">
+        <strong>Precizare tehnică.</strong> PitOS nu este un sistem de operare
+        propriu-zis — nu are propriul kernel. Este un proiect în spațiul
+        utilizator (user-space), scris în C, peste apelurile de sistem oferite
+        de kernelul Linux. Construirea unui kernel real depășește scopul
+        pedagogic al unui semestru; narațiunea „construim un SO" servește ca
+        fir conductor pentru laboratoare, nu ca literă tehnică.
+      </div>
+      <p>
+        Fiecare sesiune adaugă o componentă nouă peste ce există deja —
+        procese, apoi fire de execuție, sincronizare, memorie, fișiere, I/O —
+        până la un sistem mic, integrat, predat și susținut la ultima sesiune.
+      </p>
+    </div>
+
+    <div class="block-inner">
+      <h2>Structura celor 7 sesiuni</h2>
+      <p class="section-sub">
+        Laboratoarele au loc din două în două săptămâni. Modulele devin
+        disponibile pe măsură ce sunt publicate.
+      </p>
+      <div class="card-grid">
+        <a class="card wip" href="#">
+          <div class="week">S1</div>
+          <h3>Mediu și procese</h3>
+          <p>Shell, apeluri de sistem, descriptori de fișiere, fork/exec/wait.</p>
+          <span class="status wip">În pregătire</span>
+        </a>
+        <a class="card wip" href="#">
+          <div class="week">S3</div>
+          <h3>Fire de execuție</h3>
+          <p>pthreads — creare/join, memorie partajată, stările thread-ului.</p>
+          <span class="status wip">În pregătire</span>
+        </a>
+        <a class="card wip" href="#">
+          <div class="week">S5</div>
+          <h3>Sincronizare și impas</h3>
+          <p>Mutex, semafoare, probleme clasice, algoritmul bancherului.</p>
+          <span class="status wip">În pregătire</span>
+        </a>
+        <a class="card wip" href="#">
+          <div class="week">S7</div>
+          <h3>Gestiunea memoriei</h3>
+          <p>Alocare, paginare, memorie virtuală, algoritmi de înlocuire.</p>
+          <span class="status wip">În pregătire</span>
+        </a>
+        <a class="card wip" href="#">
+          <div class="week">S9</div>
+          <h3>Sisteme de fișiere</h3>
+          <p>Structuri pe disc, metadate, operații POSIX pe fișiere/directoare.</p>
+          <span class="status wip">În pregătire</span>
+        </a>
+        <a class="card wip" href="#">
+          <div class="week">S11</div>
+          <h3>Planificare I/O</h3>
+          <p>FCFS, SSTF, SCAN, C-SCAN — măsurarea performanței politicilor.</p>
+          <span class="status wip">În pregătire</span>
+        </a>
+        <a class="card wip" href="#">
+          <div class="week">S13</div>
+          <h3>Proiect de integrare</h3>
+          <p>Sistemul complet, integrat, predat și susținut oral — Release Day.</p>
+          <span class="status wip">În pregătire</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: CERINȚE ===================== -->
+  <section class="tabpanel container" id="tab-cerinte" role="tabpanel" hidden>
+
+    <div class="block-inner">
+      <h2>Prerechizite</h2>
+      <p class="section-sub">Ce trebuie să stăpânești înainte de S1.</p>
+      <ul class="plain-list">
+        <li>noțiuni de bază de programare în C (funcții, pointeri, alocare de memorie);</li>
+        <li>confort minim cu linia de comandă (navigare în directoare, editare de fișiere text);</li>
+        <li>un calculator propriu pe care poți instala Docker Desktop (Windows/macOS) sau Docker Engine (Linux).</li>
+      </ul>
+    </div>
+
+    <div class="block-inner">
+      <h2>Mediul de lucru</h2>
+      <p class="section-sub">
+        Un singur mediu Linux/C/POSIX standard, identic pentru toți studenții,
+        indiferent de sistemul de operare de acasă.
+      </p>
+      <div class="quickstart"><span class="c"># build, o singură dată</span>
+docker build -t pitos-lab .
+
+<span class="c"># rulare, la fiecare sesiune</span>
+docker run -it --rm -v "$(pwd)":/pitos -w /pitos pitos-lab</div>
+      <p class="note">
+        Linux nativ, WSL2 sau o mașină virtuală Ubuntu sunt alternative
+        acceptate — condiția este să folosească aceleași versiuni de
+        gcc/biblioteci ca mediul de predare al codului.
+      </p>
+    </div>
+
+    <div class="block-inner">
+      <h2>Predarea lucrărilor</h2>
+      <p class="section-sub">Totul se predă prin platforma oficială Moodle.</p>
+      <ul class="plain-list">
+        <li>incrementele S1–S11 se predau prin activități VPL dedicate, cu compilare și testare automată;</li>
+        <li>proiectul final (S13) se predă ca temă obișnuită, urmată de susținere orală obligatorie;</li>
+        <li>nu este nevoie de niciun cont extern (GitHub sau altul) — containerul Docker este strict o unealtă locală de dezvoltare.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: EVALUARE ===================== -->
+  <section class="tabpanel container" id="tab-evaluare" role="tabpanel" hidden>
+
+    <div class="block-inner">
+      <h2>Structura notei</h2>
+      <table class="plain">
+        <tr><th>Componentă</th><th>Punctaj</th><th>Ce reflectă</th></tr>
+        <tr><td>Examen scris</td><td>5p</td><td>Subiectele teoretice + probleme aplicate</td></tr>
+        <tr><td>Activitate de laborator (incremente S1–S11)</td><td>2,5p</td><td>Corectitudine, non-regresie, integrare, evidență</td></tr>
+        <tr><td>Proiect final + susținere orală (S13)</td><td>2p</td><td>Integrarea sistemului complet și înțelegerea reală</td></tr>
+        <tr><td>Prezență fizică</td><td>0,5p</td><td>Participare constantă la laborator</td></tr>
+      </table>
+    </div>
+
+    <div class="block-inner">
+      <h2>Condiții de parcurgere</h2>
+      <ul class="plain-list">
+        <li>predarea artefactului fiecărei sesiuni și trecerea testelor de non-regresie în VPL;</li>
+        <li>prezența la susținerea orală finală (S13) — condiție obligatorie, nu opțională;</li>
+        <li>artefactele bonus rămân opționale și nu condiționează parcurgerea;</li>
+        <li>examenul rămâne obligatoriu.</li>
+      </ul>
+    </div>
+
+    <div class="block-inner">
+      <h2>Politica de recuperare</h2>
+      <p>
+        Dacă un increment eșuează (de exemplu sincronizarea la S5), primești o
+        implementare de referință pentru acel pas, ca să poți continua la
+        sesiunile următoare fără să rămâi blocat. Nota pentru acel pas
+        reflectă faptul că nu a fost cod propriu — credit parțial, nu zero.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: RESURSE ===================== -->
+  <section class="tabpanel container" id="tab-resurse" role="tabpanel" hidden>
+
+    <div class="block-inner">
+      <h2>Bibliografie principală</h2>
+      <ol class="doclist">
+        <li>Silberschatz, A., Galvin, P.B., Gagne, G. — <em>Operating System Concepts</em>, ed. 10, Wiley, 2018.</li>
+        <li>Stallings, W. — <em>Operating Systems: Internals and Design Principles</em>, ed. 9, Pearson, 2018.</li>
+        <li>Tanenbaum, A.S., Bos, H. — <em>Modern Operating Systems</em>, ed. 4, Pearson, 2015.</li>
+        <li>Kerrisk, M. — <em>The Linux Programming Interface</em>, No Starch Press, 2010.</li>
+        <li>Boian, F.M. et al. — <em>Programare concurentă pe platforme Unix, Windows, Java</em>, Cluj, 2002.</li>
+        <li>Ignat, C., Kacso, A. — <em>Unix: generarea proceselor</em>, Cluj, 1995.</li>
+      </ol>
+    </div>
+
+    <div class="block-inner">
+      <h2>Repere de curriculum folosite</h2>
+      <ul class="plain-list">
+        <li>MIT 6.1810 — Operating System Engineering (structura progresivă a laboratoarelor);</li>
+        <li>UPB — ocw.cs.pub.ro/courses/so și cs-pub-ro.github.io/operating-systems;</li>
+        <li>consensul manualelor clasice: Stallings, Tanenbaum, Silberschatz.</li>
+      </ul>
+    </div>
+
+    <div class="block-inner">
+      <h2>Documentație tehnică utilă</h2>
+      <ul class="plain-list">
+        <li><code>man 2 fork</code>, <code>man 2 exec</code>, <code>man 7 pthreads</code> — direct în terminal, în container;</li>
+        <li><a href="https://pubs.opengroup.org/onlinepubs/9699919799/" target="_blank" rel="noopener">POSIX.1-2017 (The Open Group)</a>;</li>
+        <li><a href="https://www.kernel.org/doc/html/latest/" target="_blank" rel="noopener">Documentația kernelului Linux</a>.</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="container">
+    Sisteme de Operare · Departamentul Matematică-Informatică · Universitatea din Pitești
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
