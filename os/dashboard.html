@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard PitOS | Sisteme de Operare</title>
+<meta name="description" content="Dashboard personal de progres PitOS — pe bază de cod pseudonim, fără date personale." />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+
+<!-- ========== TOP NAV ========== -->
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">SO</span> Sisteme de Operare</a>
+  <div class="topnav-breadcrumb">
+    <span>Matematică-Informatică</span><span class="sep">›</span><span>Dashboard PitOS</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="leaderboard.html" class="btn-sm primary">Vezi clasamentul</a>
+  </div>
+</nav>
+
+<!-- ========== LAYOUT ========== -->
+<div class="shell">
+  <!-- LEFT SIDEBAR — same session nav as index.html -->
+  <aside class="sidebar">
+    <span class="sidebar-label">Modul</span>
+    <a class="sidebar-link" href="index.html">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zm0 6a1 1 0 011-1h6a1 1 0 010 2H4a1 1 0 01-1-1z"/></svg>
+      Prezentare generală
+    </a>
+    <span class="sidebar-label">Gamification PitOS</span>
+    <a class="sidebar-link" href="leaderboard.html">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 011 1v1h4a1 1 0 011 1v3a3 3 0 01-3 3h-.17A5.002 5.002 0 0111 14.9V17h2a1 1 0 110 2H7a1 1 0 110-2h2v-2.1A5.002 5.002 0 015.17 11H5a3 3 0 01-3-3V5a1 1 0 011-1h4V3a1 1 0 011-1z"/></svg>
+      Clasament
+    </a>
+    <a class="sidebar-link active" href="dashboard.html">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 1v2h2V5H5zm5-1a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zm2 1v2h2V5h-2zM3 12a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zm2 1v2h2v-2H5zm7-1a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4zm2 1v2h2v-2h-2z" clip-rule="evenodd"/></svg>
+      Dashboard-ul meu <span class="sidebar-tag current"></span>
+    </a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" style="max-width:900px;">
+
+    <div class="gam-header">
+      <div class="overline">PitOS · Gamification (separată de nota oficială)</div>
+      <h1>Dashboard-ul tău de progres</h1>
+      <p>
+        Introdu codul pe care ți l-a dat titularul pe Moodle (nu numele tău real) ca să-ți vezi Uptime-ul,
+        versiunea curentă de kernel PitOS și situația sesiune-cu-sesiune.
+      </p>
+    </div>
+
+    <div class="dash-search">
+      <input type="text" id="dCodeInput" placeholder="ex. demo-04" />
+      <button id="dSearchBtn">Vezi progresul</button>
+    </div>
+
+    <div id="dEmpty" style="color:var(--text-3); font-size:.9rem;">Introdu codul tău mai sus ca să-ți vezi dashboard-ul.</div>
+
+    <div id="dContent" style="display:none;">
+
+      <div class="dash-summary">
+        <div>
+          <div class="ds-cod" id="dCod">—</div>
+          <div class="ds-version" id="dVersion">—</div>
+        </div>
+        <div>
+          <div class="ds-uptime-num" id="dUptime">—</div>
+          <div class="ds-uptime-label">zile Uptime</div>
+        </div>
+        <div class="ds-bar-wrap">
+          <div class="ds-bar-track"><div class="ds-bar-fill" id="dBarFill" style="width:0%"></div></div>
+          <div class="ds-bar-note" id="dBarNote">—</div>
+        </div>
+      </div>
+
+      <div class="section-header"><h2>Situația pe sesiuni</h2></div>
+      <div class="tbl-wrap" style="padding:6px 18px;">
+        <ul class="session-timeline" id="dTimeline"></ul>
+      </div>
+
+      <div class="box tip" style="margin-top:1.4rem;">
+        <div class="box-title"><i class="fa-solid fa-lightbulb"></i> Ce înseamnă asta</div>
+        <p>
+          Punctele afișate la fiecare sesiune sunt notele VPL/susținere folosite și pentru <code>Nota_activitate</code>
+          / <code>Nota_proiect</code> oficiale — dar Uptime-ul și versiunea de kernel de mai sus sunt calculate cu o
+          formulă separată, pur ludică (vezi tab-ul „Evaluare” de pe pagina principală). Nu confunda cele două scale.
+        </p>
+      </div>
+    </div>
+
+    <div class="box note" style="margin-top:1.6rem;">
+      <div class="box-title"><i class="fa-solid fa-shield-halved"></i> Confidențialitate</div>
+      <p>
+        Pagina nu are login și nu trimite nimic către niciun server — codul introdus e comparat local, în browser,
+        cu conținutul public al fișierului <code>progres.csv</code>. Nu apare niciun nume real nicăieri pe această pagină.
+      </p>
+    </div>
+
+    <footer class="page-footer">
+      <span>Sisteme de Operare · Departamentul Matematică-Informatică · Universitatea din Pitești</span>
+      <div class="footer-nav"><a href="index.html" class="footer-link">← Înapoi la pagina principală</a></div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  var toggle = document.getElementById('sidebarToggle');
+  var sidebar = document.querySelector('.sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', function () { sidebar.classList.toggle('open'); });
+  }
+
+  var SESSIONS = [
+    { key: 's1',  name: 'S1 — Mediu și procese' },
+    { key: 's3',  name: 'S3 — Fire de execuție' },
+    { key: 's5',  name: 'S5 — Sincronizare și impas' },
+    { key: 's7',  name: 'S7 — Gestiunea memoriei' },
+    { key: 's9',  name: 'S9 — Sisteme de fișiere' },
+    { key: 's11', name: 'S11 — Planificare I/O' },
+    { key: 's13', name: 'S13 — Proiect de integrare (susținere)' }
+  ];
+
+  var VERSION_THRESHOLDS = [
+    { min: 80, label: 'PitOS v2.0 LTS' },
+    { min: 60, label: 'PitOS v1.5' },
+    { min: 40, label: 'PitOS v1.0' },
+    { min: 20, label: 'PitOS v0.5' },
+    { min: 0,  label: 'PitOS v0.1' }
+  ];
+  function versionFor(uptime) {
+    for (var i = 0; i < VERSION_THRESHOLDS.length; i++) if (uptime >= VERSION_THRESHOLDS[i].min) return VERSION_THRESHOLDS[i];
+    return VERSION_THRESHOLDS[VERSION_THRESHOLDS.length - 1];
+  }
+
+  function parseCsv(text) {
+    var lines = text.trim().split(/\r?\n/);
+    var header = lines[0].split(',').map(function (h) { return h.trim(); });
+    var rows = [];
+    for (var i = 1; i < lines.length; i++) {
+      var parts = lines[i].split(',');
+      if (parts.length < 2) continue;
+      var row = {};
+      header.forEach(function (h, idx) { row[h] = (parts[idx] || '').trim(); });
+      if (!row.cod) continue;
+      row.uptime = parseFloat(row.uptime);
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  var progressData = [];
+  fetch('progres.csv')
+    .then(function (r) { if (!r.ok) throw new Error('no csv'); return r.text(); })
+    .then(function (text) { progressData = parseCsv(text); })
+    .catch(function () { progressData = []; });
+
+  function showDashboard(row) {
+    var empty = document.getElementById('dEmpty');
+    var content = document.getElementById('dContent');
+    if (!row) {
+      content.style.display = 'none';
+      empty.style.display = 'block';
+      empty.textContent = 'Niciun rezultat pentru acest cod. Verifică-l pe Moodle sau cu titularul.';
+      return;
+    }
+    empty.style.display = 'none';
+    content.style.display = 'block';
+
+    var version = versionFor(row.uptime);
+    var idx = VERSION_THRESHOLDS.indexOf(version);
+    var next = idx > 0 ? VERSION_THRESHOLDS[idx - 1] : null;
+    var pct = next ? Math.min(100, Math.round((row.uptime / next.min) * 100)) : 100;
+
+    document.getElementById('dCod').textContent = 'Cod: ' + row.cod;
+    document.getElementById('dVersion').textContent = version.label;
+    document.getElementById('dUptime').textContent = row.uptime;
+    document.getElementById('dBarFill').style.width = pct + '%';
+    document.getElementById('dBarNote').textContent = next
+      ? pct + '% spre ' + next.label + ' (' + next.min + ' zile)'
+      : 'Ai atins cea mai înaltă versiune — v2.0 LTS';
+
+    var tl = document.getElementById('dTimeline');
+    tl.innerHTML = '';
+    SESSIONS.forEach(function (s) {
+      var val = row[s.key];
+      var has = val !== undefined && val !== '' && !isNaN(parseFloat(val));
+      var li = document.createElement('li');
+      li.innerHTML =
+        '<span class="st-dot ' + (has ? 'done' : 'pending') + '"></span>' +
+        '<span class="st-name">' + s.name + '</span>' +
+        '<span class="st-score ' + (has ? '' : 'pending') + '">' + (has ? parseFloat(val) + '/10' : 'în așteptare') + '</span>';
+      tl.appendChild(li);
+    });
+  }
+
+  function doSearch() {
+    var code = document.getElementById('dCodeInput').value.trim().toLowerCase();
+    if (!code) return;
+    var row = progressData.find(function (r) { return r.cod.toLowerCase() === code; });
+    showDashboard(row || null);
+  }
+
+  document.getElementById('dSearchBtn').addEventListener('click', doSearch);
+  document.getElementById('dCodeInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') doSearch(); });
+
+  // support ?cod=xxx in the URL for a direct link
+  var params = new URLSearchParams(location.search);
+  var urlCod = params.get('cod');
+  if (urlCod) {
+    document.getElementById('dCodeInput').value = urlCod;
+    // wait briefly for the CSV fetch above to land, then search
+    setTimeout(doSearch, 300);
+  }
+});
+</script>
+</body>
+</html>

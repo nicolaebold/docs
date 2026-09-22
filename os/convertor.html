@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Convertor Moodle → progres.csv | Sisteme de Operare</title>
+<meta name="description" content="Instrument intern: transformă exportul de note din Moodle direct în progres.csv, fără nume reale." />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="topnav-logo" href="index.html"><span class="badge">SO</span> Sisteme de Operare</a>
+  <div class="topnav-breadcrumb">
+    <span>Instrument intern</span><span class="sep">›</span><span>Convertor Moodle → progres.csv</span>
+  </div>
+</nav>
+
+<div class="shell">
+  <main class="main" style="max-width:880px; margin:0 auto; flex:none; width:100%;">
+
+    <div class="gam-header">
+      <div class="overline">Doar pentru titular — nu e o pagină pentru studenți</div>
+      <h1>Convertor: export Moodle → progres.csv</h1>
+      <p>
+        Încarci exact fișierul exportat din <em>Grades → Export → Plain text file / Excel</em> pe Moodle (cu nume
+        reale, note VPL, tot), alegi ce coloană e ce, iar instrumentul generează automat fișierul public
+        <code>progres.csv</code> — fără niciun nume real în el. Totul rulează local, în acest browser: fișierul
+        Moodle nu este trimis nicăieri, nu există upload către niciun server.
+      </p>
+    </div>
+
+    <div class="box warning">
+      <div class="box-title"><i class="fa-solid fa-triangle-exclamation"></i> Precondiție: codul pseudonim în Moodle</div>
+      <p>
+        Pentru ca instrumentul să poată lega automat fiecare rând de codul public al studentului (fără nume),
+        setează câmpul <strong>„ID number”</strong> din profilul fiecărui student pe Moodle (Administrare
+        utilizatori → Editează profilul → „ID number”) cu exact codul pe care i l-ai comunicat studentului
+        (ex. <code>stud-14</code>). Moodle include automat această coloană în exportul de note — e singura coloană
+        din export care va ajunge, nemodificată, în fișierul public.
+      </p>
+    </div>
+
+    <div class="section-header"><h2>Pasul 1 — Încarcă exportul din Moodle</h2></div>
+    <div class="prose">
+      <p>Alege fișierul <code>.csv</code> exportat din Moodle, sau lipește direct conținutul lui mai jos.</p>
+    </div>
+    <div style="display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; margin-bottom:.8rem;">
+      <input type="file" id="fileInput" accept=".csv,.txt" />
+      <span style="color:var(--text-3); font-size:.82rem;">sau</span>
+      <button class="btn-sm primary" id="pasteBtn" type="button">Lipește text CSV</button>
+    </div>
+    <textarea id="pasteArea" style="display:none; width:100%; height:130px; font-family:var(--mono); font-size:.82rem; padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:1rem;" placeholder="Lipește aici conținutul CSV exportat din Moodle..."></textarea>
+    <div id="parseStatus" style="font-size:.85rem; color:var(--text-3); margin-bottom:1.4rem;"></div>
+
+    <div id="mappingSection" style="display:none;">
+      <div class="section-header"><h2>Pasul 2 — Spune-i ce înseamnă fiecare coloană</h2></div>
+      <div class="prose"><p>Instrumentul a încercat să ghicească potrivirile după numele coloanelor — verifică și corectează unde e nevoie.</p></div>
+      <div class="tbl-wrap" style="padding:14px 18px;">
+        <table id="mapTable">
+          <thead><tr><th>Câmp în progres.csv</th><th>Coloană din exportul Moodle</th></tr></thead>
+          <tbody id="mapBody"></tbody>
+        </table>
+      </div>
+
+      <div class="section-header"><h2>Pasul 3 — Formula de Uptime (ajustabilă)</h2></div>
+      <div class="prose">
+        <p>
+          Uptime-ul e complet separat de nota oficială — e doar stratul ludic. Formula implicită de mai jos
+          urmează modelul din ghidul disciplinei; poți ajusta valorile dacă vrei alt echilibru.
+        </p>
+      </div>
+      <div class="tbl-wrap" style="padding:14px 18px;">
+        <table>
+          <tbody>
+            <tr><td>Zile la o predare VPL validă (notă &gt; 0)</td><td><input type="number" id="wValid" value="1" step="0.5" style="width:70px;"></td></tr>
+            <tr><td>Zile bonus dacă nota sesiunii e ≥</td><td><input type="number" id="wBonusThresh" value="9" step="0.5" style="width:70px;"> /10 → <input type="number" id="wBonus" value="1.5" step="0.5" style="width:70px;"> zile</td></tr>
+            <tr><td>Zile la susținerea finală (S13) validă</td><td><input type="number" id="wFinal" value="5" step="0.5" style="width:70px;"></td></tr>
+            <tr><td>Zile bonus dacă susținerea (S13) e ≥</td><td><input type="number" id="wFinalBonusThresh" value="9" step="0.5" style="width:70px;"> /10 → <input type="number" id="wFinalBonus" value="3" step="0.5" style="width:70px;"> zile</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin:1.2rem 0;">
+        <button class="btn-sm primary" id="computeBtn" type="button" style="padding:10px 18px; font-size:.9rem;">Generează progres.csv</button>
+      </div>
+
+      <div id="previewSection" style="display:none;">
+        <div class="section-header"><h2>Previzualizare</h2><span class="count" id="previewCount"></span></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>cod</th><th>uptime</th><th>S1</th><th>S3</th><th>S5</th><th>S7</th><th>S9</th><th>S11</th><th>S13</th></tr></thead>
+            <tbody id="previewBody"></tbody>
+          </table>
+        </div>
+        <div style="margin:1.2rem 0;">
+          <button class="btn-sm primary" id="downloadBtn" type="button" style="padding:10px 18px; font-size:.9rem;">
+            <i class="fa-solid fa-download"></i> Descarcă progres.csv
+          </button>
+        </div>
+        <div class="box tip">
+          <div class="box-title"><i class="fa-solid fa-clipboard-check"></i> Ultimul pas</div>
+          <p>
+            Suprascrie fișierul <code>progres.csv</code> din folderul <code>docs/os/</code> al repository-ului tău
+            GitHub cu cel descărcat acum, și dă commit/push. Pagina de clasament și dashboard-urile studenților se
+            actualizează automat, fără nicio altă modificare — nu trebuie republicat nimic altceva.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box note" style="margin-top:1.6rem;">
+      <div class="box-title"><i class="fa-solid fa-shield-halved"></i> De ce e sigur din perspectiva GDPR</div>
+      <p>
+        Fișierul Moodle cu nume reale nu părăsește niciodată acest browser — nu există niciun upload către un
+        server, nicio bibliotecă externă care citește fișierul, nicio conexiune de rețea declanșată de această
+        pagină. Tot ce ajunge în <code>progres.csv</code> descărcat sunt codurile pseudonime și numerele calculate.
+        Verifică oricând chiar tu, deschizând unealta de dezvoltator a browserului, tab-ul „Network” — vei vedea că
+        nu pleacă nicio cerere în timp ce folosești pagina.
+      </p>
+    </div>
+
+    <footer class="page-footer">
+      <span>Sisteme de Operare · instrument intern, nelegat din navigarea pentru studenți</span>
+      <div class="footer-nav"><a href="index.html" class="footer-link">← Pagina principală</a></div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  /* ---------------- robust CSV parsing (handles quoted fields) ---------------- */
+  function parseCsvFull(text) {
+    var rows = [];
+    var row = [];
+    var field = '';
+    var inQuotes = false;
+    text = text.replace(/\r\n/g, '\n');
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (text[i + 1] === '"') { field += '"'; i++; }
+          else inQuotes = false;
+        } else field += c;
+      } else {
+        if (c === '"') inQuotes = true;
+        else if (c === ',') { row.push(field); field = ''; }
+        else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+        else field += c;
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows.filter(function (r) { return r.length > 1 || (r.length === 1 && r[0] !== ''); });
+  }
+
+  function toNumber(str) {
+    if (str === undefined || str === null) return NaN;
+    str = String(str).trim();
+    if (!str) return NaN;
+    if (/^-?\d+,\d+$/.test(str)) str = str.replace(',', '.');
+    return parseFloat(str);
+  }
+
+  var TARGET_FIELDS = [
+    { key: 'cod', label: 'Cod (pseudonim) — de regulă „ID number”' },
+    { key: 's1',  label: 'Notă VPL — S1' },
+    { key: 's3',  label: 'Notă VPL — S3' },
+    { key: 's5',  label: 'Notă VPL — S5' },
+    { key: 's7',  label: 'Notă VPL — S7' },
+    { key: 's9',  label: 'Notă VPL — S9' },
+    { key: 's11', label: 'Notă VPL — S11' },
+    { key: 's13', label: 'Notă susținere — S13' }
+  ];
+  var GUESS_PATTERNS = {
+    cod:  [/id\s*number/i, /^cod$/i],
+    s1:   [/s\s*1\b/i, /sesiunea\s*1\b/i],
+    s3:   [/s\s*3\b/i, /sesiunea\s*3\b/i],
+    s5:   [/s\s*5\b/i, /sesiunea\s*5\b/i],
+    s7:   [/s\s*7\b/i, /sesiunea\s*7\b/i],
+    s9:   [/s\s*9\b/i, /sesiunea\s*9\b/i],
+    s11:  [/s\s*11\b/i, /sesiunea\s*11\b/i],
+    s13:  [/s\s*13\b/i, /sesiunea\s*13\b/i, /sus[țt]inere/i, /proiect\s*final/i]
+  };
+
+  var headers = [];
+  var dataRows = [];
+
+  function handleParsed(rows) {
+    if (!rows.length) { setStatus('Nu am găsit rânduri în fișier.', true); return; }
+    headers = rows[0];
+    dataRows = rows.slice(1);
+    setStatus('Am citit ' + dataRows.length + ' rânduri și ' + headers.length + ' coloane. Verifică potrivirile mai jos.', false);
+    buildMapping();
+    document.getElementById('mappingSection').style.display = 'block';
+  }
+
+  function setStatus(msg, isError) {
+    var el = document.getElementById('parseStatus');
+    el.textContent = msg;
+    el.style.color = isError ? 'var(--red)' : 'var(--text-3)';
+  }
+
+  function guessColumnFor(key) {
+    var patterns = GUESS_PATTERNS[key] || [];
+    for (var p = 0; p < patterns.length; p++) {
+      for (var i = 0; i < headers.length; i++) if (patterns[p].test(headers[i])) return i;
+    }
+    return -1;
+  }
+
+  function buildMapping() {
+    var body = document.getElementById('mapBody');
+    body.innerHTML = '';
+    TARGET_FIELDS.forEach(function (f) {
+      var guess = guessColumnFor(f.key);
+      var tr = document.createElement('tr');
+      var select = document.createElement('select');
+      select.id = 'map_' + f.key;
+      select.style.cssText = 'font:inherit;font-size:.85rem;padding:5px 8px;border:1px solid var(--border);border-radius:6px;max-width:340px;';
+      var optNone = document.createElement('option');
+      optNone.value = '-1'; optNone.textContent = '— neselectat —';
+      select.appendChild(optNone);
+      headers.forEach(function (h, idx) {
+        var opt = document.createElement('option');
+        opt.value = idx; opt.textContent = h || ('coloana ' + (idx + 1));
+        if (idx === guess) opt.selected = true;
+        select.appendChild(opt);
+      });
+      var td1 = document.createElement('td'); td1.textContent = f.label;
+      var td2 = document.createElement('td'); td2.appendChild(select);
+      tr.appendChild(td1); tr.appendChild(td2);
+      body.appendChild(tr);
+    });
+  }
+
+  document.getElementById('fileInput').addEventListener('change', function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (ev) { handleParsed(parseCsvFull(ev.target.result)); };
+    reader.readAsText(file, 'UTF-8');
+  });
+
+  document.getElementById('pasteBtn').addEventListener('click', function () {
+    var area = document.getElementById('pasteArea');
+    area.style.display = area.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('pasteArea').addEventListener('input', function (e) {
+    if (e.target.value.trim()) handleParsed(parseCsvFull(e.target.value));
+  });
+
+  var lastOutput = [];
+
+  document.getElementById('computeBtn').addEventListener('click', function () {
+    var mapping = {};
+    TARGET_FIELDS.forEach(function (f) {
+      mapping[f.key] = parseInt(document.getElementById('map_' + f.key).value, 10);
+    });
+    if (mapping.cod < 0) { alert('Selectează măcar coloana pentru „cod” (ID number).'); return; }
+
+    var wValid = parseFloat(document.getElementById('wValid').value) || 0;
+    var wBonusThresh = parseFloat(document.getElementById('wBonusThresh').value);
+    var wBonus = parseFloat(document.getElementById('wBonus').value) || 0;
+    var wFinal = parseFloat(document.getElementById('wFinal').value) || 0;
+    var wFinalBonusThresh = parseFloat(document.getElementById('wFinalBonusThresh').value);
+    var wFinalBonus = parseFloat(document.getElementById('wFinalBonus').value) || 0;
+
+    var sessionKeys = ['s1','s3','s5','s7','s9','s11'];
+
+    lastOutput = [];
+    dataRows.forEach(function (r) {
+      var cod = (r[mapping.cod] || '').trim();
+      if (!cod) return;
+      var scores = {};
+      var uptime = 0;
+      sessionKeys.forEach(function (k) {
+        var col = mapping[k];
+        var val = col >= 0 ? toNumber(r[col]) : NaN;
+        scores[k] = val;
+        if (!isNaN(val) && val > 0) {
+          uptime += wValid;
+          if (!isNaN(wBonusThresh) && val >= wBonusThresh) uptime += wBonus;
+        }
+      });
+      var s13col = mapping.s13;
+      var s13val = s13col >= 0 ? toNumber(r[s13col]) : NaN;
+      scores.s13 = s13val;
+      if (!isNaN(s13val) && s13val > 0) {
+        uptime += wFinal;
+        if (!isNaN(wFinalBonusThresh) && s13val >= wFinalBonusThresh) uptime += wFinalBonus;
+      }
+      lastOutput.push({ cod: cod, uptime: Math.round(uptime * 10) / 10, scores: scores });
+    });
+
+    renderPreview();
+  });
+
+  function fmt(v) { return isNaN(v) ? '' : v; }
+
+  function renderPreview() {
+    var body = document.getElementById('previewBody');
+    body.innerHTML = '';
+    lastOutput.forEach(function (row) {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + row.cod + '</td><td>' + row.uptime + '</td>' +
+        ['s1','s3','s5','s7','s9','s11','s13'].map(function (k) { return '<td>' + fmt(row.scores[k]) + '</td>'; }).join('');
+      body.appendChild(tr);
+    });
+    document.getElementById('previewCount').textContent = lastOutput.length + ' studenți';
+    document.getElementById('previewSection').style.display = 'block';
+  }
+
+  document.getElementById('downloadBtn').addEventListener('click', function () {
+    var lines = ['cod,uptime,s1,s3,s5,s7,s9,s11,s13'];
+    lastOutput.forEach(function (row) {
+      lines.push([row.cod, row.uptime, fmt(row.scores.s1), fmt(row.scores.s3), fmt(row.scores.s5),
+                  fmt(row.scores.s7), fmt(row.scores.s9), fmt(row.scores.s11), fmt(row.scores.s13)].join(','));
+    });
+    var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'progres.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+});
+</script>
+</body>
+</html>
