@@ -88,7 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { file: 'sesiunea-1.html',  label: 'S1 – Calculator și C++' },
     { file: 'sesiunea-2.html',  label: 'S2 – Variabile și tipuri' },
     { file: 'sesiunea-3.html',  label: 'S3 – Expresii și evaluarea lor' },
-     { file: 'sesiunea-4.html',  label: 'S4 – Instrucțiuni și structuri' },
+     { file: 'sesiunea-4.html',  label: 'S4 – Instrucțiuni și structuri generale și alternative' },
+     { file: 'sesiunea-5.html',  label: 'S5 – Instrucțiuni și structuri repetitive' },
     // adaugi aici o linie noua de fiecare data cand apare o sesiune noua
   ];
 
