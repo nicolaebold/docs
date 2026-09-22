@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>S5 – Structuri repetitive: while, do–while, for | M6 OCW</title>
+<meta name="description" content="Sesiunea 5: necesitatea repetării, instrucțiunile de ciclare while, do-while și for, diferența dintre ele, tiparele contor și acumulator, bucle controlate printr-o valoare santinelă, erori frecvente (buclă infinită, off-by-one) și comparație între limbaje." />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  /* while vs do-while vs for comparison ladder */
+  .loop-compare {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: .9rem; margin: 1.25rem 0;
+  }
+  .loop-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1rem 1.15rem;
+    box-shadow: var(--shadow);
+  }
+  .loop-card h4 {
+    font-size: .8rem; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--accent); margin-bottom: .5rem;
+  }
+  .loop-card pre {
+    background: var(--surface-2); border-radius: var(--radius);
+    padding: .6rem .75rem; font-family: var(--mono); font-size: .8rem;
+    margin-bottom: .6rem; overflow-x: auto;
+  }
+  .loop-card p { font-size: .84rem; color: var(--text-2); margin: 0; }
+
+  /* flow steps (sequential arrows) */
+  .flow-steps {
+    display: flex; flex-wrap: wrap; align-items: center; gap: .5rem;
+    margin: 1rem 0; font-family: var(--mono); font-size: .85rem;
+  }
+  .flow-steps .fstep {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: .4rem .8rem;
+  }
+  .flow-steps .farrow { color: var(--text-3); }
+  .flow-steps .fstep.cond { background: var(--accent-light); color: var(--accent-dark); font-weight: 700; }
+  .flow-steps .fstep.exit { background: var(--red-light); color: var(--red); font-weight: 700; }
+
+  /* counter / accumulator pattern cards */
+  .pattern-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem; margin: 1.25rem 0;
+  }
+  .pattern-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow);
+  }
+  .pattern-card .pattern-header {
+    background: var(--surface-2); padding: .6rem 1rem;
+    font-weight: 700; font-size: .85rem; color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .pattern-card pre {
+    margin: 0; padding: .9rem 1.1rem; font-family: var(--mono);
+    font-size: .82rem; overflow-x: auto;
+  }
+
+  /* quiz-style exercises (reused pattern from S3/S4) */
+  .quiz-item { margin: 1.35rem 0; padding-bottom: 1.1rem; border-bottom: 1px solid var(--surface-2); }
+  .quiz-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .quiz-item .qnum {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 24px; height: 24px; padding: 0 .3rem;
+    border-radius: 50%; background: var(--accent-light); color: var(--accent-dark);
+    font-size: .78rem; font-weight: 800; margin-right: .5rem;
+  }
+  .choices {
+    list-style: none; padding: 0; margin: .6rem 0 .8rem;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .4rem .6rem;
+  }
+  .choices li {
+    font-family: var(--mono); font-size: .84rem; color: var(--text);
+    background: var(--surface-2); border: 1px solid var(--border);
+    padding: .4rem .65rem; border-radius: 6px;
+  }
+  .quiz-item details { margin-top: .5rem; }
+  .quiz-item summary { background: var(--accent-light); color: var(--accent-dark); font-size: .82rem; }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">M6</span>Limbaje de Programare</a>
+  <div class="topnav-breadcrumb">
+    <a href="index.html">M6</a><span class="sep">›</span> <span>S5 – Structuri repetitive: while, do–while, for</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="https://www.onlinegdb.com/online_c++_compiler" target="_blank" class="btn-sm">Compilator online</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <span class="sidebar-label">Această pagină</span>
+    <a class="sidebar-link" href="#prereq"><i class="fa-solid fa-circle-check fa-fw"></i> Prerequisite</a>
+    <a class="sidebar-link" href="#intro"><i class="fa-solid fa-book-open fa-fw"></i> Introducere</a>
+    <a class="sidebar-link" href="#obiective"><i class="fa-solid fa-bullseye fa-fw"></i> Obiective</a>
+    <a class="sidebar-link" href="#necesitate"><i class="fa-solid fa-repeat fa-fw"></i> De ce avem nevoie de repetare</a>
+    <a class="sidebar-link" href="#while"><i class="fa-solid fa-arrows-spin fa-fw"></i> Instrucțiunea while</a>
+    <a class="sidebar-link" href="#dowhile"><i class="fa-solid fa-rotate fa-fw"></i> Instrucțiunea do–while</a>
+    <a class="sidebar-link" href="#diferenta"><i class="fa-solid fa-code-compare fa-fw"></i> while vs. do–while</a>
+    <a class="sidebar-link" href="#for"><i class="fa-solid fa-hashtag fa-fw"></i> Instrucțiunea for</a>
+    <a class="sidebar-link" href="#reprezentare"><i class="fa-solid fa-diagram-project fa-fw"></i> Scheme logice și pseudocod</a>
+    <a class="sidebar-link" href="#contor-acumulator"><i class="fa-solid fa-calculator fa-fw"></i> Contor și acumulator</a>
+    <a class="sidebar-link" href="#alegere"><i class="fa-solid fa-scale-balanced fa-fw"></i> Alegerea structurii potrivite</a>
+    <a class="sidebar-link" href="#santinela"><i class="fa-solid fa-flag-checkered fa-fw"></i> Bucle cu valoare santinelă</a>
+    <a class="sidebar-link" href="#erori"><i class="fa-solid fa-triangle-exclamation fa-fw"></i> Erori frecvente</a>
+    <a class="sidebar-link" href="#comparatie"><i class="fa-solid fa-language fa-fw"></i> Comparație între limbaje</a>
+    <span class="sidebar-label">Laborator</span>
+    <a class="sidebar-link" href="#exemple"><i class="fa-solid fa-lightbulb fa-fw"></i> Exemple rezolvate</a>
+    <a class="sidebar-link" href="#introductive"><i class="fa-solid fa-pencil fa-fw"></i> Exerciții introductive</a>
+    <a class="sidebar-link" href="#tracing"><i class="fa-solid fa-chart-line fa-fw"></i> Code tracing</a>
+    <a class="sidebar-link" href="#lab"><i class="fa-solid fa-flask fa-fw"></i> Laborator</a>
+    <a class="sidebar-link" href="#extra"><i class="fa-solid fa-plus fa-fw"></i> Exerciții extra</a>
+    <span class="sidebar-label">Referință</span>
+    <a class="sidebar-link" href="#verificare"><i class="fa-solid fa-circle-check fa-fw"></i> Autoevaluare</a>
+    <a class="sidebar-link" href="#rezumat"><i class="fa-solid fa-thumbtack fa-fw"></i> Rezumat</a>
+    <a class="sidebar-link" href="#glosar"><i class="fa-solid fa-book fa-fw"></i> Glosar</a>
+    <a class="sidebar-link" href="#cheat"><i class="fa-solid fa-bolt fa-fw"></i> Cheat sheet</a>
+    <span class="sidebar-label">Sesiuni</span>
+    <a class="sidebar-link" href="sesiunea-0.html">S0 – Syllabus</a>
+    <a class="sidebar-link" href="sesiunea-0b.html">S0b – Istoric limbaje</a>
+    <a class="sidebar-link" href="sesiunea-1.html">S1 – Calculator și C++</a>
+    <a class="sidebar-link" href="sesiunea-2.html">S2 – Variabile și tipuri de date</a>
+    <a class="sidebar-link" href="sesiunea-3.html">S3 – Expresii și evaluarea lor</a>
+    <a class="sidebar-link" href="sesiunea-4.html">S4 – Instrucțiuni și structuri de control</a>
+    <a class="sidebar-link active" href="sesiunea-5.html">S5 – Structuri repetitive</a>
+    <a class="sidebar-link" href="index.html">← Înapoi la modul</a>
+  </aside>
+
+  <main class="main">
+    <!-- Hero -->
+    <div class="page-hero">
+      <span class="session-tag">Sesiunea 5 · 6 ore · C++</span>
+      <h1>Structuri repetitive: while, do–while, for</h1>
+      <div class="hero-meta">
+        <span class="chip">6 ore (4h teorie + 2h laborator)</span>
+        <span class="chip">Repetare · Contor · Acumulator</span>
+        <span class="chip">while · do–while · for</span>
+        <span class="chip">Bucle cu valoare santinelă</span>
+        <span class="chip">C++ · Python · Java</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="t5-curs">Curs</button>
+      <button class="tab-btn" data-tab="t5-exemple">Exemple</button>
+      <button class="tab-btn" data-tab="t5-lab">Laborator</button>
+      <button class="tab-btn" data-tab="t5-cheat">Cheat Sheet</button>
+      <button class="tab-btn" data-tab="t5-autoevaluare">Autoevaluare</button>
+    </div>
+
+    <div class="tab-wrap">
+      <!-- ========================================================= -->
+      <!-- TAB: CURS                                                  -->
+      <!-- ========================================================= -->
+      <div class="tab-pane active" id="t5-curs">
+        <div class="prose">
+
+          <!-- Prereq -->
+          <div class="prereq-box" id="prereq">
+            <h4>Prerequisite – ce trebuie să știi înainte de această sesiune</h4>
+            <ul>
+              <li>Ai parcurs S4 – știi ce este o instrucțiune, un bloc, și cum funcționează structura alternativă (<code>if</code>, <code>if–else</code>, <code>switch</code>)</li>
+              <li>Recunoști condițiile logice construite cu operatorii relaționali și logici, studiați în S3</li>
+              <li>Știi să urmărești („trace") pas cu pas modificarea valorilor variabilelor</li>
+              <li>Citești și afișezi valori cu <code>cin</code> și <code>cout</code></li>
+              <li>Folosești atribuirea simplă și compusă (<code>=</code>, <code>+=</code>) și operatorii <code>++</code>/<code>--</code></li>
+            </ul>
+          </div>
+
+          <h2 id="intro">Introducere</h2>
+          <p>În sesiunea anterioară ai văzut cum poate un program să aleagă între mai multe căi de execuție, în funcție de o condiție — aceasta este structura alternativă. Am amintit atunci, doar pentru a completa clasificarea instrucțiunilor, că mai există o categorie: instrucțiunile de ciclare (numite și <strong>repetitive</strong> sau <strong>iterative</strong>), care repetă o secvență de cod de mai multe ori. În această sesiune tocmai aceste instrucțiuni devin subiectul principal.</p>
+          <p>La fel ca structura alternativă, și structura repetitivă este o structură de control fundamentală — modifică fluxul normal (secvențial) de execuție al unui program, dar nu prin alegerea unei ramuri, ci prin <strong>revenirea</strong> la o instrucțiune anterioară, atât timp cât o condiție rămâne îndeplinită.</p>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Punct cheie</strong>
+              <p>O structură repetitivă execută în mod repetat o instrucțiune sau un bloc de instrucțiuni, atât timp cât (sau până când) este îndeplinită o anumită condiție. Numărul de repetări poate fi cunoscut dinainte sau poate depinde de o condiție evaluată în timpul execuției.</p>
+            </div>
+          </div>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Ce nu dezvoltăm încă în această sesiune</strong>
+              <p>Ne concentrăm aici pe sintaxa și funcționarea celor trei instrucțiuni de ciclare din C++: <code>while</code>, <code>do–while</code> și <code>for</code>, pe tiparele <em>contor</em> și <em>acumulator</em> și pe buclele controlate printr-o valoare santinelă. Instrucțiunile de salt <code>break</code> și <code>continue</code>, buclele imbricate (o structură repetitivă în interiorul alteia) și algoritmii elementari construiți cu bucle (determinarea maximului, verificarea unei proprietăți, numărarea elementelor care satisfac o condiție) fac obiectul sesiunii următoare.</p>
+            </div>
+          </div>
+
+          <!-- Obiective -->
+          <div class="objectives" id="obiective">
+            <h3>La finalul acestei sesiuni vei putea să:</h3>
+            <ol>
+              <li><strong>Explici</strong> de ce este necesară repetarea instrucțiunilor într-un program și ce este o structură repetitivă</li>
+              <li><strong>Utilizezi</strong> corect instrucțiunea <code>while</code>, inclusiv condiția de ciclare și corpul buclei</li>
+              <li><strong>Utilizezi</strong> corect instrucțiunea <code>do–while</code> și <strong>explici</strong> diferența ei față de <code>while</code></li>
+              <li><strong>Utilizezi</strong> corect instrucțiunea <code>for</code>, inclusiv cele trei componente ale ei: inițializare, condiție, pas</li>
+              <li><strong>Alegi</strong> structura de ciclare potrivită pentru o problemă dată</li>
+              <li><strong>Reprezinți</strong> o structură repetitivă prin pseudocod și printr-o schemă logică, sesizând diferența dintre testul inițial și testul final</li>
+              <li><strong>Identifici și construiești</strong> un <strong>contor</strong> (numără de câte ori se întâmplă ceva) și un <strong>acumulator</strong> (adună sau înmulțește valori pas cu pas)</li>
+              <li><strong>Construiești</strong> o buclă controlată printr-o valoare santinelă (citire repetată până la o valoare de oprire)</li>
+              <li><strong>Urmărești</strong> pas cu pas execuția unei bucle, inclusiv valorile variabilelor la fiecare iterație</li>
+              <li><strong>Identifici și corectezi</strong> erori frecvente: buclă infinită, eroare „off-by-one", punct și virgulă rătăcit</li>
+              <li><strong>Compari</strong> sintaxa buclelor din C++ cu cea din Java și Python</li>
+            </ol>
+          </div>
+
+          <!-- NECESITATE -->
+          <h2 id="necesitate">De ce avem nevoie de repetare</h2>
+          <p>Presupunem că vrem să afișăm mesajul <code>Bun venit!</code> de cinci ori. Folosind doar ce am învățat până acum, ar trebui să scriem instrucțiunea de cinci ori:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – fără repetare</span></div>
+            <pre><code>cout <span class="op">&lt;&lt;</span> <span class="st">"Bun venit!"</span> <span class="op">&lt;&lt;</span> endl;
+cout <span class="op">&lt;&lt;</span> <span class="st">"Bun venit!"</span> <span class="op">&lt;&lt;</span> endl;
+cout <span class="op">&lt;&lt;</span> <span class="st">"Bun venit!"</span> <span class="op">&lt;&lt;</span> endl;
+cout <span class="op">&lt;&lt;</span> <span class="st">"Bun venit!"</span> <span class="op">&lt;&lt;</span> endl;
+cout <span class="op">&lt;&lt;</span> <span class="st">"Bun venit!"</span> <span class="op">&lt;&lt;</span> endl;</code></pre>
+          </div>
+          <p>Metoda funcționează, dar nu se poate generaliza: dacă am vrea de 1000 de ori, ar trebui scrise 1000 de linii; dacă numărul de repetări este cunoscut abia în momentul execuției (de exemplu, citit de la tastatură), metoda nu mai este deloc aplicabilă. Avem nevoie de o construcție a limbajului care să spună, în esență: „repetă această instrucțiune de <code>n</code> ori" sau „repetă această instrucțiune cât timp este îndeplinită o condiție".</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – cu repetare</span></div>
+            <pre><code><span class="tp">int</span> i = <span class="nm">0</span>;
+<span class="kw">while</span> (i <span class="op">&lt;</span> <span class="nm">5</span>) {
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Bun venit!"</span> <span class="op">&lt;&lt;</span> endl;
+    i<span class="op">++</span>;
+}</code></pre>
+          </div>
+          <p>Indiferent de câte ori trebuie repetată acțiunea — 5, 1000 sau un număr necunoscut dinainte — structura de mai sus rămâne la fel de scurtă. Aceasta este utilitatea fundamentală a structurii repetitive.</p>
+
+          <!-- WHILE -->
+          <h2 id="while">Instrucțiunea <code>while</code></h2>
+          <p>Instrucțiunea <code>while</code> repetă execuția unei instrucțiuni-corp atât timp cât o condiție este adevărată. Condiția este verificată <strong>înaintea</strong> fiecărei execuții a corpului — inclusiv înaintea primeia.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Formă generală</span></div>
+            <pre><code><span class="kw">while</span> (conditie) {
+    instructiune1;
+    instructiune2;
+    ...
+}</code></pre>
+          </div>
+          <div class="flow-steps">
+            <span class="fstep cond">condiție?</span>
+            <span class="farrow">→ adevărat →</span>
+            <span class="fstep">execută corpul</span>
+            <span class="farrow">→ revino la condiție</span>
+          </div>
+          <div class="flow-steps">
+            <span class="fstep cond">condiție?</span>
+            <span class="farrow">→ fals →</span>
+            <span class="fstep exit">iese din buclă</span>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code><span class="tp">int</span> i = <span class="nm">1</span>;
+<span class="kw">while</span> (i <span class="op">&lt;=</span> <span class="nm">5</span>) {
+    cout <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+    i<span class="op">++</span>;
+}
+<span class="cm">// afiseaza: 1 2 3 4 5</span></code></pre>
+          </div>
+          <p>Trei elemente trebuie să existe pentru ca bucla să funcționeze corect: (1) o variabilă <strong>inițializată</strong> înaintea buclei (<code>i = 1</code>); (2) o <strong>condiție</strong> care implică acea variabilă (<code>i &lt;= 5</code>); (3) o instrucțiune care <strong>modifică</strong> variabila în corpul buclei, astfel încât, la un moment dat, condiția să devină falsă (<code>i++</code>). Dacă lipsește oricare dintre aceste elemente, bucla fie nu se execută deloc, fie nu se mai oprește niciodată.</p>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Condiția este verificată înainte</strong>
+              <p>Dacă, la prima verificare, condiția este deja falsă, corpul buclei <code>while</code> nu se execută niciodată — nici măcar o singură dată. De exemplu, pentru <code>int i = 10; while (i &lt; 5) { ... }</code>, corpul nu se execută deloc, întrucât <code>10 &lt; 5</code> este falsă chiar de la început.</p>
+            </div>
+          </div>
+          <p>Urmărirea execuției pas cu pas ajută la înțelegerea buclei. Pentru codul de mai sus:</p>
+          <div class="tbl-wrap">
+            <table class="trace-table">
+              <thead><tr><th>Pas</th><th>i (înainte de test)</th><th>i &lt;= 5 ?</th><th>Se afișează</th><th>i (după i++)</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>1</td><td>adevărat</td><td class="highlight">1</td><td>2</td></tr>
+                <tr><td>2</td><td>2</td><td>adevărat</td><td class="highlight">2</td><td>3</td></tr>
+                <tr><td>3</td><td>3</td><td>adevărat</td><td class="highlight">3</td><td>4</td></tr>
+                <tr><td>4</td><td>4</td><td>adevărat</td><td class="highlight">4</td><td>5</td></tr>
+                <tr><td>5</td><td>5</td><td>adevărat</td><td class="highlight">5</td><td>6</td></tr>
+                <tr><td>6</td><td>6</td><td class="highlight">fals</td><td>—</td><td>bucla se încheie</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- DO-WHILE -->
+          <h2 id="dowhile">Instrucțiunea <code>do–while</code></h2>
+          <p>Instrucțiunea <code>do–while</code> este asemănătoare cu <code>while</code>, dar cu o diferență esențială: condiția este verificată <strong>după</strong> execuția corpului, nu înainte. Corpul buclei este, așadar, executat întotdeauna <strong>cel puțin o dată</strong>, indiferent de valoarea inițială a condiției.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Formă generală</span></div>
+            <pre><code><span class="kw">do</span> {
+    instructiune1;
+    instructiune2;
+    ...
+} <span class="kw">while</span> (conditie);</code></pre>
+          </div>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Atenție la punct și virgulă</strong>
+              <p>Spre deosebire de <code>while</code>, instrucțiunea <code>do–while</code> se încheie cu <code>;</code> după paranteza condiției — este singura instrucțiune de ciclare din C++ care cere acest lucru. Omiterea lui produce o eroare de compilare.</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code><span class="tp">int</span> optiune;
+<span class="kw">do</span> {
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Introduceti un numar intre 1 si 5: "</span>;
+    cin <span class="op">&gt;&gt;</span> optiune;
+} <span class="kw">while</span> (optiune <span class="op">&lt;</span> <span class="nm">1</span> <span class="op">||</span> optiune <span class="op">&gt;</span> <span class="nm">5</span>);
+
+cout <span class="op">&lt;&lt;</span> <span class="st">"Ati introdus: "</span> <span class="op">&lt;&lt;</span> optiune;</code></pre>
+          </div>
+          <p>Acest exemplu ilustrează un caz de utilizare tipic pentru <code>do–while</code>: <strong>validarea unei date de intrare</strong>. Utilizatorul trebuie să introducă cel puțin o dată o valoare — nu are sens să verificăm o condiție înainte de a fi citit ceva — iar apoi cererea se repetă atât timp cât valoarea introdusă nu este validă.</p>
+
+          <!-- DIFERENTA -->
+          <h2 id="diferenta"><code>while</code> versus <code>do–while</code></h2>
+          <p>Diferența dintre cele două instrucțiuni pare mică din punct de vedere sintactic — poziția condiției — dar are un efect important asupra numărului minim de execuții ale corpului.</p>
+          <div class="loop-compare">
+            <div class="loop-card">
+              <h4>while — testare la început</h4>
+              <pre>int i = 10;
+while (i &lt; 5) {
+    cout &lt;&lt; i;
+}
+// corpul NU se executa
+// (conditia e falsa chiar de la inceput)</pre>
+              <p>Corpul se poate executa de <strong>zero</strong> ori.</p>
+            </div>
+            <div class="loop-card">
+              <h4>do–while — testare la sfârșit</h4>
+              <pre>int i = 10;
+do {
+    cout &lt;&lt; i;
+} while (i &lt; 5);
+// corpul se executa o data
+// (verificarea vine dupa)</pre>
+              <p>Corpul se execută întotdeauna <strong>cel puțin o dată</strong>.</p>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Aspect</th><th><code>while</code></th><th><code>do–while</code></th></tr></thead>
+              <tbody>
+                <tr><td>Momentul verificării condiției</td><td>înaintea corpului</td><td>după corp</td></tr>
+                <tr><td>Număr minim de execuții ale corpului</td><td>0</td><td>1</td></tr>
+                <tr><td>Terminator după condiție</td><td>fără <code>;</code></td><td>obligatoriu <code>;</code></td></tr>
+                <tr><td>Utilizare tipică</td><td>când numărul de repetări nu este cunoscut și corpul poate fi omis complet</td><td>meniuri, validarea unei date de intrare — corpul trebuie executat cel puțin o dată</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- FOR -->
+          <h2 id="for">Instrucțiunea <code>for</code></h2>
+          <p>Instrucțiunea <code>for</code> este utilizată în mod obișnuit atunci când numărul de repetări este cunoscut dinainte, sau atunci când ciclarea este condusă de o variabilă numărătoare care se modifică regulat. Ea reunește, într-o singură linie, cele trei elemente pe care le-am identificat mai devreme la <code>while</code>: inițializarea, condiția și pasul (modificarea variabilei).</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Formă generală</span></div>
+            <pre><code><span class="kw">for</span> (initializare; conditie; pas) {
+    instructiune1;
+    instructiune2;
+    ...
+}</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span></div>
+            <pre><code><span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">5</span>; i<span class="op">++</span>) {
+    cout <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+}
+<span class="cm">// afiseaza: 1 2 3 4 5 (identic cu exemplul de la while)</span></code></pre>
+          </div>
+          <p>Cele trei componente din paranteză se execută astfel: <strong>inițializarea</strong> (<code>int i = 1</code>) o singură dată, la începutul buclei; <strong>condiția</strong> (<code>i &lt;= 5</code>) înaintea fiecărei execuții a corpului, la fel ca la <code>while</code>; <strong>pasul</strong> (<code>i++</code>) după fiecare execuție a corpului, înainte de a reveni la verificarea condiției.</p>
+          <div class="flow-steps">
+            <span class="fstep">inițializare (o dată)</span>
+            <span class="farrow">→</span>
+            <span class="fstep cond">condiție?</span>
+            <span class="farrow">→ adevărat →</span>
+            <span class="fstep">corp</span>
+            <span class="farrow">→</span>
+            <span class="fstep">pas</span>
+            <span class="farrow">→ revino la condiție</span>
+          </div>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong><code>for</code> este echivalentă cu un <code>while</code></strong>
+              <p>Orice buclă <code>for (init; cond; pas) { corp; }</code> poate fi rescrisă ca <code>while</code>: <code>init; while (cond) { corp; pas; }</code>. Cele două instrucțiuni nu introduc concepte diferite — <code>for</code> este doar o formă mai compactă, potrivită pentru buclele controlate de un contor.</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – echivalența for ↔ while</span></div>
+            <pre><code><span class="cm">// varianta for</span>
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">5</span>; i<span class="op">++</span>) {
+    cout <span class="op">&lt;&lt;</span> i;
+}
+
+<span class="cm">// varianta while, echivalenta</span>
+<span class="tp">int</span> i = <span class="nm">1</span>;
+<span class="kw">while</span> (i <span class="op">&lt;=</span> <span class="nm">5</span>) {
+    cout <span class="op">&lt;&lt;</span> i;
+    i<span class="op">++</span>;
+}</code></pre>
+          </div>
+          <h3>Variații ale instrucțiunii <code>for</code></h3>
+          <p><code>for</code> poate număra și descrescător, poate folosi un pas diferit de 1, iar variabila de control poate fi de orice tip numeric:</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – variații</span></div>
+            <pre><code><span class="cm">// descrescator, de la 10 la 1</span>
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">10</span>; i <span class="op">&gt;=</span> <span class="nm">1</span>; i<span class="op">--</span>) {
+    cout <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+}
+
+<span class="cm">// pas de 2 (doar numere pare de la 0 la 10)</span>
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">0</span>; i <span class="op">&lt;=</span> <span class="nm">10</span>; i <span class="op">+=</span> <span class="nm">2</span>) {
+    cout <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+}</code></pre>
+          </div>
+          <div class="callout ok">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Domeniul de vizibilitate al variabilei din <code>for</code></strong>
+              <p>O variabilă declarată în inițializarea unui <code>for</code>, ca în <code>for (int i = 0; ...)</code>, este vizibilă numai în interiorul buclei (inclusiv în condiție și în pas) — la fel cum o variabilă declarată într-un bloc este vizibilă doar acolo (vezi S4). După încheierea buclei, <code>i</code> nu mai poate fi folosită.</p>
+            </div>
+          </div>
+
+          <!-- REPREZENTARE -->
+          <h2 id="reprezentare">Reprezentarea structurii repetitive: scheme logice și pseudocod</h2>
+          <p>La fel ca la structura alternativă (vezi S4), o structură repetitivă poate fi reprezentată, înainte de a fi scrisă în cod C++, printr-o <strong>schemă logică</strong> (reprezentare grafică) sau printr-un <strong>pseudocod</strong> (reprezentare textuală). Diferența esențială față de schema unei structuri alternative este că, după executarea corpului, controlul <strong>revine</strong> la simbolul de decizie (rombul), în loc să se încheie.</p>
+
+          <h3>Schema logică a unei bucle</h3>
+          <p>Structura repetitivă cu <strong>test inițial</strong> (specifică lui <code>while</code> și <code>for</code>) și cea cu <strong>test final</strong> (specifică lui <code>do–while</code>) se reprezintă astfel:</p>
+          <div class="loop-compare">
+            <div class="loop-card">
+              <h4>Test inițial — while / for</h4>
+              <pre>Start
+  |
+  v
+[conditie?] &lt;----+
+  | DA            |
+  v               |
+[corp buclei] -----+
+  | NU
+  v
+Stop</pre>
+              <p>Rombul (decizia) este întâlnit <strong>înaintea</strong> corpului — corpul poate fi ocolit complet.</p>
+            </div>
+            <div class="loop-card">
+              <h4>Test final — do–while</h4>
+              <pre>Start
+  |
+  v
+[corp buclei] &lt;----+
+  |                |
+  v                |
+[conditie?] -DA----+
+  | NU
+  v
+Stop</pre>
+              <p>Rombul este întâlnit <strong>după</strong> corp — corpul se execută garantat o dată.</p>
+            </div>
+          </div>
+
+          <h3>Pseudocod pentru structurile repetitive</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Pseudocod – test inițial (echivalent while)</span></div>
+            <pre><code>Cat timp conditie executa
+    instructiuni
+SfarsitCatTimp</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Pseudocod – test final (echivalent do–while)</span></div>
+            <pre><code>Executa
+    instructiuni
+Cat timp conditie</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Pseudocod – contor (echivalent for)</span></div>
+            <pre><code>Pentru i = 1, n executa
+    instructiuni
+SfarsitPentru</code></pre>
+          </div>
+
+          <h3>O buclă, în trei reprezentări</h3>
+          <p>Problemă: se citește un număr natural <code>n</code>; se calculează și se afișează suma primelor <code>n</code> numere naturale.</p>
+          <div class="pattern-grid">
+            <div class="pattern-card">
+              <div class="pattern-header">Pseudocod</div>
+              <pre>Citeste n
+suma &lt;- 0
+Pentru i = 1, n executa
+    suma &lt;- suma + i
+SfarsitPentru
+Afiseaza suma</pre>
+            </div>
+            <div class="pattern-card">
+              <div class="pattern-header">Schemă logică (pas cu pas)</div>
+              <pre>Start
+Citeste n
+suma = 0, i = 1
+[i &lt;= n ?]
+  DA -&gt; suma=suma+i, i=i+1 -&gt; revino
+  NU -&gt; Afiseaza suma
+Stop</pre>
+            </div>
+            <div class="pattern-card">
+              <div class="pattern-header">Cod C++</div>
+              <pre>int n;
+cin &gt;&gt; n;
+int suma = 0;
+for (int i = 1; i &lt;= n; i++)
+    suma += i;
+cout &lt;&lt; suma;</pre>
+            </div>
+          </div>
+          <p>Observăm din nou corespondența directă dintre cele trei reprezentări, la fel ca la structura alternativă (S4): fiecare pas din pseudocod are un echivalent explicit atât în descrierea schemei logice, cât și în codul C++, iar „revenirea" la testul condiției — absentă la structura alternativă — este exact ceea ce deosebește vizual o buclă de o simplă decizie.</p>
+
+          <!-- CONTOR SI ACUMULATOR -->
+          <h2 id="contor-acumulator">Contor și acumulator</h2>
+          <p>Aproape orice problemă rezolvată cu o buclă folosește una sau ambele dintre următoarele două tipare, care revin în majoritatea programelor cu structuri repetitive.</p>
+          <div class="pattern-grid">
+            <div class="pattern-card">
+              <div class="pattern-header">Contor (numărare)</div>
+              <pre><span class="tp">int</span> numar = <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+    numar = numar <span class="op">+</span> <span class="nm">1</span>;   <span class="cm">// numar++;</span>
+}</pre>
+            </div>
+            <div class="pattern-card">
+              <div class="pattern-header">Acumulator (sumă)</div>
+              <pre><span class="tp">int</span> suma = <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+    suma = suma <span class="op">+</span> i;
+}</pre>
+            </div>
+            <div class="pattern-card">
+              <div class="pattern-header">Acumulator (produs)</div>
+              <pre><span class="tp">int</span> produs = <span class="nm">1</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+    produs = produs <span class="op">*</span> i;
+}</pre>
+            </div>
+          </div>
+          <p>Un <strong>contor</strong> este o variabilă care este mărită (de obicei cu 1) de fiecare dată când se întâmplă un anumit lucru — răspunde la întrebarea „de câte ori?". Un <strong>acumulator</strong> este o variabilă care adună (sau înmulțește) treptat valori pe parcursul buclei — răspunde la întrebarea „cât în total?". Diferența esențială dintre ele nu este sintactică, ci de <strong>rol</strong>: un contor este de regulă incrementat cu o valoare fixă (<code>+1</code>), în timp ce un acumulator adună valori care pot diferi la fiecare pas.</p>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Inițializarea contorului/acumulatorului contează</strong>
+              <p>Un acumulator pentru sumă trebuie inițializat cu <code>0</code> (elementul neutru al adunării); un acumulator pentru produs trebuie inițializat cu <code>1</code> (elementul neutru al înmulțirii), niciodată cu <code>0</code> — altfel produsul final ar fi întotdeauna <code>0</code>, indiferent de valorile înmulțite.</p>
+            </div>
+          </div>
+          <p>Urmărirea pas cu pas a unui acumulator pentru calculul sumei primelor 4 numere naturale, <code>1+2+3+4</code>:</p>
+          <div class="tbl-wrap">
+            <table class="trace-table">
+              <thead><tr><th>i</th><th>suma (înainte)</th><th>suma = suma + i</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>0</td><td class="highlight">1</td></tr>
+                <tr><td>2</td><td>1</td><td class="highlight">3</td></tr>
+                <tr><td>3</td><td>3</td><td class="highlight">6</td></tr>
+                <tr><td>4</td><td>6</td><td class="highlight">10</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ALEGERE -->
+          <h2 id="alegere">Alegerea structurii de ciclare potrivite</h2>
+          <p>Cele trei instrucțiuni de ciclare din C++ pot, în principiu, rezolva aceleași probleme — orice buclă <code>for</code> se poate scrie cu <code>while</code>, iar un <code>do–while</code> poate fi rescris ca <code>while</code> cu o mică restructurare. Alegerea dintre ele este, în primul rând, o alegere de <strong>claritate</strong>: care structură exprimă cel mai natural intenția problemei.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Situație</th><th>Structură recomandată</th></tr></thead>
+              <tbody>
+                <tr><td>Numărul de repetări este cunoscut dinainte (ex: „repetă de <code>n</code> ori", „de la 1 la 100")</td><td><code>for</code></td></tr>
+                <tr><td>Repetarea depinde de o condiție care nu este legată de un contor (ex: „cât timp mai sunt bani în cont")</td><td><code>while</code></td></tr>
+                <tr><td>Corpul trebuie executat obligatoriu cel puțin o dată (ex: validarea unei date de intrare, un meniu)</td><td><code>do–while</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Nu există o regulă absolută</strong>
+              <p>Aceste recomandări descriu tiparul cel mai frecvent, nu o regulă obligatorie a limbajului. C++ nu împiedică folosirea unui <code>while</code> acolo unde numărul de repetări este cunoscut — dar codul devine, de regulă, mai greu de citit dacă structura aleasă nu reflectă natura problemei.</p>
+            </div>
+          </div>
+
+          <!-- SANTINELA -->
+          <h2 id="santinela">Bucle controlate printr-o valoare santinelă</h2>
+          <p>Nu toate buclele au un număr de repetări cunoscut dinainte. Un tipar frecvent este citirea repetată a unor valori, până când utilizatorul introduce o valoare specială, convenită dinainte, care semnalează oprirea — numită <strong>valoare santinelă</strong> (din engleză, <em>sentinel value</em>).</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – citire până la valoarea santinelă 0</span></div>
+            <pre><code><span class="tp">int</span> x;
+<span class="tp">int</span> suma = <span class="nm">0</span>;
+
+cout <span class="op">&lt;&lt;</span> <span class="st">"Introduceti numere, 0 pentru a opri: "</span>;
+cin <span class="op">&gt;&gt;</span> x;
+
+<span class="kw">while</span> (x <span class="op">!=</span> <span class="nm">0</span>) {
+    suma <span class="op">+=</span> x;
+    cin <span class="op">&gt;&gt;</span> x;
+}
+
+cout <span class="op">&lt;&lt;</span> <span class="st">"Suma este: "</span> <span class="op">&lt;&lt;</span> suma;</code></pre>
+          </div>
+          <p>Observă structura: (1) o <strong>citire înainte de buclă</strong> (numită, uneori, „citire de pregătire"), care oferă prima valoare de testat; (2) condiția <code>while</code> testează dacă valoarea citită este diferită de santinelă; (3) în interiorul buclei, pe lângă prelucrarea propriu-zisă (<code>suma += x;</code>), se află o <strong>a doua citire</strong>, care pregătește testul următor. Fără această a doua citire, condiția ar folosi mereu prima valoare citită, iar bucla nu s-ar mai opri niciodată sau nu s-ar mai actualiza corect.</p>
+          <div class="callout warn">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Alegerea valorii santinelă</strong>
+              <p>Valoarea santinelă trebuie să fie una care nu poate apărea în mod normal printre datele valide ale problemei — de exemplu, <code>0</code> este o alegere nepotrivită dacă printre valorile de prelucrat se poate afla și numărul 0 însuși. În astfel de cazuri se alege o altă valoare convențională (de exemplu, <code>-1</code>, dacă datele sunt cunoscute a fi pozitive).</p>
+            </div>
+          </div>
+          <p>Acest tipar folosește <code>while</code> mai degrabă decât <code>for</code>, deoarece numărul de repetări nu este cunoscut dinainte — depinde exclusiv de datele introduse de utilizator, nu de un contor.</p>
+
+          <!-- ERORI -->
+          <h2 id="erori">Erori frecvente</h2>
+
+          <h3>Eroarea 1 – Bucla infinită prin uitarea pasului</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+            <pre><code><span class="tp">int</span> i = <span class="nm">1</span>;
+<span class="kw">while</span> (i <span class="op">&lt;=</span> <span class="nm">5</span>) {
+    cout <span class="op">&lt;&lt;</span> i;
+    <span class="cm">// lipseste i++; -- i ramane mereu 1, conditia e mereu adevarata</span>
+}</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Corect</span></div>
+            <pre><code><span class="tp">int</span> i = <span class="nm">1</span>;
+<span class="kw">while</span> (i <span class="op">&lt;=</span> <span class="nm">5</span>) {
+    cout <span class="op">&lt;&lt;</span> i;
+    i<span class="op">++</span>;
+}</code></pre>
+          </div>
+          <p><strong>Explicație:</strong> dacă variabila testată în condiție nu este niciodată modificată în corpul buclei, condiția rămâne mereu adevărată (sau mereu falsă), iar bucla nu se mai oprește — sau nu se execută deloc. Această eroare se numește <strong>buclă infinită</strong>; dacă apare într-un program, execuția pare „înghețată" și trebuie întreruptă manual.</p>
+
+          <h3>Eroarea 2 – Punct și virgulă rătăcit după <code>while</code>/<code>for</code></h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+            <pre><code><span class="tp">int</span> i = <span class="nm">1</span>;
+<span class="kw">while</span> (i <span class="op">&lt;=</span> <span class="nm">5</span>); <span class="cm">// ; formeaza corpul buclei!</span>
+{
+    cout <span class="op">&lt;&lt;</span> i;
+    i<span class="op">++</span>;
+}</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Corect</span></div>
+            <pre><code><span class="tp">int</span> i = <span class="nm">1</span>;
+<span class="kw">while</span> (i <span class="op">&lt;=</span> <span class="nm">5</span>) {
+    cout <span class="op">&lt;&lt;</span> i;
+    i<span class="op">++</span>;
+}</code></pre>
+          </div>
+          <p><strong>Explicație:</strong> la fel ca la <code>if</code> (vezi S4), un <code>;</code> imediat după condiția lui <code>while</code> sau <code>for</code> formează o instrucțiune nulă, care devine corpul buclei. Ca urmare, condiția este verificată la nesfârșit fără ca variabila să fie vreodată modificată — se obține tot o buclă infinită, deoarece <code>i</code> nu este niciodată actualizat. Blocul de mai jos, cu acolade, se execută o singură dată, independent de buclă.</p>
+
+          <h3>Eroarea 3 – „Off-by-one" (o repetare în plus sau în minus)</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Se dorea afișarea numerelor 1...5</span></div>
+            <pre><code><span class="cm">// Gresit -- afiseaza doar 1 2 3 4</span>
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;</span> <span class="nm">5</span>; i<span class="op">++</span>) {
+    cout <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+}
+
+<span class="cm">// Corect -- afiseaza 1 2 3 4 5</span>
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">5</span>; i<span class="op">++</span>) {
+    cout <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+}</code></pre>
+          </div>
+          <p><strong>Explicație:</strong> folosirea lui <code>&lt;</code> în loc de <code>&lt;=</code> (sau invers) este una dintre cele mai frecvente surse de erori la bucle — condiția de continuare trebuie verificată cu grijă față de limitele exacte cerute de problemă. Acest tip de greșeală se numește, în engleză, <strong>off-by-one error</strong> (eroare cu o unitate în plus sau în minus).</p>
+
+          <h3>Eroarea 4 – Confuzia dintre <code>=</code> și <code>==</code> în condiția buclei</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+            <pre><code><span class="tp">int</span> i = <span class="nm">0</span>;
+<span class="kw">while</span> (i <span class="op">=</span> <span class="nm">5</span>) { <span class="cm">// atribuie 5 lui i; conditia e mereu "adevarata" (5 e nenul)</span>
+    cout <span class="op">&lt;&lt;</span> i;
+}</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Corect</span></div>
+            <pre><code><span class="tp">int</span> i = <span class="nm">0</span>;
+<span class="kw">while</span> (i <span class="op">==</span> <span class="nm">5</span>) {
+    cout <span class="op">&lt;&lt;</span> i;
+}</code></pre>
+          </div>
+          <p><strong>Explicație:</strong> la fel ca la structura alternativă, <code>=</code> este atribuire, nu comparație. Într-o condiție de buclă, o atribuire accidentală cu <code>=</code> produce, de obicei, o condiție mereu adevărată (orice valoare nenulă) — deci o buclă infinită — sau mereu falsă, dacă valoarea atribuită este <code>0</code>.</p>
+
+          <h3>Eroarea 5 – Reinițializarea acumulatorului în interiorul buclei</h3>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Greșit</span></div>
+            <pre><code><span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">5</span>; i<span class="op">++</span>) {
+    <span class="tp">int</span> suma = <span class="nm">0</span>; <span class="cm">// GRESIT: suma e resetata la fiecare pas!</span>
+    suma <span class="op">+=</span> i;
+}</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++ – Corect</span></div>
+            <pre><code><span class="tp">int</span> suma = <span class="nm">0</span>; <span class="cm">// initializat o singura data, inainte de bucla</span>
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">5</span>; i<span class="op">++</span>) {
+    suma <span class="op">+=</span> i;
+}</code></pre>
+          </div>
+          <p><strong>Explicație:</strong> un acumulator trebuie inițializat <strong>o singură dată</strong>, înaintea buclei — nu în interiorul ei. Dacă inițializarea este plasată în corpul buclei, valoarea acumulată la pasul anterior este pierdută la fiecare iterație, iar rezultatul final este greșit.</p>
+
+          <!-- COMPARATIE -->
+          <h2 id="comparatie">Comparație între limbaje de programare</h2>
+          <p>Structura repetitivă există, conceptual, în orice limbaj de programare imperativ — ceea ce diferă este sintaxa concretă, iar în cazul lui Python, chiar și disponibilitatea unora dintre construcții.</p>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Concept</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td>Testare la început</td><td><code>while (cond) { ... }</code></td><td><code>while (cond) { ... }</code></td><td><code>while cond:</code> (bloc indentat)</td></tr>
+                <tr><td>Testare la sfârșit</td><td><code>do { ... } while (cond);</code></td><td><code>do { ... } while (cond);</code></td><td>nu există — se simulează cu <code>while True:</code> și <code>break</code> (subiect de S6)</td></tr>
+                <tr><td>Buclă cu contor</td><td><code>for (int i=0; i&lt;n; i++)</code></td><td><code>for (int i=0; i&lt;n; i++)</code></td><td><code>for i in range(n):</code></td></tr>
+                <tr><td>Delimitarea blocului</td><td>acolade <code>{ }</code></td><td>acolade <code>{ }</code></td><td>indentare (nu acolade)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Cea mai importantă diferență conceptuală apare la <code>for</code>: în C++ și Java, <code>for</code> este construit din trei componente explicite (inițializare; condiție; pas), potrivite pentru orice tip de progresie numerică. În Python, <code>for</code> este întotdeauna o parcurgere a unei secvențe — <code>for i in range(n):</code> parcurge, pe rând, valorile <code>0, 1, ..., n-1</code>, generate de funcția <code>range</code>; conceptul de „buclă cu contor" este identic, dar exprimat printr-o parcurgere, nu printr-o formulă cu trei părți.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">Aceeași buclă (1 la 5), în trei limbaje</span></div>
+            <pre><code>C++    : <span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">5</span>; i<span class="op">++</span>) cout <span class="op">&lt;&lt;</span> i;
+Java   : <span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">5</span>; i<span class="op">++</span>) System.out.print(i);
+Python : <span class="kw">for</span> i <span class="kw">in</span> range(<span class="nm">1</span>, <span class="nm">6</span>): print(i, end=<span class="st">" "</span>)</code></pre>
+          </div>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>De ce <code>range(1, 6)</code> și nu <code>range(1, 5)</code>?</strong>
+              <p>În Python, <code>range(a, b)</code> generează valorile de la <code>a</code> inclusiv, până la <code>b</code> <strong>exclusiv</strong>. Pentru a obține valorile <code>1, 2, 3, 4, 5</code>, limita superioară trebuie scrisă <code>6</code>, nu <code>5</code> — o altă formă a capcanei „off-by-one", de data aceasta specifică modului în care Python delimitează un interval.</p>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /tab curs -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: EXEMPLE                                               -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t5-exemple">
+        <div class="prose">
+          <h2 id="exemple">Exemple rezolvate</h2>
+          <p>Aplicăm, ca și în sesiunea anterioară, aceeași metodologie de rezolvare: <strong>cerință</strong>, <strong>date de intrare</strong>, <strong>date de ieșire</strong>, <strong>restricții</strong>, un <strong>exemplu</strong>, <strong>proiectarea algoritmului</strong> și <strong>codul C++</strong>.</p>
+
+          <h3>Exemplul 1 – Afișarea numerelor de la 1 la n</h3>
+          <p><strong>Cerință:</strong> Se citește un număr natural <code>n</code>. Se afișează, separate prin spațiu, numerele de la 1 la <code>n</code>.</p>
+          <p><strong>Date de intrare:</strong> un întreg <code>n</code>. <strong>Date de ieșire:</strong> numerele <code>1 2 ... n</code>. <strong>Restricții:</strong> <code>1 ≤ n ≤ 1.000.000</code>.</p>
+          <p><strong>Exemplu:</strong> se citește <code>4</code>; se afișează <code>1 2 3 4</code>.</p>
+          <p><strong>Algoritm:</strong> (1) se citește <code>n</code>; (2) se folosește o variabilă <code>i</code>, de la 1 la <code>n</code>; (3) la fiecare pas se afișează valoarea curentă a lui <code>i</code> — o buclă <code>for</code> este alegerea firească, întrucât numărul de repetări (<code>n</code>) este cunoscut dinainte.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> n;
+cin <span class="op">&gt;&gt;</span> n;
+
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+    cout <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+}</code></pre>
+          </div>
+
+          <h3>Exemplul 2 – Suma primelor n numere naturale</h3>
+          <p><strong>Cerință:</strong> Se citește un număr natural <code>n</code>. Se afișează suma <code>1+2+...+n</code>.</p>
+          <p><strong>Date de intrare:</strong> un întreg <code>n</code>. <strong>Date de ieșire:</strong> suma primelor <code>n</code> numere naturale. <strong>Restricții:</strong> <code>1 ≤ n ≤ 100.000</code>.</p>
+          <p><strong>Exemplu:</strong> se citește <code>5</code>; se afișează <code>15</code> (<code>1+2+3+4+5</code>).</p>
+          <p><strong>Algoritm:</strong> (1) se citește <code>n</code>; (2) se inițializează un acumulator <code>suma</code> cu <code>0</code>, înaintea buclei; (3) pentru fiecare <code>i</code> de la 1 la <code>n</code>, se adaugă <code>i</code> la <code>suma</code>; (4) se afișează <code>suma</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> n;
+cin <span class="op">&gt;&gt;</span> n;
+
+<span class="tp">int</span> suma = <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+    suma <span class="op">+=</span> i;
+}
+
+cout <span class="op">&lt;&lt;</span> suma;</code></pre>
+          </div>
+
+          <h3>Exemplul 3 – Factorialul unui număr</h3>
+          <p><strong>Cerință:</strong> Se citește un număr natural <code>n</code>. Se afișează <code>n!</code> (produsul numerelor de la 1 la <code>n</code>).</p>
+          <p><strong>Date de intrare:</strong> un întreg <code>n</code>. <strong>Date de ieșire:</strong> <code>n!</code>. <strong>Restricții:</strong> <code>0 ≤ n ≤ 12</code> (pentru ca rezultatul să încapă într-un <code>int</code>).</p>
+          <p><strong>Exemplu:</strong> se citește <code>5</code>; se afișează <code>120</code> (<code>1·2·3·4·5</code>).</p>
+          <p><strong>Algoritm:</strong> (1) se citește <code>n</code>; (2) se inițializează acumulatorul <code>factorial</code> cu <code>1</code> (elementul neutru al înmulțirii, nu <code>0</code>); (3) pentru fiecare <code>i</code> de la 1 la <code>n</code>, se înmulțește <code>factorial</code> cu <code>i</code>; (4) se afișează rezultatul. Pentru <code>n = 0</code>, bucla nu se execută deloc, iar <code>factorial</code> rămâne <code>1</code> — valoarea corectă a lui <code>0!</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> n;
+cin <span class="op">&gt;&gt;</span> n;
+
+<span class="tp">long long</span> factorial = <span class="nm">1</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+    factorial <span class="op">*=</span> i;
+}
+
+cout <span class="op">&lt;&lt;</span> factorial;</code></pre>
+          </div>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>De ce <code>long long</code>?</strong>
+              <p>Factorialul crește foarte rapid — <code>13!</code> depășește deja limita superioară a unui <code>int</code>. Pentru siguranță, rezultatul unui produs acumulat este de multe ori păstrat într-un tip cu domeniu mai mare, precum <code>long long</code>.</p>
+            </div>
+          </div>
+
+          <h3>Exemplul 4 – Numărul de cifre ale unui număr</h3>
+          <p><strong>Cerință:</strong> Se citește un număr natural <code>n</code>. Se afișează câte cifre are.</p>
+          <p><strong>Date de intrare:</strong> un întreg <code>n</code>. <strong>Date de ieșire:</strong> numărul de cifre ale lui <code>n</code>. <strong>Restricții:</strong> <code>0 ≤ n ≤ 2.000.000.000</code>.</p>
+          <p><strong>Exemplu:</strong> se citește <code>2024</code>; se afișează <code>4</code>.</p>
+          <p><strong>Algoritm:</strong> (1) se citește <code>n</code>; (2) atât timp cât <code>n</code> este diferit de 0, se elimină ultima cifră (<code>n = n / 10</code>) și se mărește un contor; (3) se afișează contorul. Numărul de repetări nu este cunoscut dinainte — depinde de valoarea citită — deci <code>while</code> este alegerea potrivită, nu <code>for</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> n;
+cin <span class="op">&gt;&gt;</span> n;
+
+<span class="tp">int</span> nrCifre = <span class="nm">0</span>;
+<span class="kw">if</span> (n <span class="op">==</span> <span class="nm">0</span>) {
+    nrCifre = <span class="nm">1</span>; <span class="cm">// cazul special: 0 are o singura cifra</span>
+} <span class="kw">else</span> {
+    <span class="kw">while</span> (n <span class="op">!=</span> <span class="nm">0</span>) {
+        n <span class="op">/=</span> <span class="nm">10</span>;
+        nrCifre<span class="op">++</span>;
+    }
+}
+
+cout <span class="op">&lt;&lt;</span> nrCifre;</code></pre>
+          </div>
+          <div class="tbl-wrap">
+            <table class="trace-table">
+              <thead><tr><th>n (înainte)</th><th>n != 0 ?</th><th>n = n/10</th><th>nrCifre</th></tr></thead>
+              <tbody>
+                <tr><td>2024</td><td>adevărat</td><td>202</td><td>1</td></tr>
+                <tr><td>202</td><td>adevărat</td><td>20</td><td>2</td></tr>
+                <tr><td>20</td><td>adevărat</td><td>2</td><td>3</td></tr>
+                <tr><td>2</td><td>adevărat</td><td>0</td><td>4</td></tr>
+                <tr><td>0</td><td class="highlight">fals</td><td>—</td><td>4 (rezultat final)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Exemplul 5 – Suma cifrelor unui număr</h3>
+          <p><strong>Cerință:</strong> Se citește un număr natural <code>n</code>. Se afișează suma cifrelor lui.</p>
+          <p><strong>Date de intrare:</strong> un întreg <code>n</code>. <strong>Date de ieșire:</strong> suma cifrelor lui <code>n</code>. <strong>Restricții:</strong> <code>0 ≤ n ≤ 2.000.000.000</code>.</p>
+          <p><strong>Exemplu:</strong> se citește <code>festival</code> — de fapt <code>274</code>; se afișează <code>13</code> (<code>2+7+4</code>).</p>
+          <p><strong>Algoritm:</strong> (1) se citește <code>n</code>; (2) se inițializează acumulatorul <code>suma</code> cu 0; (3) atât timp cât <code>n</code> este diferit de 0: se extrage ultima cifră cu <code>n % 10</code>, se adaugă la <code>suma</code>, apoi se elimină acea cifră cu <code>n = n / 10</code>; (4) se afișează <code>suma</code>.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> n;
+cin <span class="op">&gt;&gt;</span> n;
+
+<span class="tp">int</span> suma = <span class="nm">0</span>;
+<span class="kw">while</span> (n <span class="op">!=</span> <span class="nm">0</span>) {
+    suma <span class="op">+=</span> n <span class="op">%</span> <span class="nm">10</span>;
+    n <span class="op">/=</span> <span class="nm">10</span>;
+}
+
+cout <span class="op">&lt;&lt;</span> suma;</code></pre>
+          </div>
+
+          <h3>Exemplul 6 – Tabla înmulțirii unui număr</h3>
+          <p><strong>Cerință:</strong> Se citește un număr întreg <code>n</code>. Se afișează, câte una pe linie, primele 10 valori ale tablei înmulțirii lui <code>n</code> (<code>n·1</code> până la <code>n·10</code>).</p>
+          <p><strong>Date de intrare:</strong> un întreg <code>n</code>. <strong>Date de ieșire:</strong> 10 linii, cu produsele <code>n·1, n·2, ..., n·10</code>. <strong>Restricții:</strong> <code>1 ≤ n ≤ 1000</code>.</p>
+          <p><strong>Exemplu:</strong> se citește <code>7</code>; se afișează, pe linii separate, <code>7 14 21 28 35 42 49 56 63 70</code>.</p>
+          <p><strong>Algoritm:</strong> (1) se citește <code>n</code>; (2) pentru fiecare <code>i</code> de la 1 la 10, se afișează <code>n * i</code>, urmat de o mutare pe linia următoare — numărul de repetări este fix (10), deci <code>for</code> este structura firească.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> n;
+cin <span class="op">&gt;&gt;</span> n;
+
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">10</span>; i<span class="op">++</span>) {
+    cout <span class="op">&lt;&lt;</span> n <span class="op">&lt;&lt;</span> <span class="st">" * "</span> <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" = "</span> <span class="op">&lt;&lt;</span> n <span class="op">*</span> i <span class="op">&lt;&lt;</span> endl;
+}</code></pre>
+          </div>
+
+          <h3>Exemplul 7 – Sumă cu valoare santinelă</h3>
+          <p><strong>Cerință:</strong> Se citesc numere întregi, câte unul, până se introduce valoarea <code>0</code>, care nu face parte din sumă. Se afișează suma numerelor citite înaintea santinelei.</p>
+          <p><strong>Date de intrare:</strong> o secvență de întregi, terminată cu <code>0</code>. <strong>Date de ieșire:</strong> suma numerelor citite, fără santinelă. <strong>Restricții:</strong> secvența conține cel mult 1000 de valori.</p>
+          <p><strong>Exemplu:</strong> se citește <code>3 5 -2 0</code>; se afișează <code>6</code> (<code>3+5-2</code>).</p>
+          <p><strong>Algoritm:</strong> tipar de buclă cu valoare santinelă: (1) se citește o primă valoare, înaintea buclei; (2) cât timp valoarea citită nu este 0, se adaugă la sumă și se citește următoarea valoare; (3) se afișează suma.</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> x, suma = <span class="nm">0</span>;
+cin <span class="op">&gt;&gt;</span> x;
+
+<span class="kw">while</span> (x <span class="op">!=</span> <span class="nm">0</span>) {
+    suma <span class="op">+=</span> x;
+    cin <span class="op">&gt;&gt;</span> x;
+}
+
+cout <span class="op">&lt;&lt;</span> suma;</code></pre>
+          </div>
+
+          <h3>Exemplul 8 – Meniu repetat cu <code>do–while</code></h3>
+          <p><strong>Cerință:</strong> Se afișează un meniu cu trei opțiuni (1, 2, 3) și se cere utilizatorului să aleagă una. Dacă opțiunea introdusă nu este validă, cererea se repetă.</p>
+          <p><strong>Date de intrare:</strong> una sau mai multe valori întregi, introduse repetat de utilizator. <strong>Date de ieșire:</strong> mesajul corespunzător primei opțiuni valide introduse.</p>
+          <p><strong>Exemplu:</strong> se introduce <code>7</code>, apoi <code>2</code>; se afișează mesajul asociat opțiunii 2 (după ce <code>7</code> este respinsă ca invalidă).</p>
+          <p><strong>Algoritm:</strong> corpul trebuie executat cel puțin o dată — utilizatorul trebuie să aibă șansa să introducă o valoare înainte ca aceasta să poată fi validată — deci se alege <code>do–while</code>, cu condiția de repetare „opțiunea nu este 1, 2 sau 3".</p>
+          <div class="code-block">
+            <div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div>
+            <pre><code><span class="tp">int</span> optiune;
+
+<span class="kw">do</span> {
+    cout <span class="op">&lt;&lt;</span> <span class="st">"1. Suma  2. Produs  3. Iesire\n"</span>;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Alegeti o optiune: "</span>;
+    cin <span class="op">&gt;&gt;</span> optiune;
+} <span class="kw">while</span> (optiune <span class="op">!=</span> <span class="nm">1</span> <span class="op">&amp;&amp;</span> optiune <span class="op">!=</span> <span class="nm">2</span> <span class="op">&amp;&amp;</span> optiune <span class="op">!=</span> <span class="nm">3</span>);
+
+cout <span class="op">&lt;&lt;</span> <span class="st">"Ati ales optiunea "</span> <span class="op">&lt;&lt;</span> optiune;</code></pre>
+          </div>
+
+        </div>
+      </div><!-- /tab exemple -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: LABORATOR                                             -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t5-lab">
+        <div class="prose">
+          <h2 id="introductive">Exerciții introductive (fără scriere de cod)</h2>
+          <p>Rezolvă pe hârtie, apoi verifică cu răspunsul.</p>
+
+          <div class="quiz-item">
+            <p><span class="qnum">1</span>Câte instrucțiuni de ciclare are C++? Numiți-le.</p>
+            <details><summary>Vezi răspunsul</summary><p>Trei: <code>while</code>, <code>do–while</code> și <code>for</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">2</span>Care este singura dintre cele trei instrucțiuni de ciclare al cărei corp se execută garantat cel puțin o dată?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>do–while</code> — condiția este verificată după executarea corpului, nu înainte.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">3</span>Ce se întâmplă dacă, într-o buclă <code>while</code>, condiția este falsă chiar de la prima verificare?</p>
+            <details><summary>Vezi răspunsul</summary><p>Corpul buclei nu se execută deloc — execuția trece direct la instrucțiunea de după buclă.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">4</span>Care sunt cele trei componente ale unei instrucțiuni <code>for</code>, în ordine?</p>
+            <details><summary>Vezi răspunsul</summary><p>Inițializare, condiție, pas — <code>for (initializare; conditie; pas) { ... }</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">5</span>La ce moment este evaluat „pasul" dintr-un <code>for</code> — înainte sau după execuția corpului?</p>
+            <details><summary>Vezi răspunsul</summary><p>După execuția corpului, și înainte de a reveni la verificarea condiției.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">6</span>Care instrucțiune de ciclare are nevoie de <code>;</code> după condiție?</p>
+            <details><summary>Vezi răspunsul</summary><p><code>do–while</code>: <code>do { ... } while (conditie);</code></p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">7</span>Ce valoare de inițializare trebuie folosită pentru un acumulator de tip sumă? Dar pentru unul de tip produs?</p>
+            <details><summary>Vezi răspunsul</summary><p>Sumă: <code>0</code> (elementul neutru al adunării). Produs: <code>1</code> (elementul neutru al înmulțirii).</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">8</span>Ce este o „valoare santinelă"?</p>
+            <details><summary>Vezi răspunsul</summary><p>O valoare convențională, care nu apare printre datele valide ale problemei, folosită pentru a marca sfârșitul unei secvențe de date citite repetat.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">9</span>De ce o buclă controlată de o valoare santinelă folosește, de regulă, <code>while</code>, și nu <code>for</code>?</p>
+            <details><summary>Vezi răspunsul</summary><p>Pentru că numărul de repetări nu este cunoscut dinainte — depinde de datele citite, nu de un contor cu limite fixe.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">10</span>Ce se întâmplă dacă, într-o buclă, variabila testată în condiție nu este niciodată modificată în corp?</p>
+            <details><summary>Vezi răspunsul</summary><p>Se obține o buclă infinită — condiția rămâne fixă (mereu adevărată sau mereu falsă), iar execuția nu se mai oprește (sau corpul nu se execută niciodată).</p></details>
+          </div>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="tracing">Code Tracing – Exerciții</h2>
+          <p>Urmărește execuția <strong>fără să rulezi programul</strong>. Notează valorile variabilelor la fiecare pas și ce se va afișa. Verifică apoi rulând codul.</p>
+
+          <details>
+            <summary>Exercițiul 1</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> i = <span class="nm">0</span>;
+<span class="kw">while</span> (i <span class="op">&lt;</span> <span class="nm">3</span>) {
+    cout <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+    i<span class="op">++</span>;
+}</code></pre></div>
+            <p><strong>Soluție:</strong> <code>i=0</code> (afișează 0) → <code>i=1</code> (afișează 1) → <code>i=2</code> (afișează 2) → <code>i=3</code>, condiția devine falsă. Se afișează <code>0 1 2</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiul 2</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> i = <span class="nm">5</span>;
+<span class="kw">do</span> {
+    cout <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+    i<span class="op">--</span>;
+} <span class="kw">while</span> (i <span class="op">&gt;</span> <span class="nm">2</span>);</code></pre></div>
+            <p><strong>Soluție:</strong> corpul se execută cu <code>i=5,4,3</code> (afișate), apoi <code>i</code> devine 2 și condiția <code>2&gt;2</code> e falsă. Se afișează <code>5 4 3</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiul 3</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> suma = <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">4</span>; i<span class="op">++</span>) {
+    suma <span class="op">+=</span> i <span class="op">*</span> i;
+}
+cout <span class="op">&lt;&lt;</span> suma;</code></pre></div>
+            <p><strong>Soluție:</strong> <code>1²+2²+3²+4² = 1+4+9+16 = 30</code>. Se afișează <code>30</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiul 4 — <code>do–while</code> cu condiție inițial falsă</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> x = <span class="nm">10</span>;
+<span class="tp">int</span> contor = <span class="nm">0</span>;
+
+<span class="kw">do</span> {
+    contor<span class="op">++</span>;
+} <span class="kw">while</span> (x <span class="op">&lt;</span> <span class="nm">5</span>);
+
+cout <span class="op">&lt;&lt;</span> contor;</code></pre></div>
+            <p><strong>Soluție:</strong> chiar dacă <code>x &lt; 5</code> este falsă de la început, corpul lui <code>do–while</code> tot se execută o dată — <code>contor</code> devine <code>1</code>, apoi condiția e verificată și e falsă, deci bucla se oprește. Se afișează <code>1</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiul 5 — pas negativ</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">10</span>; i <span class="op">&gt;=</span> <span class="nm">0</span>; i <span class="op">-=</span> <span class="nm">3</span>) {
+    cout <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+}</code></pre></div>
+            <p><strong>Soluție:</strong> <code>i</code> ia valorile <code>10, 7, 4, 1</code>; la pasul următor <code>i</code> ar deveni <code>-2</code>, iar <code>-2 &gt;= 0</code> e fals, deci bucla se oprește. Se afișează <code>10 7 4 1</code>.</p>
+          </details>
+
+          <details>
+            <summary>Exercițiul 6 — buclă care nu se execută deloc</summary>
+            <div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+              <pre><code><span class="tp">int</span> n = <span class="nm">3</span>;
+<span class="tp">int</span> produs = <span class="nm">1</span>;
+
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">5</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+    produs <span class="op">*=</span> i;
+}
+
+cout <span class="op">&lt;&lt;</span> produs;</code></pre></div>
+            <p><strong>Soluție:</strong> condiția inițială <code>5 &lt;= 3</code> este falsă, deci corpul buclei <code>for</code> nu se execută niciodată — <code>produs</code> rămâne <code>1</code>. Se afișează <code>1</code>.</p>
+          </details>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="lab">Laborator – Aplicații de rezolvat</h2>
+          <p>Pentru fiecare problemă: identifică datele de intrare, alege structura de ciclare potrivită (<code>while</code>, <code>do–while</code> sau <code>for</code>), stabilește dacă ai nevoie de un contor, un acumulator sau ambele, scrie programul complet și testează-l cu cel puțin două seturi de date.</p>
+
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Afișare descrescătoare</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se afișează numerele de la <code>n</code> la 1, în ordine descrescătoare.</p>
+              <details><summary>Indiciu</summary><p><code>for (int i = n; i &gt;= 1; i--) cout &lt;&lt; i &lt;&lt; " ";</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">2</div><div class="exercise-title">Suma numerelor pare dintr-un interval</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc două numere naturale <code>a</code> și <code>b</code>, cu <code>a &lt;= b</code>. Se afișează suma numerelor pare cuprinse între <code>a</code> și <code>b</code>, inclusiv.</p>
+              <details><summary>Indiciu</summary><p>Parcurge cu <code>for (int i = a; i &lt;= b; i++)</code> și adaugă la sumă doar valorile pentru care <code>i % 2 == 0</code>, folosind un <code>if</code> din S4 în interiorul buclei.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">3</div><div class="exercise-title">Puterea unui număr</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc un număr întreg <code>baza</code> și un număr natural <code>exponent</code>. Se afișează <code>baza</code> ridicat la puterea <code>exponent</code>, calculată printr-o buclă (fără funcția <code>pow</code>).</p>
+              <details><summary>Indiciu</summary><p>Acumulator de tip produs, inițializat cu 1: <code>for (int i = 1; i &lt;= exponent; i++) rezultat *= baza;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">4</div><div class="exercise-title">Suma a n valori citite</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește mai întâi un număr natural <code>n</code>, apoi <code>n</code> numere reale. Se afișează suma lor.</p>
+              <details><summary>Indiciu</summary><p><code>for (int i = 1; i &lt;= n; i++) { cin &gt;&gt; x; suma += x; }</code> — numărul de repetări este cunoscut (<code>n</code>), deci <code>for</code> e potrivit, spre deosebire de exercițiul cu valoare santinelă.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">5</div><div class="exercise-title">Media a n valori citite</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>, apoi <code>n</code> note. Se afișează media lor, cu zecimale.</p>
+              <details><summary>Indiciu</summary><p>Combină un acumulator de sumă (în buclă) cu o singură împărțire finală: <code>double medie = suma / (double)n;</code> — conversia de tip a fost studiată în S3.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">6</div><div class="exercise-title">Inversul unui număr</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se afișează numărul obținut prin inversarea ordinii cifrelor lui.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 1234
+Iesire : 4321</code></pre></div>
+              <details><summary>Indiciu</summary><p>La fel ca la extragerea cifrelor (Exemplul 5): cât timp <code>n != 0</code>, ia ultima cifră cu <code>n % 10</code>, adaug-o la <code>inversul</code> construit până atunci (<code>inversul = inversul * 10 + cifra;</code>), apoi elimină cifra din <code>n</code> cu <code>n /= 10;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">7</div><div class="exercise-title">Cel mai mare divizor comun, prin scădere repetată</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc două numere naturale nenule <code>a</code> și <code>b</code>. Determină cel mai mare divizor comun al lor, folosind algoritmul lui Euclid prin scăderi repetate: cât timp <code>a</code> și <code>b</code> sunt diferite, se scade cel mai mic din cel mai mare.</p>
+              <details><summary>Indiciu</summary><p><code>while (a != b) { if (a &gt; b) a -= b; else b -= a; }</code> — la final, <code>a</code> (egal cu <code>b</code>) este cmmdc-ul căutat. Numărul de repetări nu este cunoscut dinainte, deci <code>while</code>, nu <code>for</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">8</div><div class="exercise-title">Citire până la o valoare santinelă negativă</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc numere naturale, unul câte unul, până se introduce un număr negativ (care nu se mai prelucrează). Se afișează câte numere naturale au fost citite și suma lor.</p>
+              <details><summary>Indiciu</summary><p>Combină tiparul „citire de pregătire + <code>while</code>" din secțiunea despre valoarea santinelă cu un contor și un acumulator, ambele actualizate în corpul buclei.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">9</div><div class="exercise-title">Suma cifrelor, repetată până la o singură cifră</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se calculează suma cifrelor lui; dacă rezultatul are mai mult de o cifră, se repetă procesul, până se obține un singur număr, format dintr-o singură cifră (rădăcina digitală).</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 9875
+Iesire : 2</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>9+8+7+5=29</code>, apoi <code>2+9=11</code>, apoi <code>1+1=2</code> — o singură cifră, procesul se oprește. Se poate rezolva cu o buclă exterioară <code>while (n &gt;= 10)</code>, care recalculează suma cifrelor lui <code>n</code> la fiecare pas (cu o buclă interioară precum cea din Exemplul 5) și o pune înapoi în <code>n</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">10</div><div class="exercise-title">Numărul de termeni ai unei sume care depășesc un prag</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr real <code>prag</code>. Determină cel mai mic număr natural <code>n</code> pentru care suma <code>1+2+...+n</code> depășește <code>prag</code>.</p>
+              <details><summary>Indiciu</summary><p>Numărul de repetări nu este cunoscut dinainte, deci <code>while</code>: <code>while (suma &lt;= prag) { n++; suma += n; }</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">11</div><div class="exercise-title">Conversia unui număr în baza 2</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se afișează, cifră cu cifră (nu neapărat în ordinea corectă), resturile obținute prin împărțiri succesive la 2 — primul pas către înțelegerea conversiei binare, întâlnită deja conceptual în S1.</p>
+              <details><summary>Indiciu</summary><p><code>while (n != 0) { cout &lt;&lt; n % 2; n /= 2; }</code> — cifrele afișate apar în ordine inversă față de reprezentarea binară obișnuită; corectarea ordinii se poate face abia după ce vom discuta tablourile.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">12</div><div class="exercise-title">Meniu repetat de conversie a temperaturii</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește o valoare de temperatură în grade Celsius. Se afișează echivalentul în Fahrenheit (<code>F = C · 9/5 + 32</code>). Se cere apoi utilizatorului dacă mai vrea o conversie (introducând 1 pentru da, 0 pentru nu); cererea se repetă atât timp cât răspunsul este 1.</p>
+              <details><summary>Indiciu</summary><p>O buclă <code>do–while</code> exterioară: corpul (citire, calcul, afișare, întrebare) trebuie executat măcar o dată, iar condiția de repetare este <code>continua == 1</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">13</div><div class="exercise-title">Media geometrică a n numere</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>, apoi <code>n</code> numere reale strict pozitive. Se afișează media geometrică a lor: rădăcina de ordin <code>n</code> din produsul celor <code>n</code> valori.</p>
+              <details><summary>Indiciu</summary><p>Acumulează produsul într-o buclă <code>for</code> (inițializat cu 1, ca la factorial), apoi calculează rădăcina cu <code>pow(produs, 1.0 / n)</code> din biblioteca <code>&lt;cmath&gt;</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">14</div><div class="exercise-title">Suma cuburilor primelor n numere naturale</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se afișează <code>1³+2³+3³+...+n³</code>.</p>
+              <details><summary>Indiciu</summary><p><code>for (int i = 1; i &lt;= n; i++) suma += i * i * i;</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">15</div><div class="exercise-title">Cel mai mic n cu produsul peste un prag</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr real <code>prag</code>. Determină cel mai mic număr natural <code>n</code> pentru care produsul <code>1·2·...·n</code> depășește <code>prag</code>.</p>
+              <details><summary>Indiciu</summary><p>La fel ca la exercițiul cu pragul pentru sumă, dar cu acumulator produs (inițializat cu 1): <code>while (produs &lt;= prag) { n++; produs *= n; }</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">16</div><div class="exercise-title">Cea mai mică putere a lui 2 care depășește n</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Determină cea mai mică putere a lui 2 (adică <code>2^k</code>, cu <code>k</code> natural) care este strict mai mare decât <code>n</code>.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 20
+Iesire : 32</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>int putere = 1; while (putere &lt;= n) putere *= 2;</code> — numărul de repetări nu este cunoscut dinainte, deci <code>while</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">17</div><div class="exercise-title">Paritatea sumei cifrelor</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se calculează suma cifrelor lui, apoi se afișează dacă această sumă este pară sau impară.</p>
+              <details><summary>Indiciu</summary><p>Combină bucla <code>while</code> de extragere a cifrelor (Exemplul 5 din tabul „Exemple") cu un <code>if</code> final pe paritatea sumei obținute, la fel ca în S4.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num hard">18</div><div class="exercise-title">Sumă telescopată</div><span class="exercise-tag">Nivel: Provocare</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se calculează și se afișează, cu zecimale, suma <code>1/(1·2) + 1/(2·3) + ... + 1/(n·(n+1))</code>.</p>
+              <details><summary>Indiciu</summary><p><code>double suma = 0; for (int i = 1; i &lt;= n; i++) suma += 1.0 / (i * (i + 1));</code> — conversia <code>1.0</code> forțează o împărțire reală (vezi S3).</p></details>
+            </div>
+          </div>
+
+          <p class="text-sm text-muted">Exercițiile 19–24 sunt adaptate (enunț și valori proprii, nu preluate identic) după tipul de aplicații din culegerea <em>Fundamentele programării</em>, capitolul 1.2 „Structuri repetitive", secțiunea Probleme propuse.</p>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num warm">19</div><div class="exercise-title">Produsul primelor n numere pare</div><span class="exercise-tag">Nivel: Încălzire</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural nenul <code>n</code>. Se afișează produsul primelor <code>n</code> numere naturale pare (<code>2, 4, 6, ...</code>).</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 2
+Iesire : 8   (2 * 4)</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>int produs = 1; for (int i = 1; i &lt;= n; i++) produs *= 2 * i;</code> — al <code>i</code>-lea număr par este <code>2*i</code>.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">20</div><div class="exercise-title">Suma produselor a doi termeni consecutivi</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code> (<code>n &lt; 9</code>). Se afișează suma <code>E = 1·2 + 2·3 + 3·4 + ... + n·(n+1)</code>.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 3
+Iesire : 20   (1*2 + 2*3 + 3*4 = 2+6+12)</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>for (int i = 1; i &lt;= n; i++) suma += i * (i + 1);</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">21</div><div class="exercise-title">Numere pare afișate cât timp suma lor nu depășește n</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se afișează, începând de la 2, numerele pare <code>2, 4, 6, ...</code>, atât timp cât suma numerelor afișate până atunci nu depășește <code>n</code>.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 15
+Iesire : 2 4 6   (2+4+6=12 &lt;= 15, dar 12+8=20 &gt; 15, deci 8 nu se mai afiseaza)</code></pre></div>
+              <details><summary>Indiciu</summary><p>Testează condiția <strong>înainte</strong> de a adăuga următorul număr par la sumă: <code>int par = 2, suma = 0; while (suma + par &lt;= n) { cout &lt;&lt; par &lt;&lt; " "; suma += par; par += 2; }</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">22</div><div class="exercise-title">Șir descrescător cu pas 2, cât timp rămâne pozitiv</div><span class="exercise-tag">Nivel: Aplicativ</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr real <code>x</code>. Se afișează succesiv <code>x</code>, apoi <code>x-2</code>, <code>x-4</code> ș.a.m.d., atât timp cât valoarea afișată rămâne pozitivă.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 7.01
+Iesire : 7.01 5.01 3.01 1.01</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>double v = x; while (v &gt; 0) { cout &lt;&lt; v &lt;&lt; " "; v -= 2; }</code> — este o buclă <code>while</code>, nu <code>for</code>, deoarece numărul de termeni depinde de valoarea reală citită.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">23</div><div class="exercise-title">Puterile lui n mai mici decât un plafon</div><span class="exercise-tag">Nivel: Combinat</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc două numere naturale, <code>n</code> (<code>n ≥ 2</code>) și <code>plafon</code>. Se afișează, pe rând, puterile lui <code>n</code> (adică <code>n¹, n², n³, ...</code>) care sunt strict mai mici decât <code>plafon</code>.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 3 100
+Iesire : 3 9 27 81</code></pre></div>
+              <details><summary>Indiciu</summary><p><code>long long putere = n; while (putere &lt; plafon) { cout &lt;&lt; putere &lt;&lt; " "; putere *= n; }</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num hard">24</div><div class="exercise-title">Citire până când valoarea este suma precedentelor două</div><span class="exercise-tag">Nivel: Provocare</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc numere reale, unul câte unul, atât timp cât valoarea citită <strong>nu</strong> este egală cu suma precedentelor două valori citite. Citirea se oprește (inclusiv cu ultima valoare, cea care oprește citirea) când apare o astfel de coincidență. Se afișează suma tuturor numerelor citite.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 3 5 2 4 6
+Iesire : 20   (6 = 2+4, deci citirea se opreste dupa 6; suma = 3+5+2+4+6)</code></pre></div>
+              <details><summary>Indiciu</summary><p>Păstrează ultimele două valori citite în <code>penultim</code> și <code>ultim</code>; la fiecare pas citește o nouă valoare <code>x</code>, adaug-o la sumă, verifică dacă <code>x == penultim + ultim</code> (doar după ce există deja două valori anterioare) pentru a decide oprirea, apoi „glisează" <code>penultim = ultim; ultim = x;</code>. Nu este nevoie de niciun tablou.</p></details>
+            </div>
+          </div>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h3>Întrebări cu alegere multiplă</h3>
+          <p>O singură variantă este corectă la fiecare întrebare.</p>
+
+          <div class="quiz-item">
+            <p><span class="qnum">1</span>Care dintre următoarele instrucțiuni garantează executarea corpului cel puțin o dată?</p>
+            <ul class="choices"><li>a) while</li><li>b) do–while</li><li>c) for</li><li>d) niciuna dintre ele</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b) do–while</strong> — condiția este verificată după executarea corpului.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">2</span>Ce se afișează pentru <code>int i = 5; while (i &gt; 10) { cout &lt;&lt; i; }</code>?</p>
+            <ul class="choices"><li>a) 5</li><li>b) 10</li><li>c) nimic</li><li>d) eroare de compilare</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>c) nimic</strong> — condiția <code>5 &gt; 10</code> este falsă chiar de la prima verificare, deci corpul nu se execută deloc.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">3</span>Care este forma corectă a instrucțiunii <code>for</code> în C++?</p>
+            <ul class="choices"><li>a) for(i=0,i&lt;n,i++)</li><li>b) for(int i=0; i&lt;n; i++)</li><li>c) for(int i=0, i&lt;n, i++)</li><li>d) for i=0 to n</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b)</strong> — cele trei componente sunt separate prin <code>;</code>, nu prin <code>,</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">4</span>Ce valoare are <code>produs</code> după <code>int produs = 1; for (int i = 1; i &lt;= 4; i++) produs *= i;</code>?</p>
+            <ul class="choices"><li>a) 4</li><li>b) 10</li><li>c) 24</li><li>d) 1</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>c) 24</strong> — este <code>4! = 1·2·3·4</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">5</span>Care dintre următoarele produce o buclă infinită?</p>
+            <ul class="choices"><li>a) for(int i=0;i&lt;5;i++) { }</li><li>b) int i=0; while(i&lt;5){i++;}</li><li>c) int i=0; while(i&lt;5){cout&lt;&lt;i;}</li><li>d) do{cout&lt;&lt;"x";}while(false);</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>c)</strong> — <code>i</code> nu este niciodată modificat în corp, deci condiția <code>i&lt;5</code> rămâne mereu adevărată.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">6</span>Câte cifre are numărul afișat de <code>int n=250, c=0; while(n!=0){n/=10; c++;} cout&lt;&lt;c;</code>?</p>
+            <ul class="choices"><li>a) 2</li><li>b) 3</li><li>c) 4</li><li>d) 250</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b) 3</strong> — programul numără cifrele lui 250 (2, 5, 0), nu afișează cifrele înseși.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">7</span>Care este echivalentul corect, scris cu <code>while</code>, al buclei <code>for (int i = 1; i &lt;= 3; i++) cout &lt;&lt; i;</code>?</p>
+            <ul class="choices"><li>a) int i=1; while(i&lt;=3){cout&lt;&lt;i; i++;}</li><li>b) int i=1; while(i&lt;=3){i++; cout&lt;&lt;i;}</li><li>c) while(i&lt;=3){cout&lt;&lt;i; i++;}</li><li>d) int i=1; while(i&lt;3){cout&lt;&lt;i; i++;}</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>a)</strong> — pasul trebuie plasat <em>după</em> instrucțiunea din corp, exact ca în bucla <code>for</code> originală.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">8</span>Ce se întâmplă dacă se omite <code>;</code> după paranteza condiției unui <code>do–while</code>?</p>
+            <ul class="choices"><li>a) nimic, este opțional</li><li>b) eroare de compilare</li><li>c) bucla nu se mai oprește</li><li>d) bucla nu se execută deloc</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b) eroare de compilare</strong> — <code>;</code> face parte obligatorie din sintaxa lui <code>do–while</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">9</span>Pentru <code>n = 0</code>, ce valoare are <code>suma</code> după <code>int suma=0; for(int i=1;i&lt;=n;i++) suma+=i;</code>?</p>
+            <ul class="choices"><li>a) 0</li><li>b) 1</li><li>c) eroare la execuție</li><li>d) valoare nedefinită</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>a) 0</strong> — condiția inițială <code>1 &lt;= 0</code> este falsă, deci bucla nu se execută deloc, iar <code>suma</code> rămâne la valoarea de inițializare.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">10</span>Care variantă reprezintă corect, în pseudocod, o buclă cu contor de la 1 la n?</p>
+            <ul class="choices"><li>a) Cat timp i&lt;=n executa ...</li><li>b) Pentru i = 1, n executa ... SfarsitPentru</li><li>c) Executa ... Cat timp i&lt;=n</li><li>d) Daca i&lt;=n atunci ...</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b)</strong> — este forma pseudocod echivalentă instrucțiunii <code>for</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">11</span>Cum se numește eroarea produsă prin folosirea lui <code>&lt;</code> în loc de <code>&lt;=</code> (sau invers) în condiția unei bucle <code>for</code>?</p>
+            <ul class="choices"><li>a) eroare de compilare</li><li>b) eroare de tip</li><li>c) eroare „off-by-one"</li><li>d) buclă infinită garantată</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>c) eroare „off-by-one"</strong> — o repetare în plus sau în minus față de intenția corectă.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">12</span>Fie <code>int i=1, suma=0; do { suma+=i; i++; } while(i&lt;=3);</code> Ce valoare are <code>suma</code> la final?</p>
+            <ul class="choices"><li>a) 3</li><li>b) 6</li><li>c) 0</li><li>d) 1</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b) 6</strong> — se adună <code>1+2+3=6</code>, corpul executându-se de trei ori înainte ca <code>i&lt;=3</code> să devină falsă.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">13</span>Câte iterații efectuează bucla <code>for (int i = 3; i &lt;= 12; i += 3) { ... }</code>?</p>
+            <ul class="choices"><li>a) 3</li><li>b) 4</li><li>c) 5</li><li>d) 9</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b) 4</strong> — <code>i</code> ia valorile <code>3, 6, 9, 12</code>; la pasul următor ar deveni <code>15</code>, iar <code>15 &lt;= 12</code> e fals.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">14</span>Ce se afișează pentru <code>for (int j = 10; j &lt;= 16; j++) if (j % 3 == 0) cout &lt;&lt; j &lt;&lt; ' ';</code>?</p>
+            <ul class="choices"><li>a) 12 15</li><li>b) 10 13 16</li><li>c) 9 12 15</li><li>d) 12 15 18</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>a) 12 15</strong> — sunt singurele valori din intervalul <code>[10,16]</code> divizibile cu 3; <code>9</code> și <code>18</code> nu fac parte din interval.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">15</span>Ce valoare are <code>s</code> după <code>int s=0; for (int j=6;j&lt;=9;j++) { if (j%2==0) s -= j%2; else s += j%2; }</code>?</p>
+            <ul class="choices"><li>a) 1</li><li>b) 2</li><li>c) -2</li><li>d) 0</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b) 2</strong> — pentru <code>j</code> par, <code>j%2</code> este 0, deci scăderea nu are efect; pentru <code>j</code> impar (7 și 9), se adună <code>1</code> de fiecare dată. Aparenta complexitate a expresiei ascunde, de fapt, o simplă numărare a valorilor impare.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">16</span>Care dintre următoarele bucle execută un număr infinit de iterații?</p>
+            <ul class="choices"><li>a) int x=50; while(x&gt;5){x-=5;}</li><li>b) int x=50; while(x&gt;5){x-=10;}</li><li>c) int x=50; while(x&gt;5){x+=0;}</li><li>d) int x=50; while(x&gt;5){x/=2;}</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>c)</strong> — <code>x += 0;</code> nu modifică deloc valoarea lui <code>x</code>, deci condiția <code>x&gt;5</code> rămâne mereu adevărată.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">17</span>Fie <code>int x, y = 1; do { y *= 2; } while (y &lt; x);</code> Care este cea mai mică valoare întreagă a lui <code>x</code> pentru care bucla efectuează exact 3 iterații?</p>
+            <ul class="choices"><li>a) 4</li><li>b) 5</li><li>c) 8</li><li>d) 9</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>b) 5</strong> — după iterația 1, <code>y=2</code>, iar pentru continuare trebuie <code>2&lt;x</code>; după iterația 2, <code>y=4</code>, trebuie <code>4&lt;x</code>; după iterația 3, <code>y=8</code>, trebuie ca <code>8&lt;x</code> să fie <strong>falsă</strong> (deci <code>x&lt;=8</code>). Combinând <code>x&gt;4</code> cu <code>x&lt;=8</code>, cea mai mică valoare întreagă este <code>5</code>.</p></details>
+          </div>
+          <div class="quiz-item">
+            <p><span class="qnum">18</span>Ce se afișează pentru <code>int x=37; do { if (x%2==1) cout &lt;&lt; x &lt;&lt; ' '; x--; } while (x&gt;=30);</code>?</p>
+            <ul class="choices"><li>a) 37 35 33 31</li><li>b) 36 34 32 30</li><li>c) 37 36 35 34 33 32 31 30</li><li>d) 31 33 35 37</li></ul>
+            <details><summary>Vezi răspunsul</summary><p><strong>a) 37 35 33 31</strong> — bucla parcurge <code>x</code> de la 37 până la 30 (test final, deci inclusiv 30), dar afișează doar valorile impare întâlnite, în ordinea descrescătoare a parcurgerii.</p></details>
+          </div>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="extra">Exerciții extra</h2>
+          <p>Un bazin suplimentar de exersat, pentru cei care termină mai repede sau vor mai multă practică.</p>
+
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num hard">E1</div><div class="exercise-title">Șirul lui Fibonacci, primii n termeni</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code> (<code>n ≥ 2</code>). Se afișează primii <code>n</code> termeni ai șirului lui Fibonacci, în care primii doi termeni sunt 0 și 1, iar fiecare termen următor este suma celor doi anteriori.</p>
+              <div class="code-block"><div class="code-header"><span class="code-lang">Exemplu</span></div><pre><code>Intrare: 6
+Iesire : 0 1 1 2 3 5</code></pre></div>
+              <details><summary>Indiciu</summary><p>Păstrează doar ultimii doi termeni în două variabile, <code>a</code> și <code>b</code>; la fiecare pas calculează <code>urmator = a + b</code>, afișează, apoi „glisează" valorile: <code>a = b; b = urmator;</code>. Nu este nevoie de un tablou pentru acest exercițiu.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num hard">E2</div><div class="exercise-title">Aproximarea lui π cu seria Leibniz</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se calculează o aproximare a lui π folosind primii <code>n</code> termeni ai seriei <code>π/4 = 1 - 1/3 + 1/5 - 1/7 + ...</code>, apoi se afișează <code>4</code> înmulțit cu suma obținută.</p>
+              <details><summary>Indiciu</summary><p>Termenul de pe poziția <code>i</code> (începând de la 0) are numitorul <code>2i+1</code> și semnul alternant <code>(-1)^i</code>; construiește semnul cu un <code>if</code> pe paritatea lui <code>i</code>, nu cu funcția de ridicare la putere.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">E3</div><div class="exercise-title">Numărul de cifre pare ale unui număr</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se afișează câte dintre cifrele lui sunt pare.</p>
+              <details><summary>Indiciu</summary><p>Combină extragerea cifrelor (<code>n % 10</code>, <code>n / 10</code>) cu un contor incrementat doar când cifra extrasă este pară.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">E4</div><div class="exercise-title">Dobânda compusă, an cu an</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc o sumă inițială, o dobândă anuală (procent) și un număr de ani. Se afișează, pentru fiecare an, suma acumulată la sfârșitul acelui an.</p>
+              <details><summary>Indiciu</summary><p><code>for (int an = 1; an &lt;= nrAni; an++) { suma = suma + suma * dobanda / 100.0; cout &lt;&lt; suma &lt;&lt; endl; }</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num hard">E5</div><div class="exercise-title">Aproximarea numărului e</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citește un număr natural <code>n</code>. Se calculează o aproximare a numărului <code>e</code> folosind primii <code>n</code> termeni ai seriei <code>e ≈ 1 + 1/1! + 1/2! + ... + 1/n!</code>.</p>
+              <details><summary>Indiciu</summary><p>Nu recalcula factorialul de la zero la fiecare pas: păstrează-l într-o variabilă <code>factorial</code>, actualizată la fiecare iterație cu <code>factorial *= i;</code>, apoi adaugă <code>1.0 / factorial</code> la suma acumulată — o singură buclă, nu una imbricată.</p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num apply">E6</div><div class="exercise-title">Suma unei progresii aritmetice</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc primul termen <code>a1</code>, rația <code>r</code> și numărul de termeni <code>n</code> ai unei progresii aritmetice. Se afișează suma celor <code>n</code> termeni, calculată printr-o buclă (fără formula directă a sumei).</p>
+              <details><summary>Indiciu</summary><p><code>double termen = a1; for (int i = 1; i &lt;= n; i++) { suma += termen; termen += r; }</code></p></details>
+            </div>
+          </div>
+          <div class="exercise">
+            <div class="exercise-header"><div class="exercise-num combine">E7</div><div class="exercise-title">Numărul de ani până la dublarea unei investiții</div><span class="exercise-tag">Nivel: Extra</span></div>
+            <div class="exercise-body">
+              <p class="cerinta">Cerință</p>
+              <p>Se citesc o sumă inițială și o dobândă anuală (procent). Determină, printr-o buclă <code>while</code>, după câți ani întregi suma acumulată ajunge să fie cel puțin dublul sumei inițiale.</p>
+              <details><summary>Indiciu</summary><p><code>double sumaInitiala = suma; int ani = 0; while (suma &lt; 2 * sumaInitiala) { suma += suma * dobanda / 100.0; ani++; }</code> — spre deosebire de E4/E6, numărul de repetări nu este cunoscut dinainte, deci <code>while</code>, nu <code>for</code>.</p></details>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /tab lab -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: CHEAT SHEET                                           -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t5-cheat">
+        <div class="prose">
+          <h2 id="cheat">Fișă rapidă – Sesiunea 5</h2>
+          <p>Referință compactă pentru folosit în laborator.</p>
+          <div class="cheat-grid">
+            <div class="cheat-card">
+              <div class="cheat-card-header">while</div>
+              <pre>while (conditie) {
+    instructiuni;
+}
+
+Testeaza INAINTE.
+Corp: 0 sau mai multe executii.</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">do–while</div>
+              <pre>do {
+    instructiuni;
+} while (conditie);
+
+Testeaza DUPA.
+Corp: cel putin 1 executie.
+Atentie la ; final!</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">for</div>
+              <pre>for (init; conditie; pas) {
+    instructiuni;
+}
+
+init: o singura data
+conditie: inainte de fiecare corp
+pas: dupa fiecare corp</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">for ↔ while (echivalență)</div>
+              <pre>for (init; cond; pas) { corp; }
+
+     este echivalent cu
+
+init;
+while (cond) {
+    corp;
+    pas;
+}</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Contor</div>
+              <pre>int numar = 0;
+for (...) {
+    numar++;   // sau numar += 1
+}
+// raspunde la "de cate ori?"</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Acumulator</div>
+              <pre>int suma = 0;      // 0 pentru suma
+int produs = 1;    // 1 pentru produs
+for (...) {
+    suma += x;
+    produs *= x;
+}
+// raspunde la "cat in total?"</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Buclă cu valoare santinelă</div>
+              <pre>cin &gt;&gt; x;          // citire de pregatire
+while (x != santinela) {
+    // prelucrare
+    cin &gt;&gt; x;      // citire in bucla
+}</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Extragerea cifrelor (while)</div>
+              <pre>while (n != 0) {
+    cifra = n % 10;
+    n = n / 10;
+}
+// clasic pentru: numarare cifre,
+// suma cifrelor, inversul unui numar</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Alegerea structurii</div>
+              <pre>Numar de repetari cunoscut  -&gt; for
+Conditie fara contor        -&gt; while
+Corp obligatoriu macar 1x   -&gt; do-while</pre>
+            </div>
+            <div class="cheat-card">
+              <div class="cheat-card-header">Capcane de reținut</div>
+              <pre>Uitarea pasului      -&gt; bucla infinita
+";" dupa while/for   -&gt; bucla infinita
+< in loc de <=       -&gt; off-by-one
+= in loc de ==       -&gt; conditie gresita
+Acumulator initializat
+  IN bucla           -&gt; se reseteaza</pre>
+            </div>
+          </div>
+
+          <h3>Corespondența pseudocod ↔ C++</h3>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Pseudocod</th><th>C++</th></tr></thead>
+              <tbody>
+                <tr><td><code>Cat timp cond executa ... SfarsitCatTimp</code></td><td><code>while (cond) { ... }</code></td></tr>
+                <tr><td><code>Executa ... Cat timp cond</code></td><td><code>do { ... } while (cond);</code></td></tr>
+                <tr><td><code>Pentru i = 1, n executa ... SfarsitPentru</code></td><td><code>for (int i = 1; i &lt;= n; i++) { ... }</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Comparație rapidă C++ · Java · Python</h3>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th></th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+              <tbody>
+                <tr><td>Testare la început</td><td><code>while (cond) { }</code></td><td><code>while (cond) { }</code></td><td><code>while cond:</code></td></tr>
+                <tr><td>Testare la sfârșit</td><td><code>do { } while (cond);</code></td><td><code>do { } while (cond);</code></td><td>nu există direct</td></tr>
+                <tr><td>Buclă cu contor</td><td><code>for(int i=0;i&lt;n;i++)</code></td><td><code>for(int i=0;i&lt;n;i++)</code></td><td><code>for i in range(n):</code></td></tr>
+                <tr><td>Delimitare bloc</td><td>acolade</td><td>acolade</td><td>indentare</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div><!-- /cheat -->
+
+      <!-- ========================================================= -->
+      <!-- TAB: AUTOEVALUARE                                          -->
+      <!-- ========================================================= -->
+      <div class="tab-pane" id="t5-autoevaluare">
+        <div class="prose">
+          <h2 id="verificare">Întrebări de autoevaluare</h2>
+
+          <details><summary>1. Ce este o structură repetitivă și de ce este necesară?</summary>
+            <p>O structură repetitivă execută în mod repetat o instrucțiune sau un bloc, atât timp cât (sau până când) este îndeplinită o condiție. Este necesară pentru că, fără ea, orice acțiune care trebuie repetată de mai multe ori ar trebui scrisă manual de fiecare dată, ceea ce nu se poate generaliza pentru un număr mare sau necunoscut de repetări.</p>
+          </details>
+          <details><summary>2. Care este diferența esențială dintre while și do–while?</summary>
+            <p><code>while</code> verifică condiția înaintea fiecărei execuții a corpului, deci corpul se poate executa de zero ori. <code>do–while</code> verifică după execuția corpului, deci acesta se execută întotdeauna cel puțin o dată.</p>
+          </details>
+          <details><summary>3. Care sunt cele trei componente ale unui for și în ce ordine se execută?</summary>
+            <p>Inițializare (o singură dată, la început), condiție (înaintea fiecărei execuții a corpului) și pas (după fiecare execuție a corpului, înaintea revenirii la condiție).</p>
+          </details>
+          <details><summary>4. Este for o construcție complet diferită de while, din punct de vedere conceptual?</summary>
+            <p>Nu. Orice <code>for (init; cond; pas) { corp; }</code> este echivalent cu <code>init; while (cond) { corp; pas; }</code> — <code>for</code> este doar o formă mai compactă pentru bucle controlate de un contor.</p>
+          </details>
+          <details><summary>5. Ce este un contor și ce este un acumulator? Dați câte un exemplu.</summary>
+            <p>Un contor numără de câte ori se întâmplă ceva (ex: <code>numar++;</code>). Un acumulator adună sau înmulțește valori pas cu pas, pentru a obține un total (ex: <code>suma += x;</code>, <code>produs *= x;</code>).</p>
+          </details>
+          <details><summary>6. De ce trebuie inițializat cu 1, și nu cu 0, un acumulator pentru produs?</summary>
+            <p>Pentru că <code>1</code> este elementul neutru al înmulțirii. Dacă acumulatorul ar fi inițializat cu <code>0</code>, orice înmulțire ulterioară ar da tot <code>0</code>, indiferent de valorile implicate.</p>
+          </details>
+          <details><summary>7. Ce este o valoare santinelă și de ce trebuie aleasă cu grijă?</summary>
+            <p>O valoare convențională folosită pentru a marca sfârșitul unei secvențe de date citite repetat. Trebuie aleasă astfel încât să nu poată apărea printre datele valide ale problemei — altfel, o valoare validă ar fi confundată cu semnalul de oprire.</p>
+          </details>
+          <details><summary>8. Ce este o buclă infinită și ce o provoacă cel mai frecvent?</summary>
+            <p>O buclă a cărei condiție de continuare rămâne mereu adevărată, astfel încât execuția nu se mai oprește. Cauzele frecvente: uitarea instrucțiunii care modifică variabila din condiție, sau un <code>;</code> rătăcit imediat după condiția lui <code>while</code>/<code>for</code>.</p>
+          </details>
+          <details><summary>9. Ce este o eroare „off-by-one" și cum apare la o buclă for?</summary>
+            <p>O eroare în care bucla execută cu o repetare în plus sau în minus față de intenția corectă — de exemplu, folosirea lui <code>&lt;</code> în loc de <code>&lt;=</code> (sau invers) în condiția de continuare a buclei.</p>
+          </details>
+          <details><summary>10. De ce trebuie inițializat un acumulator înaintea buclei, și nu în interiorul ei?</summary>
+            <p>Pentru că, dacă inițializarea este plasată în corpul buclei, valoarea acumulată la pasul anterior este ștearsă la fiecare iterație, iar rezultatul final este incorect.</p>
+          </details>
+          <details><summary>11. Cum se alege, în general, între while, do–while și for?</summary>
+            <p><code>for</code> — când numărul de repetări este cunoscut dinainte. <code>while</code> — când repetarea depinde de o condiție care nu este legată de un contor. <code>do–while</code> — când corpul trebuie executat obligatoriu cel puțin o dată.</p>
+          </details>
+          <details><summary>12. Ce diferență importantă există între for din C++/Java și for din Python?</summary>
+            <p>În C++ și Java, <code>for</code> este format din trei componente explicite (inițializare; condiție; pas). În Python, <code>for</code> parcurge întotdeauna o secvență, de exemplu valorile generate de <code>range(n)</code> — conceptul de buclă cu contor este identic, dar exprimat printr-o parcurgere.</p>
+          </details>
+
+          <hr style="margin:2rem 0;border-color:var(--border);">
+          <h2 id="rezumat">Rezumat – De reținut</h2>
+          <div class="callout ok">
+            <span class="callout-icon"></span>
+            <div class="callout-body"><strong>Cele mai importante idei din această sesiune</strong></div>
+          </div>
+          <ol>
+            <li>O <strong>structură repetitivă</strong> execută în mod repetat o instrucțiune sau un bloc, atât timp cât (sau până când) este îndeplinită o condiție — a treia structură de control fundamentală, alături de cea secvențială și cea alternativă.</li>
+            <li><code>while</code> verifică condiția <strong>înaintea</strong> corpului — acesta se poate executa de zero ori.</li>
+            <li><code>do–while</code> verifică condiția <strong>după</strong> corp — acesta se execută întotdeauna <strong>cel puțin o dată</strong>; necesită <code>;</code> după condiție.</li>
+            <li><code>for (init; conditie; pas)</code> reunește într-o singură linie inițializarea, condiția și pasul — este echivalentă cu un <code>while</code>, dar mai potrivită pentru bucle controlate de un contor, cu număr de repetări cunoscut.</li>
+            <li>Un <strong>contor</strong> numără de câte ori se întâmplă ceva; un <strong>acumulator</strong> adună sau înmulțește valori pas cu pas — ambele trebuie inițializate <strong>înaintea</strong> buclei (sumă: 0; produs: 1).</li>
+            <li>O buclă poate fi reprezentată prin <strong>schemă logică</strong> și <strong>pseudocod</strong>, la fel ca structura alternativă — diferența vizuală esențială este „revenirea" la testul condiției după executarea corpului, absentă la o simplă decizie.</li>
+            <li>O buclă controlată printr-o <strong>valoare santinelă</strong> folosește o citire de pregătire înaintea buclei și o a doua citire în interiorul ei, iar structura potrivită este, de regulă, <code>while</code>.</li>
+            <li>Alegerea structurii de ciclare este, în esență, o alegere de claritate: <code>for</code> pentru repetări cu număr cunoscut, <code>while</code> pentru condiții fără contor, <code>do–while</code> pentru corp executat obligatoriu măcar o dată.</li>
+            <li>Erori frecvente: <strong>buclă infinită</strong> (lipsa pasului, sau <code>;</code> rătăcit după <code>while</code>/<code>for</code>), eroarea <strong>„off-by-one"</strong> (<code>&lt;</code> vs. <code>&lt;=</code>), confuzia <code>=</code>/<code>==</code>, reinițializarea acumulatorului în interiorul buclei.</li>
+            <li>Conceptul de repetare este universal; sintaxa diferă între limbaje — Python nu are <code>do–while</code> și exprimă <code>for</code> printr-o parcurgere (<code>range</code>), nu prin cele trei componente explicite din C++/Java.</li>
+            <li>Instrucțiunile de salt (<code>break</code>, <code>continue</code>), buclele imbricate și algoritmii elementari construiți cu bucle (maxim, minim, verificare, numărare) sunt subiectul sesiunii următoare.</li>
+          </ol>
+
+          <h2 id="glosar">Glosar</h2>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Termen</th><th>Definiție</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Structură repetitivă (ciclare, iterație)</strong></td><td>Structură de control care repetă execuția unei instrucțiuni sau a unui bloc, atât timp cât (sau până când) este îndeplinită o condiție</td></tr>
+                <tr><td><strong>Iterație</strong></td><td>O singură execuție a corpului unei bucle</td></tr>
+                <tr><td><strong>while</strong></td><td>Instrucțiune de ciclare care verifică o condiție înaintea fiecărei execuții a corpului</td></tr>
+                <tr><td><strong>do–while</strong></td><td>Instrucțiune de ciclare care verifică o condiție după execuția corpului, garantând cel puțin o execuție</td></tr>
+                <tr><td><strong>for</strong></td><td>Instrucțiune de ciclare care reunește inițializarea, condiția și pasul într-o singură formă, potrivită pentru bucle cu contor</td></tr>
+                <tr><td><strong>Contor</strong></td><td>Variabilă mărită (de obicei cu 1) de fiecare dată când se întâmplă un anumit lucru, folosită pentru a număra</td></tr>
+                <tr><td><strong>Acumulator</strong></td><td>Variabilă care adună sau înmulțește treptat valori pe parcursul unei bucle, pentru a obține un total</td></tr>
+                <tr><td><strong>Valoare santinelă</strong></td><td>Valoare convențională, care nu apare printre datele valide ale problemei, folosită pentru a marca sfârșitul unei secvențe de date citite repetat</td></tr>
+                <tr><td><strong>Buclă infinită</strong></td><td>Buclă a cărei condiție de continuare rămâne mereu adevărată, astfel încât execuția nu se mai oprește</td></tr>
+                <tr><td><strong>Eroare „off-by-one"</strong></td><td>Eroare în care o buclă execută cu o repetare în plus sau în minus față de intenția corectă</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2>Ce urmează?</h2>
+          <div class="callout info">
+            <span class="callout-icon"></span>
+            <div class="callout-body">
+              <strong>Sesiunea 6 – Structuri repetitive II și algoritmi elementari</strong>
+              <p>Acum că știi să construiești și să alegi corect o buclă <code>while</code>, <code>do–while</code> sau <code>for</code>, pasul următor este să lucrezi cu <strong>bucle imbricate</strong> (o structură repetitivă în interiorul alteia), cu instrucțiunile de salt <code>break</code> și <code>continue</code>, și să construiești algoritmii elementari cel mai frecvent întâlniți: determinarea maximului și minimului dintr-o secvență de valori, numărarea elementelor care satisfac o condiție și verificarea unei proprietăți (de exemplu, dacă un număr este prim).</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- /autoevaluare -->
+
+    </div><!-- /tab-wrap -->
+
+    <footer class="page-footer">
+      <span>M6 · Sesiunea 5 – Structuri repetitive: while, do–while, for</span>
+      <div class="footer-nav">
+        <a href="sesiunea-4.html" class="footer-link">← S4 Instrucțiuni și structuri de control</a>
+        <a href="sesiunea-6.html" class="footer-link fwd">S6 – Structuri repetitive II și algoritmi elementari →</a>
+      </div>
+    </footer>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
