@@ -59,11 +59,12 @@
       </p>
     </div>
 
-    <div class="overview-grid">
-      <div class="ov-card"><div class="ov-number" id="statCount">–</div><div class="ov-label">Studenți urmăriți</div></div>
-      <div class="ov-card"><div class="ov-number" id="statMax">–</div><div class="ov-label">Uptime maxim</div></div>
-      <div class="ov-card"><div class="ov-number" id="statAvg">–</div><div class="ov-label">Uptime mediu</div></div>
-      <div class="ov-card"><div class="ov-number" id="statLts">–</div><div class="ov-label">Pe v2.0 LTS</div></div>
+    <div class="term-panel">
+      <div class="term-titlebar">
+        <span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span>
+        <span class="term-title">top — PitOS classroom</span>
+      </div>
+      <div class="term-body" id="termTop"></div>
     </div>
 
     <div class="section-header"><h2>Podium</h2><span class="count">Top 3</span></div>
@@ -137,12 +138,21 @@ document.addEventListener('DOMContentLoaded', function () {
   function render(rows) {
     var sorted = rows.slice().sort(function (a, b) { return b.uptime - a.uptime; });
 
-    document.getElementById('statCount').textContent = sorted.length;
-    document.getElementById('statMax').textContent = sorted.length ? sorted[0].uptime : '–';
-    document.getElementById('statAvg').textContent = sorted.length
-      ? Math.round(sorted.reduce(function (s, r) { return s + r.uptime; }, 0) / sorted.length)
-      : '–';
-    document.getElementById('statLts').textContent = sorted.filter(function (r) { return r.uptime >= 80; }).length;
+    var count = sorted.length;
+    var max = count ? sorted[0].uptime : 0;
+    var avg = count ? Math.round(sorted.reduce(function (s, r) { return s + r.uptime; }, 0) / count) : 0;
+    var lts = sorted.filter(function (r) { return r.uptime >= 80; }).length;
+
+    var termLines = [
+      '<span class="term-prompt">titular@pitos</span><span style="color:#8b949e;">:~$</span> top',
+      '<span class="t-key">procese active</span> (studenți urmăriți) : <span class="t-val">' + count + '</span>',
+      '<span class="t-key">load average</span> (uptime mediu)        : <span class="t-val">' + avg + ' days</span>',
+      '<span class="t-key">peak</span> (uptime maxim)                : <span class="t-val">' + max + ' days</span>',
+      '<span class="t-key">stable releases</span> (pe v2.0 LTS)      : <span class="t-tag ok">' + lts + '</span>'
+    ];
+    document.getElementById('termTop').innerHTML = termLines.map(function (l, i) {
+      return '<div class="term-line" style="animation-delay:' + (i * 0.12) + 's">' + l + '</div>';
+    }).join('');
 
     var podium = document.getElementById('podium');
     podium.innerHTML = '';
@@ -168,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
     sorted.forEach(function (row, i) {
       var v = versionInfo(row.uptime);
       var tr = document.createElement('tr');
+      tr.style.animationDelay = (i * 0.05) + 's';
       tr.innerHTML =
         '<td class="lt-rank">' + (i + 1) + '</td>' +
         '<td class="lt-cod">' + row.cod + '</td>' +

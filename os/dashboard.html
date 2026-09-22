@@ -28,7 +28,7 @@
 
 <!-- ========== LAYOUT ========== -->
 <div class="shell">
-  <!-- LEFT SIDEBAR — same session nav as index.html -->
+  <!-- LEFT SIDEBAR -->
   <aside class="sidebar">
     <span class="sidebar-label">Modul</span>
     <a class="sidebar-link" href="index.html">
@@ -53,46 +53,73 @@
       <div class="overline">PitOS · Gamification (separată de nota oficială)</div>
       <h1>Dashboard-ul tău de progres</h1>
       <p>
-        Introdu codul pe care ți l-a dat titularul pe Moodle (nu numele tău real) ca să-ți vezi Uptime-ul,
-        versiunea curentă de kernel PitOS și situația sesiune-cu-sesiune.
+        Introdu codul pe care ți l-a dat titularul pe Moodle (nu numele tău real) ca să pornești consola de status
+        PitOS — kernel, uptime, subsisteme deblocate și jurnalul de boot al propriului tău sistem.
       </p>
     </div>
 
     <div class="dash-search">
       <input type="text" id="dCodeInput" placeholder="ex. demo-04" />
-      <button id="dSearchBtn">Vezi progresul</button>
+      <button id="dSearchBtn">pitos-status --cod</button>
     </div>
 
-    <div id="dEmpty" style="color:var(--text-3); font-size:.9rem;">Introdu codul tău mai sus ca să-ți vezi dashboard-ul.</div>
+    <div id="dEmpty" style="color:var(--text-3); font-size:.9rem;">Introdu codul tău mai sus ca să pornești consola.</div>
 
     <div id="dContent" style="display:none;">
 
-      <div class="dash-summary">
-        <div>
-          <div class="ds-cod" id="dCod">—</div>
-          <div class="ds-version" id="dVersion">—</div>
+      <button class="sound-toggle" id="soundToggle"><i class="fa-solid fa-volume-high"></i> <span id="soundLabel">Sunet: pornit</span></button>
+
+      <!-- TERMINAL: status panel -->
+      <div class="term-panel">
+        <div class="term-titlebar">
+          <span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span>
+          <span class="term-title">pitos-status — bash</span>
         </div>
-        <div>
-          <div class="ds-uptime-num" id="dUptime">—</div>
-          <div class="ds-uptime-label">zile Uptime</div>
-        </div>
-        <div class="ds-bar-wrap">
-          <div class="ds-bar-track"><div class="ds-bar-fill" id="dBarFill" style="width:0%"></div></div>
-          <div class="ds-bar-note" id="dBarNote">—</div>
-        </div>
+        <div class="term-body" id="termStatus"></div>
       </div>
 
-      <div class="section-header"><h2>Situația pe sesiuni</h2></div>
+      <!-- UPTIME + VERSION TRACK -->
+      <div class="uptime-hero">
+        <div>
+          <span class="uptime-kernel"><span class="u-label">Kernel curent</span><span id="dVersion">—</span></span>
+        </div>
+        <div>
+          <span class="uptime-counter" id="dUptimeCounter">0</span><span class="u-suffix">zile uptime</span>
+        </div>
+      </div>
+      <div class="version-track" id="versionTrack">
+        <div class="vt-fill" id="vtFill"></div>
+        <div class="vt-marker" id="vtMarker"><i class="fa-solid fa-microchip"></i></div>
+      </div>
+      <div class="prose"><p id="dBarNote" style="margin-top:2.2rem;">—</p></div>
+
+      <!-- BADGES -->
+      <div class="section-header"><h2>Subsisteme deblocate</h2><span class="count" id="badgeCount">0/7</span></div>
+      <div class="badge-grid" id="badgeGrid"></div>
+
+      <!-- BOOT LOG -->
+      <div class="section-header"><h2>Jurnal de pornire</h2></div>
+      <div class="term-panel">
+        <div class="term-titlebar">
+          <span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span>
+          <span class="term-title">dmesg — boot log</span>
+        </div>
+        <div class="term-body" id="bootLog"></div>
+      </div>
+
+      <!-- CHANGELOG -->
+      <div class="section-header"><h2>Changelog</h2></div>
       <div class="tbl-wrap" style="padding:6px 18px;">
-        <ul class="session-timeline" id="dTimeline"></ul>
+        <ul class="changelog-list" id="changelog"></ul>
       </div>
 
       <div class="box tip" style="margin-top:1.4rem;">
         <div class="box-title"><i class="fa-solid fa-lightbulb"></i> Ce înseamnă asta</div>
         <p>
-          Punctele afișate la fiecare sesiune sunt notele VPL/susținere folosite și pentru <code>Nota_activitate</code>
-          / <code>Nota_proiect</code> oficiale — dar Uptime-ul și versiunea de kernel de mai sus sunt calculate cu o
-          formulă separată, pur ludică (vezi tab-ul „Evaluare” de pe pagina principală). Nu confunda cele două scale.
+          Notele afișate în jurnalul de boot sunt cele folosite și pentru <code>Nota_activitate</code> /
+          <code>Nota_proiect</code> oficiale — dar Uptime-ul, versiunea de kernel și subsistemele deblocate de mai
+          sus sunt calculate cu o formulă separată, pur ludică (vezi tab-ul „Evaluare” de pe pagina principală).
+          Nu confunda cele două scale.
         </p>
       </div>
     </div>
@@ -118,26 +145,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var toggle = document.getElementById('sidebarToggle');
   var sidebar = document.querySelector('.sidebar');
-  if (toggle && sidebar) {
-    toggle.addEventListener('click', function () { sidebar.classList.toggle('open'); });
+  if (toggle && sidebar) toggle.addEventListener('click', function () { sidebar.classList.toggle('open'); });
+
+  /* ---------------- sound (WebAudio, no external files) ---------------- */
+  var soundOn = true;
+  var soundBtn = document.getElementById('soundToggle');
+  var soundLabel = document.getElementById('soundLabel');
+  soundBtn.classList.add('on');
+  soundBtn.addEventListener('click', function () {
+    soundOn = !soundOn;
+    soundBtn.classList.toggle('on', soundOn);
+    soundLabel.textContent = 'Sunet: ' + (soundOn ? 'pornit' : 'oprit');
+    soundBtn.querySelector('i').className = soundOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+  });
+  function beep(freq, duration) {
+    if (!soundOn) return;
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      var osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = 'square'; osc.frequency.value = freq;
+      gain.gain.value = 0.025;
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start();
+      setTimeout(function () { osc.stop(); ctx.close(); }, duration);
+    } catch (e) { /* audio unavailable — fail silently */ }
   }
 
+  /* ---------------- data model ---------------- */
   var SESSIONS = [
-    { key: 's1',  name: 'S1 — Mediu și procese' },
-    { key: 's3',  name: 'S3 — Fire de execuție' },
-    { key: 's5',  name: 'S5 — Sincronizare și impas' },
-    { key: 's7',  name: 'S7 — Gestiunea memoriei' },
-    { key: 's9',  name: 'S9 — Sisteme de fișiere' },
-    { key: 's11', name: 'S11 — Planificare I/O' },
-    { key: 's13', name: 'S13 — Proiect de integrare (susținere)' }
+    { key: 's1',  name: 'Procese',            icon: 'fa-microchip',       desc: 'Primul proces pornit cu fork().' },
+    { key: 's3',  name: 'Fire de execuție',    icon: 'fa-diagram-project', desc: 'Fire de execuție paralele, coordonate.' },
+    { key: 's5',  name: 'Sincronizare',        icon: 'fa-lock',            desc: 'Fără curse de date, fără deadlock.' },
+    { key: 's7',  name: 'Memorie',             icon: 'fa-memory',         desc: 'Paginare și memorie virtuală funcționale.' },
+    { key: 's9',  name: 'Sisteme de fișiere',  icon: 'fa-folder-tree',    desc: 'Sistem de fișiere propriu, operațional.' },
+    { key: 's11', name: 'Planificare I/O',     icon: 'fa-hard-drive',     desc: 'Planificare a cererilor către disc.' },
+    { key: 's13', name: 'Integrare',           icon: 'fa-flag-checkered',desc: 'Sistem integrat, susținut — Release Day.' }
   ];
-
   var VERSION_THRESHOLDS = [
-    { min: 80, label: 'PitOS v2.0 LTS' },
-    { min: 60, label: 'PitOS v1.5' },
-    { min: 40, label: 'PitOS v1.0' },
-    { min: 20, label: 'PitOS v0.5' },
-    { min: 0,  label: 'PitOS v0.1' }
+    { min: 80, label: 'v2.0 LTS' },
+    { min: 60, label: 'v1.5' },
+    { min: 40, label: 'v1.0' },
+    { min: 20, label: 'v0.5' },
+    { min: 0,  label: 'v0.1' }
   ];
   function versionFor(uptime) {
     for (var i = 0; i < VERSION_THRESHOLDS.length; i++) if (uptime >= VERSION_THRESHOLDS[i].min) return VERSION_THRESHOLDS[i];
@@ -161,11 +210,25 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   var progressData = [];
-  fetch('progres.csv')
+  var csvReady = fetch('progres.csv')
     .then(function (r) { if (!r.ok) throw new Error('no csv'); return r.text(); })
     .then(function (text) { progressData = parseCsv(text); })
     .catch(function () { progressData = []; });
 
+  /* ---------------- animated counter ---------------- */
+  function animateCounter(el, target, duration) {
+    var start = 0, startTime = null;
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var progress = Math.min(1, (ts - startTime) / duration);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(start + (target - start) * eased);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ---------------- render ---------------- */
   function showDashboard(row) {
     var empty = document.getElementById('dEmpty');
     var content = document.getElementById('dContent');
@@ -181,48 +244,106 @@ document.addEventListener('DOMContentLoaded', function () {
     var version = versionFor(row.uptime);
     var idx = VERSION_THRESHOLDS.indexOf(version);
     var next = idx > 0 ? VERSION_THRESHOLDS[idx - 1] : null;
-    var pct = next ? Math.min(100, Math.round((row.uptime / next.min) * 100)) : 100;
+    var pct = Math.min(100, row.uptime);
 
-    document.getElementById('dCod').textContent = 'Cod: ' + row.cod;
-    document.getElementById('dVersion').textContent = version.label;
-    document.getElementById('dUptime').textContent = row.uptime;
-    document.getElementById('dBarFill').style.width = pct + '%';
-    document.getElementById('dBarNote').textContent = next
-      ? pct + '% spre ' + next.label + ' (' + next.min + ' zile)'
-      : 'Ai atins cea mai înaltă versiune — v2.0 LTS';
+    /* terminal status panel */
+    var completedCount = SESSIONS.filter(function (s) { return row[s.key] !== undefined && row[s.key] !== '' && !isNaN(parseFloat(row[s.key])); }).length;
+    var term = document.getElementById('termStatus');
+    var termLines = [
+      '<span class="term-prompt">' + row.cod + '@pitos</span><span style="color:#8b949e;">:~$</span> pitos-status',
+      '<span class="t-key">kernel</span>      : <span class="t-val">PitOS ' + version.label + '</span>',
+      '<span class="t-key">uptime</span>      : <span class="t-val">' + row.uptime + ' days</span>',
+      '<span class="t-key">subsisteme</span>  : <span class="t-val">' + completedCount + '/7 online</span>',
+      '<span class="t-key">status</span>      : <span class="t-tag ok">' + (row.uptime > 0 ? 'RUNNING' : 'IDLE') + '</span>'
+    ];
+    term.innerHTML = termLines.map(function (l, i) {
+      return '<div class="term-line" style="animation-delay:' + (i * 0.12) + 's">' + l + '</div>';
+    }).join('');
 
-    var tl = document.getElementById('dTimeline');
-    tl.innerHTML = '';
+    document.getElementById('dVersion').textContent = 'PitOS ' + version.label;
+    animateCounter(document.getElementById('dUptimeCounter'), row.uptime, 900);
+
+    /* version track */
+    var track = document.getElementById('versionTrack');
+    track.querySelectorAll('.vt-tick, .vt-tick-label').forEach(function (n) { n.remove(); });
+    [20, 40, 60, 80].forEach(function (t) {
+      var tick = document.createElement('div'); tick.className = 'vt-tick'; tick.style.left = t + '%'; track.appendChild(tick);
+      var lab = document.createElement('div'); lab.className = 'vt-tick-label'; lab.style.left = t + '%'; lab.textContent = t; track.appendChild(lab);
+    });
+    setTimeout(function () {
+      document.getElementById('vtFill').style.width = pct + '%';
+      document.getElementById('vtMarker').style.left = pct + '%';
+    }, 50);
+    document.getElementById('dBarNote').innerHTML = next
+      ? 'Mai sunt <strong>' + Math.max(0, next.min - row.uptime) + ' zile</strong> până la <strong>PitOS ' + next.label + '</strong>.'
+      : 'Ai atins cea mai înaltă versiune — <strong>PitOS v2.0 LTS</strong>.';
+
+    /* badges */
+    var grid = document.getElementById('badgeGrid');
+    grid.innerHTML = '';
+    var unlockedIdx = 0;
+    SESSIONS.forEach(function (s, i) {
+      var val = row[s.key];
+      var unlocked = val !== undefined && val !== '' && !isNaN(parseFloat(val));
+      var div = document.createElement('div');
+      div.className = 'badge-tile ' + (unlocked ? 'unlocked' : 'locked');
+      div.style.animationDelay = (i * 0.08) + 's';
+      div.innerHTML =
+        (unlocked ? '' : '<i class="fa-solid fa-lock bt-lock"></i>') +
+        '<div class="bt-icon"><i class="fa-solid ' + s.icon + '"></i></div>' +
+        '<div class="bt-name">' + s.name + '</div>' +
+        '<div class="bt-desc">' + (unlocked ? s.desc + ' (' + parseFloat(val) + '/10)' : 'Se deblochează la finalizarea sesiunii.') + '</div>';
+      grid.appendChild(div);
+      if (unlocked) {
+        (function (delay) { setTimeout(function () { beep(440 + delay * 60, 90); }, 200 + delay * 130); })(unlockedIdx);
+        unlockedIdx++;
+      }
+    });
+    document.getElementById('badgeCount').textContent = completedCount + '/7';
+
+    /* boot log */
+    var boot = document.getElementById('bootLog');
+    boot.innerHTML = SESSIONS.map(function (s, i) {
+      var val = row[s.key];
+      var done = val !== undefined && val !== '' && !isNaN(parseFloat(val));
+      return '<div class="term-line" style="animation-delay:' + (i * 0.1) + 's">' +
+        '<span class="t-tag ' + (done ? 'ok' : 'pending') + '">[' + (done ? '&nbsp;OK&nbsp;' : '....') + ']</span>' +
+        '<span>Se încarcă subsistem: ' + s.name + (done ? ' — notă ' + parseFloat(val) + '/10' : ' — în așteptare') + '</span>' +
+        '</div>';
+    }).join('');
+
+    /* changelog */
+    var cl = document.getElementById('changelog');
+    var entries = [];
     SESSIONS.forEach(function (s) {
       var val = row[s.key];
-      var has = val !== undefined && val !== '' && !isNaN(parseFloat(val));
-      var li = document.createElement('li');
-      li.innerHTML =
-        '<span class="st-dot ' + (has ? 'done' : 'pending') + '"></span>' +
-        '<span class="st-name">' + s.name + '</span>' +
-        '<span class="st-score ' + (has ? '' : 'pending') + '">' + (has ? parseFloat(val) + '/10' : 'în așteptare') + '</span>';
-      tl.appendChild(li);
+      var done = val !== undefined && val !== '' && !isNaN(parseFloat(val));
+      if (done) entries.push({ tag: s.key.toUpperCase(), msg: s.name + ' finalizat — notă ' + parseFloat(val) + '/10' });
     });
+    if (row.uptime >= 20) entries.push({ tag: 'v0.5', msg: 'build stabil — primele subsisteme funcționale' });
+    if (row.uptime >= 40) entries.push({ tag: 'v1.0', msg: 'patch major — sincronizare fără regresii' });
+    if (row.uptime >= 60) entries.push({ tag: 'v1.5', msg: 'subsistem I/O integrat' });
+    if (row.uptime >= 80) entries.push({ tag: 'v2.0', msg: 'LTS — sistem integrat, susținut cu succes (Release Day)' });
+    cl.innerHTML = entries.length
+      ? entries.map(function (e) { return '<li><span class="cl-tag">' + e.tag + '</span><span class="cl-msg">' + e.msg + '</span></li>'; }).join('')
+      : '<li><span class="cl-msg" style="color:var(--text-3);">Niciun increment finalizat încă.</span></li>';
   }
 
   function doSearch() {
     var code = document.getElementById('dCodeInput').value.trim().toLowerCase();
     if (!code) return;
-    var row = progressData.find(function (r) { return r.cod.toLowerCase() === code; });
-    showDashboard(row || null);
+    csvReady.then(function () {
+      var row = progressData.find(function (r) { return r.cod.toLowerCase() === code; });
+      showDashboard(row || null);
+    });
   }
 
   document.getElementById('dSearchBtn').addEventListener('click', doSearch);
   document.getElementById('dCodeInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') doSearch(); });
 
-  // support ?cod=xxx in the URL for a direct link
   var params = new URLSearchParams(location.search);
   var urlCod = params.get('cod');
-  if (urlCod) {
-    document.getElementById('dCodeInput').value = urlCod;
-    // wait briefly for the CSV fetch above to land, then search
-    setTimeout(doSearch, 300);
-  }
+  if (urlCod) { document.getElementById('dCodeInput').value = urlCod; doSearch(); }
 });
 </script>
 </body>
