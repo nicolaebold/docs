@@ -227,9 +227,9 @@ code{ font-family:var(--mono); background:var(--surface-2); padding:.1em .4em; b
 .section-header{ display:flex; align-items:baseline; gap:.7rem; margin:2.1rem 0 1rem; }
 .section-header h2{ font-size:1.32rem; font-weight:700; color:var(--text); margin:0; }
 .section-header .count{ font-size:.76rem; color:var(--text-3); font-weight:600; }
-.prose p{ font-size:.95rem; color:var(--text-2); line-height:1.75; margin:0 0 1rem; max-width:76ch; }
+.prose p{ font-size:.95rem; color:var(--text-2); line-height:1.75; margin:0 0 1rem; }
 .prose strong{ color:var(--text); }
-.prose ul, .prose ol{ font-size:.93rem; color:var(--text-2); line-height:1.7; padding-left:20px; max-width:76ch; }
+.prose ul, .prose ol{ font-size:.93rem; color:var(--text-2); line-height:1.7; padding-left:20px; }
 .prose li{ margin-bottom:5px; }
 
 /* ---------------------------- ADMONITION BOXES --------------------------- */
