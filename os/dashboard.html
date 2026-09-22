@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Dashboard PitOS | Sisteme de Operare</title>
-<meta name="description" content="Dashboard personal de progres PitOS — pe bază de cod pseudonim, fără date personale." />
+<meta name="description" content="Dashboard personal de progres PitOS." />
 <link rel="stylesheet" href="style.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
@@ -22,7 +22,7 @@
     <span>Matematică-Informatică</span><span class="sep">›</span><span>Dashboard PitOS</span>
   </div>
   <div class="topnav-actions">
-    <a href="leaderboard.html" class="btn-sm primary">Vezi clasamentul</a>
+    <a href="leaderboard.html" class="btn-sm primary">Clasament</a>
   </div>
 </nav>
 
@@ -47,15 +47,12 @@
   </aside>
 
   <!-- MAIN -->
-  <main class="main" style="max-width:900px;">
+  <main class="main" style="max-width:960px;">
 
     <div class="gam-header">
-      <div class="overline">PitOS · Gamification (separată de nota oficială)</div>
-      <h1>Dashboard-ul tău de progres</h1>
-      <p>
-        Introdu codul pe care ți l-a dat titularul pe Moodle (nu numele tău real) ca să pornești consola de status
-        PitOS — kernel, uptime, subsisteme deblocate și jurnalul de boot al propriului tău sistem.
-      </p>
+      <div class="overline">PitOS Classroom</div>
+      <h1>Consola sistemului tău</h1>
+      <p>Introdu-ți codul și pornește-ți kernelul.</p>
     </div>
 
     <div class="dash-search">
@@ -69,29 +66,38 @@
 
       <button class="sound-toggle" id="soundToggle"><i class="fa-solid fa-volume-high"></i> <span id="soundLabel">Sunet: pornit</span></button>
 
-      <!-- TERMINAL: status panel -->
-      <div class="term-panel">
-        <div class="term-titlebar">
-          <span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span>
-          <span class="term-title">pitos-status — bash</span>
+      <!-- RANK CARD -->
+      <div class="rank-card" id="rankCard">
+        <div class="rank-emblem" id="rankEmblem"><i class="fa-solid fa-terminal"></i></div>
+        <div class="rank-info">
+          <div class="ri-cod" id="riCod">—</div>
+          <div class="ri-title" id="riTitle">—<span class="ri-version" id="riVersion"></span></div>
+          <div class="ri-tagline" id="riTagline">—</div>
         </div>
-        <div class="term-body" id="termStatus"></div>
       </div>
 
-      <!-- UPTIME + VERSION TRACK -->
-      <div class="uptime-hero">
-        <div>
-          <span class="uptime-kernel"><span class="u-label">Kernel curent</span><span id="dVersion">—</span></span>
+      <!-- NEXT MILESTONE -->
+      <div class="next-banner" id="nextBanner"><i class="fa-solid fa-flag-checkered"></i> <span id="nextBannerText">—</span></div>
+
+      <!-- XP RING + STATS -->
+      <div class="xp-wrap">
+        <div class="xp-ring-box" id="xpRingBox">
+          <svg viewBox="0 0 152 152">
+            <circle class="xp-bg" cx="76" cy="76" r="68" stroke-width="12"></circle>
+            <circle class="xp-fg" id="xpFg" cx="76" cy="76" r="68" stroke-width="12"></circle>
+          </svg>
+          <div class="xp-ring-center">
+            <div class="xp-num" id="xpNum">0</div>
+            <div class="xp-label">zile uptime</div>
+          </div>
         </div>
-        <div>
-          <span class="uptime-counter" id="dUptimeCounter">0</span><span class="u-suffix">zile uptime</span>
+        <div class="stat-tiles">
+          <div class="stat-tile"><div class="stt-num" id="statSessions">0/7</div><div class="stt-label">Subsisteme active</div></div>
+          <div class="stat-tile"><div class="stt-num" id="statAvgScore">—</div><div class="stt-label">Notă medie VPL</div></div>
+          <div class="stat-tile"><div class="stt-num" id="statRank">—</div><div class="stt-label">Rang curent</div></div>
+          <div class="stat-tile"><div class="stt-num" id="statToNext">—</div><div class="stt-label">Zile până la rangul următor</div></div>
         </div>
       </div>
-      <div class="version-track" id="versionTrack">
-        <div class="vt-fill" id="vtFill"></div>
-        <div class="vt-marker" id="vtMarker"><i class="fa-solid fa-microchip"></i></div>
-      </div>
-      <div class="prose"><p id="dBarNote" style="margin-top:2.2rem;">—</p></div>
 
       <!-- BADGES -->
       <div class="section-header"><h2>Subsisteme deblocate</h2><span class="count" id="badgeCount">0/7</span></div>
@@ -112,24 +118,6 @@
       <div class="tbl-wrap" style="padding:6px 18px;">
         <ul class="changelog-list" id="changelog"></ul>
       </div>
-
-      <div class="box tip" style="margin-top:1.4rem;">
-        <div class="box-title"><i class="fa-solid fa-lightbulb"></i> Ce înseamnă asta</div>
-        <p>
-          Notele afișate în jurnalul de boot sunt cele folosite și pentru <code>Nota_activitate</code> /
-          <code>Nota_proiect</code> oficiale — dar Uptime-ul, versiunea de kernel și subsistemele deblocate de mai
-          sus sunt calculate cu o formulă separată, pur ludică (vezi tab-ul „Evaluare” de pe pagina principală).
-          Nu confunda cele două scale.
-        </p>
-      </div>
-    </div>
-
-    <div class="box note" style="margin-top:1.6rem;">
-      <div class="box-title"><i class="fa-solid fa-shield-halved"></i> Confidențialitate</div>
-      <p>
-        Pagina nu are login și nu trimite nimic către niciun server — codul introdus e comparat local, în browser,
-        cu conținutul public al fișierului <code>progres.csv</code>. Nu apare niciun nume real nicăieri pe această pagină.
-      </p>
     </div>
 
     <footer class="page-footer">
@@ -140,6 +128,7 @@
   </main>
 </div>
 
+<script src="ranks.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -171,62 +160,40 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (e) { /* audio unavailable — fail silently */ }
   }
 
-  /* ---------------- data model ---------------- */
+  /* ---------------- session / badge model ---------------- */
+  var RANKS = PitOS.RANKS;
   var SESSIONS = [
-    { key: 's1',  name: 'Procese',            icon: 'fa-microchip',       desc: 'Primul proces pornit cu fork().' },
-    { key: 's3',  name: 'Fire de execuție',    icon: 'fa-diagram-project', desc: 'Fire de execuție paralele, coordonate.' },
-    { key: 's5',  name: 'Sincronizare',        icon: 'fa-lock',            desc: 'Fără curse de date, fără deadlock.' },
-    { key: 's7',  name: 'Memorie',             icon: 'fa-memory',         desc: 'Paginare și memorie virtuală funcționale.' },
-    { key: 's9',  name: 'Sisteme de fișiere',  icon: 'fa-folder-tree',    desc: 'Sistem de fișiere propriu, operațional.' },
-    { key: 's11', name: 'Planificare I/O',     icon: 'fa-hard-drive',     desc: 'Planificare a cererilor către disc.' },
-    { key: 's13', name: 'Integrare',           icon: 'fa-flag-checkered',desc: 'Sistem integrat, susținut — Release Day.' }
+    { key: 's1',  name: 'Procese',            icon: 'fa-microchip',        desc: 'Primul proces pornit cu fork().',            rank: RANKS[0] },
+    { key: 's3',  name: 'Fire de execuție',    icon: 'fa-diagram-project',  desc: 'Fire de execuție paralele, coordonate.',     rank: RANKS[1] },
+    { key: 's5',  name: 'Sincronizare',        icon: 'fa-lock',             desc: 'Fără curse de date, fără deadlock.',         rank: RANKS[1] },
+    { key: 's7',  name: 'Memorie',             icon: 'fa-memory',          desc: 'Paginare și memorie virtuală funcționale.',  rank: RANKS[2] },
+    { key: 's9',  name: 'Sisteme de fișiere',  icon: 'fa-folder-tree',     desc: 'Sistem de fișiere propriu, operațional.',    rank: RANKS[2] },
+    { key: 's11', name: 'Planificare I/O',     icon: 'fa-hard-drive',      desc: 'Planificare a cererilor către disc.',        rank: RANKS[3] },
+    { key: 's13', name: 'Integrare',           icon: 'fa-flag-checkered',  desc: 'Sistem integrat, susținut — Release Day.',   rank: RANKS[4] }
   ];
-  var VERSION_THRESHOLDS = [
-    { min: 80, label: 'v2.0 LTS' },
-    { min: 60, label: 'v1.5' },
-    { min: 40, label: 'v1.0' },
-    { min: 20, label: 'v0.5' },
-    { min: 0,  label: 'v0.1' }
-  ];
-  function versionFor(uptime) {
-    for (var i = 0; i < VERSION_THRESHOLDS.length; i++) if (uptime >= VERSION_THRESHOLDS[i].min) return VERSION_THRESHOLDS[i];
-    return VERSION_THRESHOLDS[VERSION_THRESHOLDS.length - 1];
-  }
-
-  function parseCsv(text) {
-    var lines = text.trim().split(/\r?\n/);
-    var header = lines[0].split(',').map(function (h) { return h.trim(); });
-    var rows = [];
-    for (var i = 1; i < lines.length; i++) {
-      var parts = lines[i].split(',');
-      if (parts.length < 2) continue;
-      var row = {};
-      header.forEach(function (h, idx) { row[h] = (parts[idx] || '').trim(); });
-      if (!row.cod) continue;
-      row.uptime = parseFloat(row.uptime);
-      rows.push(row);
-    }
-    return rows;
-  }
 
   var progressData = [];
   var csvReady = fetch('progres.csv')
     .then(function (r) { if (!r.ok) throw new Error('no csv'); return r.text(); })
-    .then(function (text) { progressData = parseCsv(text); })
+    .then(function (text) { progressData = PitOS.parseCsv(text); })
     .catch(function () { progressData = []; });
 
   /* ---------------- animated counter ---------------- */
   function animateCounter(el, target, duration) {
-    var start = 0, startTime = null;
+    var startTime = null;
     function step(ts) {
       if (!startTime) startTime = ts;
       var progress = Math.min(1, (ts - startTime) / duration);
       var eased = 1 - Math.pow(1 - progress, 3);
-      el.textContent = Math.round(start + (target - start) * eased);
+      el.textContent = Math.round(target * eased);
       if (progress < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
   }
+
+  var ring = { r: 68, c: 2 * Math.PI * 68 };
+  document.getElementById('xpFg').setAttribute('stroke-dasharray', ring.c);
+  document.getElementById('xpFg').style.strokeDashoffset = ring.c;
 
   /* ---------------- render ---------------- */
   function showDashboard(row) {
@@ -241,42 +208,37 @@ document.addEventListener('DOMContentLoaded', function () {
     empty.style.display = 'none';
     content.style.display = 'block';
 
-    var version = versionFor(row.uptime);
-    var idx = VERSION_THRESHOLDS.indexOf(version);
-    var next = idx > 0 ? VERSION_THRESHOLDS[idx - 1] : null;
-    var pct = Math.min(100, row.uptime);
+    var rank = PitOS.rankFor(row.uptime);
+    var next = PitOS.nextRank(rank);
+    var pct = PitOS.pctToNext(row.uptime);
 
-    /* terminal status panel */
-    var completedCount = SESSIONS.filter(function (s) { return row[s.key] !== undefined && row[s.key] !== '' && !isNaN(parseFloat(row[s.key])); }).length;
-    var term = document.getElementById('termStatus');
-    var termLines = [
-      '<span class="term-prompt">' + row.cod + '@pitos</span><span style="color:#8b949e;">:~$</span> pitos-status',
-      '<span class="t-key">kernel</span>      : <span class="t-val">PitOS ' + version.label + '</span>',
-      '<span class="t-key">uptime</span>      : <span class="t-val">' + row.uptime + ' days</span>',
-      '<span class="t-key">subsisteme</span>  : <span class="t-val">' + completedCount + '/7 online</span>',
-      '<span class="t-key">status</span>      : <span class="t-tag ok">' + (row.uptime > 0 ? 'RUNNING' : 'IDLE') + '</span>'
-    ];
-    term.innerHTML = termLines.map(function (l, i) {
-      return '<div class="term-line" style="animation-delay:' + (i * 0.12) + 's">' + l + '</div>';
-    }).join('');
+    document.getElementById('rankCard').style.setProperty('--rank-color', rank.color);
+    document.getElementById('rankCard').style.setProperty('--rank-glow', rank.glow);
+    document.getElementById('rankEmblem').innerHTML = '<i class="fa-solid ' + rank.icon + '"></i>';
+    document.getElementById('riCod').textContent = 'cod: ' + row.cod;
+    document.getElementById('riTitle').innerHTML = rank.title + '<span class="ri-version" id="riVersion">PitOS ' + rank.version + '</span>';
+    document.getElementById('riTagline').textContent = rank.tagline;
 
-    document.getElementById('dVersion').textContent = 'PitOS ' + version.label;
-    animateCounter(document.getElementById('dUptimeCounter'), row.uptime, 900);
+    document.getElementById('nextBanner').style.display = next ? 'flex' : 'none';
+    if (next) {
+      document.getElementById('nextBannerText').innerHTML =
+        'Mai sunt <strong>' + Math.max(0, next.min - row.uptime) + ' zile</strong> până devii <strong>' + next.title + '</strong> (' + next.version + ').';
+    }
 
-    /* version track */
-    var track = document.getElementById('versionTrack');
-    track.querySelectorAll('.vt-tick, .vt-tick-label').forEach(function (n) { n.remove(); });
-    [20, 40, 60, 80].forEach(function (t) {
-      var tick = document.createElement('div'); tick.className = 'vt-tick'; tick.style.left = t + '%'; track.appendChild(tick);
-      var lab = document.createElement('div'); lab.className = 'vt-tick-label'; lab.style.left = t + '%'; lab.textContent = t; track.appendChild(lab);
-    });
+    document.getElementById('xpRingBox').style.setProperty('--rank-color', rank.color);
+    animateCounter(document.getElementById('xpNum'), row.uptime, 900);
     setTimeout(function () {
-      document.getElementById('vtFill').style.width = pct + '%';
-      document.getElementById('vtMarker').style.left = pct + '%';
-    }, 50);
-    document.getElementById('dBarNote').innerHTML = next
-      ? 'Mai sunt <strong>' + Math.max(0, next.min - row.uptime) + ' zile</strong> până la <strong>PitOS ' + next.label + '</strong>.'
-      : 'Ai atins cea mai înaltă versiune — <strong>PitOS v2.0 LTS</strong>.';
+      document.getElementById('xpFg').style.strokeDashoffset = ring.c * (1 - pct / 100);
+    }, 60);
+
+    var completed = SESSIONS.filter(function (s) { var v = row[s.key]; return v !== undefined && v !== '' && !isNaN(parseFloat(v)); });
+    var scores = completed.map(function (s) { return parseFloat(row[s.key]); });
+    var avgScore = scores.length ? Math.round((scores.reduce(function (a, b) { return a + b; }, 0) / scores.length) * 10) / 10 : 0;
+
+    document.getElementById('statSessions').textContent = completed.length + '/7';
+    document.getElementById('statAvgScore').textContent = scores.length ? avgScore + '/10' : '—';
+    document.getElementById('statRank').textContent = rank.title;
+    document.getElementById('statToNext').textContent = next ? Math.max(0, next.min - row.uptime) : '—';
 
     /* badges */
     var grid = document.getElementById('badgeGrid');
@@ -288,6 +250,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var div = document.createElement('div');
       div.className = 'badge-tile ' + (unlocked ? 'unlocked' : 'locked');
       div.style.animationDelay = (i * 0.08) + 's';
+      if (unlocked) div.style.setProperty('--badge-accent', s.rank.color);
       div.innerHTML =
         (unlocked ? '' : '<i class="fa-solid fa-lock bt-lock"></i>') +
         '<div class="bt-icon"><i class="fa-solid ' + s.icon + '"></i></div>' +
@@ -299,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
         unlockedIdx++;
       }
     });
-    document.getElementById('badgeCount').textContent = completedCount + '/7';
+    document.getElementById('badgeCount').textContent = completed.length + '/7';
 
     /* boot log */
     var boot = document.getElementById('bootLog');
@@ -320,10 +283,9 @@ document.addEventListener('DOMContentLoaded', function () {
       var done = val !== undefined && val !== '' && !isNaN(parseFloat(val));
       if (done) entries.push({ tag: s.key.toUpperCase(), msg: s.name + ' finalizat — notă ' + parseFloat(val) + '/10' });
     });
-    if (row.uptime >= 20) entries.push({ tag: 'v0.5', msg: 'build stabil — primele subsisteme funcționale' });
-    if (row.uptime >= 40) entries.push({ tag: 'v1.0', msg: 'patch major — sincronizare fără regresii' });
-    if (row.uptime >= 60) entries.push({ tag: 'v1.5', msg: 'subsistem I/O integrat' });
-    if (row.uptime >= 80) entries.push({ tag: 'v2.0', msg: 'LTS — sistem integrat, susținut cu succes (Release Day)' });
+    RANKS.forEach(function (r) {
+      if (row.uptime >= r.min && r.min > 0) entries.push({ tag: r.version, msg: 'rang nou — ' + r.title });
+    });
     cl.innerHTML = entries.length
       ? entries.map(function (e) { return '<li><span class="cl-tag">' + e.tag + '</span><span class="cl-msg">' + e.msg + '</span></li>'; }).join('')
       : '<li><span class="cl-msg" style="color:var(--text-3);">Niciun increment finalizat încă.</span></li>';

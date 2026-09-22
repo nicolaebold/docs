@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Clasament PitOS | Sisteme de Operare</title>
-<meta name="description" content="Clasament pseudonim al progresului PitOS — separat de nota oficială." />
+<meta name="description" content="Clasament PitOS pe ligi de rang." />
 <link rel="stylesheet" href="style.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
@@ -28,7 +28,7 @@
 
 <!-- ========== LAYOUT ========== -->
 <div class="shell">
-  <!-- LEFT SIDEBAR — same session nav as index.html -->
+  <!-- LEFT SIDEBAR -->
   <aside class="sidebar">
     <span class="sidebar-label">Modul</span>
     <a class="sidebar-link" href="index.html">
@@ -47,48 +47,19 @@
   </aside>
 
   <!-- MAIN -->
-  <main class="main" style="max-width:900px;">
+  <main class="main" style="max-width:960px;">
 
     <div class="gam-header">
-      <div class="overline">PitOS · Gamification (separată de nota oficială)</div>
-      <h1>Clasament Uptime</h1>
-      <p>
-        Progresul din laboratoarele S1–S13, exprimat ca „Uptime” (zile de funcționare a kernelului tău PitOS) și
-        „versiune de kernel”. Participarea la acest clasament e opțională și nu influențează în niciun fel nota —
-        e doar un mod ludic de a-ți urmări evoluția, sub un cod, nu sub numele tău real.
-      </p>
-    </div>
-
-    <div class="term-panel">
-      <div class="term-titlebar">
-        <span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span>
-        <span class="term-title">top — PitOS classroom</span>
-      </div>
-      <div class="term-body" id="termTop"></div>
+      <div class="overline">PitOS Classroom</div>
+      <h1>Clasament</h1>
+      <p>Cine ține sistemul cel mai mult timp în funcțiune, fără să pice? Vezi cine urcă spre BDFL.</p>
     </div>
 
     <div class="section-header"><h2>Podium</h2><span class="count">Top 3</span></div>
     <div class="podium" id="podium"></div>
 
-    <div class="section-header"><h2>Clasament complet</h2></div>
-    <div class="tbl-wrap">
-      <table class="leader-table">
-        <thead><tr><th>#</th><th>Cod student</th><th>Uptime</th><th>Kernel</th></tr></thead>
-        <tbody id="leaderBody">
-          <tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:20px;">Se încarcă datele din <code>progres.csv</code>…</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="box note" style="margin-top:1.6rem;">
-      <div class="box-title"><i class="fa-solid fa-circle-info"></i> Cum funcționează</div>
-      <p>
-        Clasamentul citește direct fișierul <code>progres.csv</code>, publicat lângă această pagină, actualizat
-        periodic de titular din exportul de note Moodle/VPL. Nu există cont, login sau date personale — doar codul
-        pe care ți l-a dat titularul și numărul de zile de Uptime. Totul rulează în browser-ul tău; nimic nu este
-        trimis către vreun server.
-      </p>
-    </div>
+    <div class="section-header"><h2>Ligi</h2><span class="count">grupate pe rang</span></div>
+    <div id="leagues"></div>
 
     <footer class="page-footer">
       <span>Sisteme de Operare · Departamentul Matematică-Informatică · Universitatea din Pitești</span>
@@ -98,99 +69,85 @@
   </main>
 </div>
 
+<script src="ranks.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
   var toggle = document.getElementById('sidebarToggle');
   var sidebar = document.querySelector('.sidebar');
-  if (toggle && sidebar) {
-    toggle.addEventListener('click', function () { sidebar.classList.toggle('open'); });
-  }
+  if (toggle && sidebar) toggle.addEventListener('click', function () { sidebar.classList.toggle('open'); });
 
-  var VERSION_THRESHOLDS = [
-    { min: 80, label: 'v2.0 LTS', cls: 'kv-v20' },
-    { min: 60, label: 'v1.5',     cls: 'kv-v15' },
-    { min: 40, label: 'v1.0',     cls: 'kv-v10' },
-    { min: 20, label: 'v0.5',     cls: 'kv-v05' },
-    { min: 0,  label: 'v0.1',     cls: 'kv-v01' }
-  ];
-  function versionInfo(uptime) {
-    for (var i = 0; i < VERSION_THRESHOLDS.length; i++) if (uptime >= VERSION_THRESHOLDS[i].min) return VERSION_THRESHOLDS[i];
-    return VERSION_THRESHOLDS[VERSION_THRESHOLDS.length - 1];
-  }
-
-  function parseCsv(text) {
-    var lines = text.trim().split(/\r?\n/);
-    var rows = [];
-    for (var i = 1; i < lines.length; i++) {
-      var parts = lines[i].split(',');
-      if (parts.length < 2) continue;
-      var cod = parts[0].trim();
-      var uptime = parseFloat(parts[1]);
-      if (!cod || isNaN(uptime)) continue;
-      rows.push({ cod: cod, uptime: uptime });
-    }
-    return rows;
-  }
-
+  var RANKS = PitOS.RANKS;
   function medalFor(i) { return i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'; }
 
   function render(rows) {
     var sorted = rows.slice().sort(function (a, b) { return b.uptime - a.uptime; });
 
-    var count = sorted.length;
-    var max = count ? sorted[0].uptime : 0;
-    var avg = count ? Math.round(sorted.reduce(function (s, r) { return s + r.uptime; }, 0) / count) : 0;
-    var lts = sorted.filter(function (r) { return r.uptime >= 80; }).length;
-
-    var termLines = [
-      '<span class="term-prompt">titular@pitos</span><span style="color:#8b949e;">:~$</span> top',
-      '<span class="t-key">procese active</span> (studenți urmăriți) : <span class="t-val">' + count + '</span>',
-      '<span class="t-key">load average</span> (uptime mediu)        : <span class="t-val">' + avg + ' days</span>',
-      '<span class="t-key">peak</span> (uptime maxim)                : <span class="t-val">' + max + ' days</span>',
-      '<span class="t-key">stable releases</span> (pe v2.0 LTS)      : <span class="t-tag ok">' + lts + '</span>'
-    ];
-    document.getElementById('termTop').innerHTML = termLines.map(function (l, i) {
-      return '<div class="term-line" style="animation-delay:' + (i * 0.12) + 's">' + l + '</div>';
-    }).join('');
-
+    /* ---------------- podium (top 3 overall) ---------------- */
     var podium = document.getElementById('podium');
     podium.innerHTML = '';
-    sorted.slice(0, 3).forEach(function (row, i) {
-      var v = versionInfo(row.uptime);
-      var div = document.createElement('div');
-      div.className = 'podium-item rank-' + (i + 1);
-      div.innerHTML =
-        '<div class="p-medal">' + medalFor(i) + '</div>' +
-        '<div class="p-cod">' + row.cod + '</div>' +
-        '<div class="p-uptime">' + row.uptime + ' zile</div>' +
-        '<span class="kv-badge ' + v.cls + '">' + v.label + '</span>';
-      podium.appendChild(div);
-    });
-    if (!sorted.length) podium.innerHTML = '<p style="color:var(--text-3);">Niciun progres încărcat încă.</p>';
-
-    var body = document.getElementById('leaderBody');
-    body.innerHTML = '';
     if (!sorted.length) {
-      body.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:20px;">Niciun rezultat.</td></tr>';
-      return;
+      podium.innerHTML = '<p style="color:var(--text-3);">Niciun progres încărcat încă.</p>';
+    } else {
+      sorted.slice(0, 3).forEach(function (row, i) {
+        var rank = PitOS.rankFor(row.uptime);
+        var div = document.createElement('div');
+        div.className = 'podium-item rank-' + (i + 1);
+        div.style.setProperty('--rank-color', rank.color);
+        div.innerHTML =
+          '<div class="p-medal">' + medalFor(i) + '</div>' +
+          '<div class="p-cod">' + row.cod + '</div>' +
+          '<div class="p-uptime">' + row.uptime + ' zile</div>' +
+          '<div class="p-rank-icon"><i class="fa-solid ' + rank.icon + '"></i></div>' +
+          '<div class="p-rank-title">' + rank.title + '</div>';
+        podium.appendChild(div);
+      });
     }
-    sorted.forEach(function (row, i) {
-      var v = versionInfo(row.uptime);
-      var tr = document.createElement('tr');
-      tr.style.animationDelay = (i * 0.05) + 's';
-      tr.innerHTML =
-        '<td class="lt-rank">' + (i + 1) + '</td>' +
-        '<td class="lt-cod">' + row.cod + '</td>' +
-        '<td>' + row.uptime + ' zile</td>' +
-        '<td><span class="kv-badge ' + v.cls + '">' + v.label + '</span></td>';
-      body.appendChild(tr);
-    });
+
+    /* ---------------- leagues (grouped by rank, highest first) ---------------- */
+    var leaguesEl = document.getElementById('leagues');
+    leaguesEl.innerHTML = '';
+    var byRank = {};
+    RANKS.forEach(function (r) { byRank[r.key] = []; });
+    sorted.forEach(function (row) { byRank[PitOS.rankFor(row.uptime).key].push(row); });
+
+    var anyLeague = false;
+    for (var i = RANKS.length - 1; i >= 0; i--) {
+      var rank = RANKS[i];
+      var members = byRank[rank.key];
+      if (!members.length) continue;
+      anyLeague = true;
+
+      var section = document.createElement('div');
+      section.className = 'league-section';
+      section.style.setProperty('--league-color', rank.color);
+
+      var head = document.createElement('div');
+      head.className = 'league-head';
+      head.innerHTML =
+        '<div class="lh-icon"><i class="fa-solid ' + rank.icon + '"></i></div>' +
+        '<div><div class="lh-title">' + rank.title + '</div><div class="lh-tagline">' + rank.tagline + '</div></div>' +
+        '<div class="lh-count">' + members.length + ' ' + (members.length === 1 ? 'student' : 'studenți') + '</div>';
+      section.appendChild(head);
+
+      var grid = document.createElement('div');
+      grid.className = 'league-grid';
+      members.forEach(function (row, idx) {
+        var chip = document.createElement('div');
+        chip.className = 'player-chip';
+        chip.style.animationDelay = (idx * 0.04) + 's';
+        chip.innerHTML = '<span class="pc-cod">' + row.cod + '</span><span class="pc-uptime">' + row.uptime + 'd</span>';
+        grid.appendChild(chip);
+      });
+      section.appendChild(grid);
+      leaguesEl.appendChild(section);
+    }
+    if (!anyLeague) leaguesEl.innerHTML = '<p style="color:var(--text-3);">Niciun progres încărcat încă.</p>';
   }
 
   fetch('progres.csv')
     .then(function (r) { if (!r.ok) throw new Error('no csv'); return r.text(); })
-    .then(function (text) { render(parseCsv(text)); })
+    .then(function (text) { render(PitOS.parseCsv(text)); })
     .catch(function () { render([]); });
 });
 </script>
