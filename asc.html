@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ASC Lab 1 — De la informație la calculator</title>
+<style>
+:root{
+  --bg:#fff; --text:#171717; --muted:#68707a; --line:#dde1e5; --soft:#f7f8f9;
+  --accent:#244f72; --accentSoft:#eef4f8; --good:#2e6a43; --bad:#a03b3b; --warn:#80651d;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.52}
+button,input,select,textarea{font:inherit}
+button{border:1px solid #cbd0d5;background:#fff;color:#222;border-radius:6px;padding:8px 12px;cursor:pointer}
+button:hover{background:#f4f5f6}
+button.primary{border-color:var(--accent);color:var(--accent)}
+button.good{border-color:var(--good);color:var(--good)}
+button:disabled{opacity:.45;cursor:default}
+input,select,textarea{width:100%;border:1px solid #cbd0d5;border-radius:5px;padding:8px;background:#fff;color:#111}
+textarea{min-height:92px;resize:vertical}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.app{display:grid;grid-template-columns:292px 1fr;min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--line);padding:18px 14px;background:#fff}
+.brand{font-weight:750;font-size:17px}.brand-sub{font-size:12px;color:#777;margin:3px 0 12px}
+.map{border:1px solid var(--line);border-radius:7px;padding:9px;margin-bottom:12px;background:#fafafa}
+.map-step{display:flex;align-items:center;gap:7px;font-size:11px;color:#777;padding:4px 0}
+.map-step .mnode{width:17px;height:17px;border:1px solid #bbb;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px}
+.map-step.active{color:var(--accent);font-weight:700}.map-step.active .mnode{border-color:var(--accent)}
+.map-step.complete .mnode{background:#777;color:#fff}
+.map-arrow{margin-left:8px;color:#aaa;font-size:10px}
+.progress{height:5px;background:#eee;border-radius:9px;overflow:hidden}.progress>div{height:100%;width:0;background:#777}
+.progress-text{font-size:11px;color:#777;margin:5px 0 12px}
+.chapter{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin:14px 0 5px}
+.navbtn{display:flex;gap:7px;width:100%;border:0;background:#fff;text-align:left;padding:6px 7px;border-radius:4px;font-size:12px}
+.navbtn:hover{background:#f6f6f6}.navbtn.active{background:var(--accentSoft);color:var(--accent)}
+.navbtn.done .dot{background:#777;color:#fff}
+.dot{flex:0 0 19px;height:19px;border:1px solid #bbb;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;margin-top:1px}
+.side-actions{display:grid;gap:7px;border-top:1px solid var(--line);padding-top:13px;margin-top:18px}
+.main{max-width:1120px;width:100%;margin:0 auto;padding:30px 40px 80px}
+.head{border-bottom:1px solid var(--line);padding-bottom:17px;margin-bottom:20px}
+.eyebrow{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;font-weight:750}
+h1{font-size:26px;line-height:1.22;margin:5px 0 7px}h2{font-size:19px;margin:0 0 8px}h3{font-size:15px;margin:0 0 7px}
+.lead{margin:0;color:#555;max-width:900px}
+.storyline{border-left:3px solid #c8cdd2;padding:8px 13px;color:#46505a;margin:0 0 14px}
+.panel{border:1px solid var(--line);border-radius:7px;padding:15px 16px;margin:12px 0;background:#fff}
+.panel.soft{background:var(--soft)}.panel.accent{background:var(--accentSoft);border-color:#d8e5ed}
+.panel-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:#67717b;font-weight:750;margin-bottom:8px}
+.mission{font-size:15px}.mission ol{margin:7px 0 0 20px}.mission li{margin:5px 0}
+.formula{font:14px Consolas,"SFMono-Regular",monospace;background:#fafafa;border:1px solid #e4e7ea;border-radius:5px;padding:9px 10px;margin:9px 0;overflow:auto}
+.small{font-size:12px;color:#666}.tiny{font-size:11px;color:#777}
+.row{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:9px;align-items:end}
+.c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}.c12{grid-column:span 12}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.result{white-space:pre-wrap;background:#fafafa;border:1px solid #e0e3e5;border-radius:5px;padding:10px;margin-top:9px;min-height:42px;overflow-wrap:anywhere}
+.goodtxt{color:var(--good)}.badtxt{color:var(--bad)}.warntxt{color:var(--warn)}
+.proof{background:#fafafa;border:1px solid #e0e3e5;border-radius:5px;padding:10px;min-height:42px;white-space:pre-wrap}
+.nav-bottom{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:18px;margin-top:24px}
+.explain-note{font-size:13px;color:#4f5963;margin-top:8px}
+.object-bin{display:flex;gap:4px;flex-wrap:wrap;align-items:center;padding:10px 0;min-height:60px}
+.obj{width:20px;height:20px;border:1px solid #7f8890;border-radius:50%;background:#fff}
+.group{display:inline-flex;gap:2px;flex-wrap:wrap;border:1px solid #bfc6cc;padding:5px;border-radius:5px;margin:3px}
+.place-row{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+.place{min-width:115px;border:1px solid #d6dadd;border-radius:6px;padding:9px;text-align:center;background:#fff}
+.place .power{font-size:11px;color:#777}.place .digit{font-size:26px;font-weight:750}.place .meaning{font-size:12px;color:#555}
+.roman-bank{display:flex;gap:7px;flex-wrap:wrap}.roman-token{border:1px solid #bbb;border-radius:5px;padding:7px 10px;cursor:pointer;background:#fff}
+.binary-switches{display:flex;gap:8px;flex-wrap:wrap}.bit-switch{width:48px;height:48px;border:1px solid #bbb;border-radius:6px;display:flex;align-items:center;justify-content:center;font:20px Consolas,monospace;cursor:pointer;background:#fff}.bit-switch.on{background:#222;color:#fff}
+.ascii-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;max-height:300px;overflow:auto}.ascii-cell{border:1px solid #ddd;border-radius:3px;padding:5px;text-align:center;font-size:11px;cursor:pointer}.ascii-cell:hover{background:#f3f3f3}.ascii-cell b{display:block;font-size:15px}
+.choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.choice-card{border:1px solid #ccd2d8;border-radius:7px;padding:12px;cursor:pointer;background:#fff}.choice-card.selected{outline:2px solid var(--accent);background:var(--accentSoft)}
+.pixel-wrap{overflow:auto;border:1px solid #ddd;background:#fff;padding:10px}.pixel-grid{display:grid;gap:1px;width:max-content;background:#ddd;border:1px solid #ddd}.pixel{width:25px;height:25px;background:#fff;cursor:pointer}
+.level-strip{display:flex;gap:2px;height:70px}.level-strip span{flex:1;border:1px solid #ddd}
+.swatch{height:90px;border:1px solid #ddd;border-radius:6px}
+.meter{height:18px;border:1px solid #ccd2d8;border-radius:999px;overflow:hidden;background:#f4f4f4}.meter>div{height:100%;width:0;background:#777}
+.need-bank{display:flex;gap:8px;flex-wrap:wrap}.need-card{border:1px solid #bbb;border-radius:5px;padding:8px 10px;cursor:pointer;background:#fff}.need-card.chosen{background:var(--accentSoft);border-color:var(--accent)}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:center}.flow-box{border:1px solid #ccd2d8;border-radius:6px;padding:14px;text-align:center;min-height:72px;background:#fff}.flow-arrow{text-align:center;color:#777;font-size:12px}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.match-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;border-bottom:1px solid #eee;padding:8px 0}
+.exercise-table{width:100%;border-collapse:collapse;font-size:13px}.exercise-table th,.exercise-table td{border:1px solid #ddd;padding:7px;text-align:left;vertical-align:middle}.exercise-table th{background:#fafafa}.exercise-table input,.exercise-table select{padding:5px}
+.score{border:1px solid #ddd;background:#fafafa;border-radius:5px;padding:9px;margin-top:9px}.score strong{font-size:18px}
+.spec-card{border:1px solid #ddd;border-radius:6px;padding:12px}.spec-card b{display:block;margin-bottom:4px}
+.pulse{height:48px;border:1px solid #ddd;border-radius:5px;position:relative;overflow:hidden;background:linear-gradient(to bottom,#fff,#fafafa)}.pulse-dot{position:absolute;top:17px;width:12px;height:12px;border-radius:50%;background:#444;left:0}
+
+.compare-grids{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.compare-card{border:1px solid #d9dde1;border-radius:7px;padding:10px;background:#fff}
+.compare-card h3{margin-bottom:4px}
+.mini-pixel-grid{display:grid;gap:1px;width:max-content;background:#ddd;border:1px solid #ddd;margin:8px auto}
+.mini-pixel{width:16px;height:16px;background:#fff}
+.mode-grid{display:grid;gap:1px;width:max-content;background:#ddd;border:1px solid #ddd;margin:8px auto}
+.mode-pixel{width:26px;height:26px;cursor:pointer}
+.memory-grid{display:grid;grid-template-columns:repeat(8,minmax(70px,1fr));gap:6px}
+.memory-cell{border:1px solid #d8dde1;border-radius:5px;padding:6px;background:#fff}
+.memory-cell .address{font:10px Consolas,monospace;color:#777}
+.memory-cell input{padding:5px;margin-top:3px}
+.calc-path{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:8px;align-items:center}
+.calc-node{border:1px solid #ccd2d8;border-radius:6px;padding:12px;text-align:center;background:#fff}
+.calc-arrow{color:#777;text-align:center}
+.encoding-levels{display:grid;grid-template-columns:1fr;gap:8px}
+.encoding-level{border:1px solid #d8dde1;border-radius:6px;padding:10px;background:#fff}
+.encoding-level .tag{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:700}
+.binary-word{font:18px Consolas,monospace;letter-spacing:2px}
+.schema-board{display:grid;grid-template-columns:repeat(3,1fr);grid-template-areas:"input control output" "storage processing inter";gap:12px;margin-top:10px}
+.schema-slot{min-height:100px;border:2px dashed #c4cbd1;border-radius:7px;padding:10px;text-align:center;background:#fafafa;cursor:pointer}
+.schema-slot.filled{border-style:solid;border-color:#8d9aa5;background:#fff}
+.schema-slot[data-slot="input"]{grid-area:input}.schema-slot[data-slot="control"]{grid-area:control}.schema-slot[data-slot="output"]{grid-area:output}
+.schema-slot[data-slot="storage"]{grid-area:storage}.schema-slot[data-slot="processing"]{grid-area:processing}.schema-slot[data-slot="interconnection"]{grid-area:inter}
+.schema-bank{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.schema-token{border:1px solid #bbb;border-radius:5px;padding:7px 9px;background:#fff;cursor:pointer}
+.schema-token.selected{outline:2px solid var(--accent);background:var(--accentSoft)}
+.clock-window{position:relative;height:82px;border:1px solid #d8dde1;border-radius:6px;background:#fff;margin:10px 0;overflow:hidden}
+.clock-axis{position:absolute;left:10px;right:10px;bottom:18px;border-top:1px solid #aaa}
+.clock-tick{position:absolute;bottom:18px;width:2px;height:42px;background:#333}
+.clock-label{position:absolute;bottom:0;font-size:10px;color:#777}
+.capacity-box{height:125px;border:2px solid #9ca7af;border-radius:7px;position:relative;overflow:hidden;background:#fff}
+.capacity-fill{position:absolute;left:0;right:0;bottom:0;background:#dfe6eb}
+.pipe{height:24px;border:1px solid #aeb7bf;border-radius:999px;background:#f4f5f6;overflow:hidden}
+.pipe-flow{height:100%;background:#cfd9e0;width:0}
+.spec-lab{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:900px){.compare-grids,.spec-lab{grid-template-columns:1fr}.memory-grid{grid-template-columns:repeat(4,1fr)}.calc-path{grid-template-columns:1fr}.schema-board{grid-template-columns:1fr;grid-template-areas:"input" "storage" "processing" "control" "output" "inter"}}
+
+@media(max-width:900px){
+ .app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+ .main{padding:22px 18px 60px}.grid2,.grid3,.choice-grid,.flow,.match-grid{grid-template-columns:1fr}.row{display:block}.row>div{margin-bottom:8px}.ascii-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media print{.sidebar,.nav-bottom,button{display:none!important}.app{display:block}.main{max-width:none;padding:0}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">ASC · Lab 1</div>
+  <div class="brand-sub">De la informație la calculator</div>
+
+  <div class="map">
+    <div class="map-step" id="map0"><span class="mnode">1</span><span>Reprezentare</span></div>
+    <div class="map-arrow">↓</div>
+    <div class="map-step" id="map1"><span class="mnode">2</span><span>Costul informației</span></div>
+    <div class="map-arrow">↓</div>
+    <div class="map-step" id="map2"><span class="mnode">3</span><span>Nevoile mașinii</span></div>
+    <div class="map-arrow">↓</div>
+    <div class="map-step" id="map3"><span class="mnode">4</span><span>Calculatorul real</span></div>
+  </div>
+
+  <div class="progress"><div id="bar"></div></div>
+  <div class="progress-text" id="progressText"></div>
+  <div id="nav"></div>
+
+  <div class="side-actions">
+    <button onclick="exportReport()">Export raport HTML</button>
+    <button onclick="exportJSON()">Export dovezi JSON</button>
+    <button onclick="resetAll()">Resetare progres</button>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="head">
+    <div class="eyebrow" id="chapterLabel"></div>
+    <h1 id="title"></h1>
+    <p class="lead" id="lead"></p>
+  </header>
+
+  <div id="stage"></div>
+
+  <div class="nav-bottom">
+    <button id="prevBtn" onclick="go(current-1)">← Înapoi</button>
+    <button class="primary" id="nextBtn" onclick="finishAndNext()">Marchează rezolvat și continuă →</button>
+  </div>
+</main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const chapters = [
+  {name:"I. Reprezentarea informației", from:0, to:6, map:0},
+  {name:"II. Imaginea ca aplicație-umbrelă", from:7, to:11, map:1},
+  {name:"III. De la informație la un sistem de calcul", from:12, to:16, map:2},
+  {name:"IV. Calculatorul real", from:17, to:18, map:3}
+];
+
+let current = 0;
+let evidence = {};
+let completed = {};
+try{
+  evidence = JSON.parse(localStorage.getItem("asc_lab1_story_ev") || "{}");
+  completed = JSON.parse(localStorage.getItem("asc_lab1_story_done") || "{}");
+}catch(e){}
+
+function persist(){
+  try{
+    localStorage.setItem("asc_lab1_story_ev", JSON.stringify(evidence));
+    localStorage.setItem("asc_lab1_story_done", JSON.stringify(completed));
+  }catch(e){}
+}
+function save(id,obj){ evidence[id] = {...(evidence[id]||{}), ...obj, updated:new Date().toISOString()}; persist(); renderProof(id); }
+function saveConclusion(id,v){ save(id,{conclusion:v}); }
+function esc(s){ return String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m])); }
+function chapterOf(i){ return chapters.find(c=>i>=c.from && i<=c.to); }
+function mission(id,items){
+  return `<div class="panel"><div class="panel-title">Misiunea ta</div><div class="mission"><ol>${items.map(x=>`<li>${x}</li>`).join("")}</ol></div></div>`;
+}
+function proofPanel(id){
+  return `<div class="panel soft"><div class="panel-title">Dovada produsă</div><div class="proof" id="${id}_proof">Încă nu ai produs o dovadă pentru această aplicație.</div></div>`;
+}
+function conclusionPanel(id,prompt){
+  return `<div class="panel"><div class="panel-title">Concluzie scurtă</div><p>${prompt}</p><textarea id="${id}_conclusion" oninput="saveConclusion('${id}',this.value)" placeholder="1–3 propoziții...">${esc(evidence[id]?.conclusion||"")}</textarea></div>`;
+}
+function renderProof(id){
+  const el=$(id+"_proof"); if(!el)return;
+  const e=evidence[id]; if(!e){el.textContent="Încă nu ai produs o dovadă pentru această aplicație.";return;}
+  const lines=[];
+  if(e.score!==undefined) lines.push(`Scor: ${e.score}/${e.total}`);
+  if(e.attempts!==undefined) lines.push(`Încercări: ${e.attempts}`);
+  if(e.artifact) lines.push(`Artefact: ${e.artifact}`);
+  if(e.summary) lines.push(e.summary);
+  el.textContent=lines.join("\n") || "Dovadă salvată.";
+}
+function gradeSimple(id,answers,normalizer=(x)=>x.trim().toLowerCase()){
+  let c=0,vals=[];
+  answers.forEach((a,i)=>{
+    const v=$(`${id}_a_${i}`).value;
+    const ok=normalizer(v)===normalizer(a);
+    vals.push(v);
+    const st=$(`${id}_s_${i}`); st.textContent=ok?"✓":"✗"; st.className="status "+(ok?"goodtxt":"badtxt");
+    if(ok)c++;
+  });
+  const att=(evidence[id]?.attempts||0)+1;
+  save(id,{score:c,total:answers.length,attempts:att,answers:vals});
+  $(`${id}_score`).innerHTML=`<strong>${c}/${answers.length}</strong> corecte`;
+}
+function tableTool(id,rows,buttonLabel,handler){
+  return `<div class="panel"><div class="panel-title">Proba practică</div><table class="exercise-table">
+    <tr><th>#</th><th>Cerință</th><th>Răspuns</th><th></th></tr>
+    ${rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r}</td><td><input id="${id}_a_${i}"></td><td id="${id}_s_${i}" class="status">—</td></tr>`).join("")}
+  </table><button class="primary" onclick="${handler}()">${buttonLabel}</button><div id="${id}_score" class="score">Nicio verificare încă.</div></div>`;
+}
+
+// ---------- state ----------
+let decObjects=27;
+let sexObjects=125;
+let binaryBits=[0,0,0];
+let romanBuilt="";
+let pixelData=Array.from({length:8},()=>Array(8).fill(0));
+let machineNeeds=new Set();
+let freqTimer=null;
+
+// ---------- steps ----------
+const steps = [
+{
+ id:"decimal",
+ name:"De ce funcționează baza 10?",
+ lead:"Pornești de la o idee familiară: grupezi unitățile câte 10 și descoperi de ce pozițiile cifrelor contează.",
+ render(){
+   return `
+   <div class="storyline"><b>Întrebarea:</b> dacă ai multe obiecte de numărat, cum le organizezi ca să nu scrii un șir interminabil de unități?</div>
+   <div class="panel accent">
+     <div class="panel-title">Explicație prin acțiune</div>
+     <h3>Grupează obiectele câte 10</h3>
+     <p>Ai <b id="decCount">${decObjects}</b> obiecte. Schimbă numărul, apoi apasă „Grupează”.</p>
+     <div class="row"><div class="c8"><input id="decRange" type="range" min="1" max="99" value="${decObjects}" oninput="decObjects=+this.value;updateDecimal()"></div><div class="c4"><button onclick="groupDecimal()">Grupează câte 10</button></div></div>
+     <div id="decObjects" class="object-bin"></div>
+     <div id="decGroups" class="result">Încă nu ai grupat.</div>
+   </div>
+   <div class="panel">
+     <div class="panel-title">De la grupare la poziție</div>
+     <div class="place-row"><div class="place"><div class="power">10¹</div><div class="digit" id="decTens">2</div><div class="meaning">zeci</div></div><div class="place"><div class="power">10⁰</div><div class="digit" id="decUnits">7</div><div class="meaning">unități</div></div></div>
+     <div id="decFormula" class="formula">27 = 2·10 + 7</div>
+   </div>
+   ${mission("decimal",["Modifică numărul de obiecte de cel puțin trei ori și grupează-le câte 10.","Observă cum numărul de zeci și unități se modifică.","Rezolvă cele 5 cerințe scurte."])}
+   ${tableTool("decimal",["47 = ? zeci și 7 unități","3 zeci + 5 unități = ?","În 82, valoarea cifrei 8 este?","10 unități formează câte zeci?","4·10²+2·10+6 = ?"],"Verifică","checkDecimal")}
+   ${proofPanel("decimal")}
+   ${conclusionPanel("decimal","Ce înseamnă, în propriile cuvinte, că sistemul zecimal este pozițional?")}`;
+ },
+ init(){ updateDecimal(); }
+},
+{
+ id:"sexagesimal",
+ name:"Ce se schimbă dacă grupăm câte 60?",
+ lead:"Păstrezi același mecanism, dar schimbi pragul de grupare. Așa devine inteligibil sistemul sexagesimal.",
+ render(){
+   return `
+   <div class="storyline"><b>Legătura:</b> la baza 10 ai grupat câte 10. Acum păstrăm exact ideea de grupare, dar schimbăm regula.</div>
+   <div class="panel accent"><div class="panel-title">Explicație prin acțiune</div>
+     <h3>Grupează unitățile câte 60</h3>
+     <div class="row"><div class="c8"><input id="sexRange" type="range" min="1" max="240" value="${sexObjects}" oninput="sexObjects=+this.value;updateSexObjects()"></div><div class="c4"><button onclick="groupSex()">Grupează câte 60</button></div></div>
+     <div id="sexVisual" class="object-bin"></div><div id="sexGroupOut" class="result">Încă nu ai grupat.</div>
+     <p class="explain-note">În baza 60, o poziție poate conține 0…59. La 60 faci transport către poziția următoare.</p>
+   </div>
+   <div class="panel"><div class="formula">(2,5)₆₀ = 2·60 + 5 = 125₁₀</div><p>Este aceeași idee ca 25₁₀ = 2·10 + 5; s-a schimbat doar baza.</p></div>
+   ${mission("sexagesimal",["Grupează 75, 125 și 180 de unități.","Urmărește grupurile complete și restul.","Rezolvă cele 5 conversii."])}
+   ${tableTool("sexagesimal",["(1,15)₆₀ → zecimal","(2,5)₆₀ → zecimal","(3,0)₆₀ → zecimal","75₁₀ → baza 60, forma a,b","125₁₀ → baza 60, forma a,b"],"Verifică","checkSex")}
+   ${proofPanel("sexagesimal")}${conclusionPanel("sexagesimal","De ce 125₁₀ se scrie (2,5)₆₀?")}`;
+ },
+ init(){ updateSexObjects(); }
+},
+{
+ id:"time",
+ name:"Unde mai vezi baza 60?",
+ lead:"Recunoști aceeași structură în timp și unghiuri, fără să înveți o formulă nouă.",
+ render(){
+   return `
+   <div class="storyline"><b>Legătura:</b> sistemul sexagesimal nu rămâne o curiozitate istorică. Îl întâlnești zilnic.</div>
+   <div class="panel accent"><div class="panel-title">Transformă timpul într-o singură unitate</div>
+     <div class="row"><div class="c4"><label>ore</label><input id="tmH" type="number" value="2"></div><div class="c4"><label>minute</label><input id="tmM" type="number" value="35"></div><div class="c4"><label>secunde</label><input id="tmS" type="number" value="20"></div></div>
+     <button onclick="timeBreakdown()">Descompune pas cu pas</button><div id="timeBreak" class="result"></div>
+     <p class="explain-note">Aceeași structură funcționează pentru grade, minute de arc și secunde de arc.</p>
+   </div>
+   ${mission("time",["Introdu două exemple proprii și verifică descompunerea.","Rezolvă cele 5 transformări.","Caută mereu aceeași structură 60²,60¹,60⁰."])}
+   ${tableTool("time",["1:30:00 → secunde","2:00:15 → secunde","3661 secunde → h:min:s","1°30′00″ → secunde de arc","3723″ → °:′:″"],"Verifică","checkTime")}
+   ${proofPanel("time")}${conclusionPanel("time","Care este structura matematică identică dintre timp și unghiuri?")}`;
+ },
+ init(){ timeBreakdown(); }
+},
+{
+ id:"roman",
+ name:"Este orice reprezentare la fel de bună pentru calcul?",
+ lead:"Construiești numerale romane și compari intuitiv un sistem nepozițional cu unul pozițional.",
+ render(){
+   return `
+   <div class="storyline"><b>Întrebarea:</b> dacă două notații exprimă aceeași valoare, sunt ele la fel de potrivite pentru calcule?</div>
+   <div class="panel accent"><div class="panel-title">Construiește tu numeralul</div>
+     <div class="roman-bank">${["I","V","X","L","C","D","M"].map(x=>`<button class="roman-token" onclick="addRoman('${x}')">${x}</button>`).join("")}<button onclick="clearRoman()">Șterge</button></div>
+     <div id="romanBuilt" class="result">—</div><div id="romanValue" class="formula">Valoare: —</div>
+     <p class="explain-note">Poziția nu funcționează aici prin puteri ale unei baze.</p>
+   </div>
+   ${mission("roman",["Construiește XIV, XLIV și XC.","Verifică valorile afișate.","Rezolvă cele 5 transformări."])}
+   ${tableTool("roman",["14 → roman","44 → roman","99 → roman","LXXV → zecimal","CDXLIV → zecimal"],"Verifică","checkRoman")}
+   ${proofPanel("roman")}${conclusionPanel("roman","De ce o reprezentare pozițională este mai convenabilă pentru algoritmi de calcul?")}`;
+ },
+ init(){ clearRoman(); }
+},
+{
+ id:"baseb",
+ name:"Generalizează: baza b",
+ lead:"Acum vezi că bazele 10 și 60 sunt doar două cazuri ale aceleiași idei.",
+ render(){
+   return `
+   <div class="storyline"><b>Legătura:</b> după două baze diferite, tratăm baza ca parametru.</div>
+   <div class="panel accent"><div class="panel-title">Schimbă baza și urmărește ponderile</div>
+     <div class="row"><div class="c6"><label>baza b</label><input id="baseSlider" type="range" min="2" max="16" value="5" oninput="baseDemo()"></div><div class="c6"><label>cifre a₂,a₁,a₀</label><input id="baseDigits" value="1,3,2" oninput="baseDemo()"></div></div>
+     <div id="basePlaces" class="place-row"></div><div id="baseOut" class="formula"></div>
+   </div>
+   ${mission("baseb",["Testează bazele 2,5,8,10,16.","Observă ponderile b²,b¹,b⁰.","Rezolvă cele 5 cerințe; conversiile vor fi aprofundate în laboratorul următor."])}
+   ${tableTool("baseb",["132₅ → baza 10","231₄ → baza 10","10110₂ → baza 10","42₁₀ → baza 5","31₁₀ → baza 2"],"Verifică","checkBase")}
+   ${proofPanel("baseb")}${conclusionPanel("baseb","Ce se schimbă și ce rămâne invariant când aceeași valoare este scrisă în baze diferite?")}`;
+ },
+ init(){ baseDemo(); }
+},
+{
+ id:"binary",
+ name:"De ce două simboluri sunt suficiente?",
+ lead:"Construiești manual configurațiile binare și vezi cum 2ⁿ apare din combinarea pozițiilor.",
+ render(){
+   return `
+   <div class="storyline"><b>Legătura:</b> baza 2 devine un caz particular, foarte potrivit pentru două stări distincte.</div>
+   <div class="panel accent"><div class="panel-title">Comută biții</div>
+     <div class="binary-switches">${[0,1,2].map(i=>`<div class="bit-switch" id="bit${i}" onclick="toggleBit(${i})">0</div>`).join("")}</div>
+     <div id="binaryValue" class="result"></div><button onclick="enumerateBits()">Arată toate configurațiile pe 3 biți</button><div id="binaryAll" class="formula"></div>
+   </div>
+   ${mission("binary",["Construiește manual valorile 0,3,5,7.","Afișează toate configurațiile și numără-le.","Rezolvă cele 5 cerințe."])}
+   ${tableTool("binary",["3 biți → câte configurații?","8 biți → câte configurații?","maxim nesemnat pe 8 biți","biți minimi pentru 10 stări","biți minimi pentru 100 stări"],"Verifică","checkBinary")}
+   ${proofPanel("binary")}${conclusionPanel("binary","De ce n biți produc exact 2ⁿ configurații?")}`;
+ },
+ init(){ paintBits(); }
+},
+{
+ id:"ascii",
+ name:"Cum transformi textul în numere?",
+ lead:"Folosești o tabelă de codificare: simbolul devine număr, iar numărul poate fi reprezentat binar.",
+ render(){
+   return `
+   <div class="storyline"><b>Legătura:</b> dacă numerele pot fi binare, și simbolurile pot deveni binare după ce primesc un cod numeric.</div>
+   <div class="panel accent"><div class="panel-title">Explorează tabela ASCII</div><div id="asciiGrid" class="ascii-grid"></div><div id="asciiPick" class="result">Alege un caracter.</div></div>
+   ${mission("ascii",["Explorează minimum 5 caractere.","Rezolvă 3 codificări și 2 decodificări.","Separă: simbol → cod numeric → biți."])}
+   ${tableTool("ascii",["A → cod zecimal","Z → binar pe 8 poziții","# → cod zecimal","65 83 67 → text","73 78 70 79 → text"],"Verifică","checkASCII")}
+   ${proofPanel("ascii")}${conclusionPanel("ascii","Care sunt pașii dintre caracterul A și șirul 01000001?")}`;
+ },
+ init(){ buildASCII(); }
+},
+
+/* II. IMAGINE */
+{
+ id:"bridgeImage",
+ name:"PUNTE — Cum reprezinți ceva care nu este deja un simbol?",
+ lead:"Treci de la numere și caractere la un obiect vizual.",
+ render(){
+   return `
+   <div class="storyline"><b>Până aici:</b> numerele și caracterele erau deja discrete. O imagine pare continuă. Cum o transformi într-o colecție finită de valori?</div>
+   <div class="panel accent"><div class="panel-title">Alege o strategie</div>
+     <div class="choice-grid"><div class="choice-card" id="biChoice0" onclick="selectImageChoice(0)"><b>Un singur număr</b><p class="small">Identifică imaginea, dar nu descrie local forma.</p></div><div class="choice-card" id="biChoice1" onclick="selectImageChoice(1)"><b>Descriere textuală</b><p class="small">Descrie sensul, nu fiecare poziție.</p></div><div class="choice-card" id="biChoice2" onclick="selectImageChoice(2)"><b>Grilă de poziții</b><p class="small">Descrii separat fiecare zonă.</p></div></div>
+     <div id="biChoiceOut" class="result">Alege o strategie.</div>
+   </div>
+   ${mission("bridgeImage",["Testează toate strategiile.","Alege strategia care permite reconstruirea locală a formei.","Salvează alegerea."])}
+   <div class="panel"><button class="primary" onclick="saveImageBridge()">Salvează alegerea</button><div id="bridgeImage_score" class="score"></div></div>
+   ${proofPanel("bridgeImage")}${conclusionPanel("bridgeImage","De ce o grilă este o strategie naturală pentru o imagine?")}`;
+ },
+ init(){ selectImageChoice(-1); }
+},
+{
+ id:"imageResolution",
+ name:"Aceeași formă, trei rezoluții",
+ lead:"Vezi simultan ce se întâmplă cu aceeași informație când schimbi numărul de poziții.",
+ render(){
+   return `
+   <div class="storyline"><b>Legătura:</b> ai ales grila. Acum compari direct cât detaliu poți păstra în grile de dimensiuni diferite.</div>
+   <div class="panel accent"><div class="panel-title">Comparație vizuală</div>
+     <p>Aceeași literă A este discretizată în 4×4, 8×8 și 16×16. Apasă „Schimbă forma” pentru un al doilea model.</p>
+     <button onclick="toggleResolutionShape()">Schimbă forma</button>
+     <div class="compare-grids">
+       <div class="compare-card"><h3>4×4</h3><div id="res4" class="mini-pixel-grid"></div><div class="small">16 poziții</div></div>
+       <div class="compare-card"><h3>8×8</h3><div id="res8" class="mini-pixel-grid"></div><div class="small">64 poziții</div></div>
+       <div class="compare-card"><h3>16×16</h3><div id="res16" class="mini-pixel-grid"></div><div class="small">256 poziții</div></div>
+     </div>
+     <div id="resCompareInfo" class="result"></div>
+   </div>
+   ${mission("imageResolution",["Compară vizual cele trei grile pentru ambele forme.","Alege grila care păstrează cel mai bine detaliile și explică de ce.","Rezolvă cele 3 întrebări de verificare."])}
+   ${tableTool("imageResolution",["4×4 → câte poziții?","8×8 → câte poziții?","16×16 are de câte ori mai multe poziții decât 8×8?"],"Verifică","checkResolution")}
+   ${proofPanel("imageResolution")}${conclusionPanel("imageResolution","Ce câștigi și ce plătești când mărești rezoluția?")}`;
+ },
+ init(){ drawResolutionComparison(); }
+},
+{
+ id:"imageModes",
+ name:"Aceeași grilă: alb-negru, grayscale și color",
+ lead:"Păstrezi exact aceleași poziții și schimbi numai informația permisă în fiecare celulă.",
+ render(){
+   return `
+   <div class="storyline"><b>Legătura:</b> rezoluția rămâne 8×8. Acum vezi ce se schimbă când fiecare poziție poate stoca mai mult decât 0/1.</div>
+   <div class="panel accent"><div class="panel-title">Comparație pe grilă</div>
+     <label>Niveluri grayscale</label><select id="grayLevels" onchange="drawModeGrids()"><option value="4">4 niveluri</option><option value="16" selected>16 niveluri</option><option value="256">256 niveluri</option></select>
+     <div class="compare-grids">
+       <div class="compare-card"><h3>Alb-negru · 1 bit/pixel</h3><div id="bwGrid" class="mode-grid"></div></div>
+       <div class="compare-card"><h3>Grayscale</h3><div id="grayGrid" class="mode-grid"></div></div>
+       <div class="compare-card"><h3>RGB · 24 biți/pixel</h3><div id="colorGrid" class="mode-grid"></div></div>
+     </div>
+     <div id="modeCellInfo" class="result">Apasă pe o celulă din oricare grilă pentru a vedea valorile aceleiași poziții.</div>
+   </div>
+   ${mission("imageModes",["Compară aceeași poziție în toate cele trei reprezentări.","Schimbă numărul de niveluri grayscale.","Rezolvă cele 5 calcule de cost."])}
+   ${tableTool("imageModes",["64 pixeli alb-negru → biți","64 pixeli, 4 niveluri → biți","64 pixeli, 256 niveluri → biți","64 pixeli RGB 24 bpp → bytes","256 pixeli, 16 niveluri → biți"],"Verifică","checkImageModes")}
+   ${proofPanel("imageModes")}${conclusionPanel("imageModes","Care este diferența dintre rezoluție și cantitatea de informație stocată în fiecare pixel?")}`;
+ },
+ init(){ drawModeGrids(); }
+},
+{
+ id:"cost",
+ name:"Cât costă reprezentarea?",
+ lead:"Transformi parametrii imaginii într-o cerință concretă de memorie sau stocare.",
+ render(){
+   return `
+   <div class="storyline"><b>Legătura:</b> acum știi separat câte poziții ai și cât costă fiecare poziție. Le pui împreună.</div>
+   <div class="panel accent"><div class="panel-title">Calculator interactiv</div>
+     <div class="grid3"><div><label>W</label><input id="costW" type="range" min="32" max="512" step="32" value="128" oninput="costDemo()"></div><div><label>H</label><input id="costH" type="range" min="32" max="512" step="32" value="128" oninput="costDemo()"></div><div><label>bpp</label><select id="costB" onchange="costDemo()"><option>1</option><option>2</option><option selected>8</option><option>16</option><option>24</option></select></div></div>
+     <div id="costInfo" class="result"></div><div class="formula">S = W·H·b</div>
+   </div>
+   ${mission("cost",["Testează patru configurații.","Verifică manual una dintre ele.","Rezolvă cele 5 probleme."])}
+   ${tableTool("cost",["1000×1000 la 1 bpp → biți","1000×1000 la 8 bpp → bytes","1920×1080 la 24 bpp → bytes","256×256 la 1 bpp → bytes","100×100, buget 80000 biți → bpp maxim"],"Verifică","checkCost")}
+   ${proofPanel("cost")}${conclusionPanel("cost","Ce nevoie fizică apare imediat ce reprezentarea ocupă milioane de biți?")}`;
+ },
+ init(){ costDemo(); }
+},
+{
+ id:"budget",
+ name:"Resurse limitate: ce alegi să păstrezi?",
+ lead:"Închei partea despre imagine printr-un compromis explicit între detaliu și cost.",
+ render(){
+   return `
+   <div class="storyline"><b>Întrebarea:</b> dacă nu ai resurse nelimitate, pe ce cheltui biții disponibili?</div>
+   <div class="panel accent"><div class="panel-title">Buget: 65.536 biți</div>
+     <div class="grid2"><div><label>Latura imaginii</label><select id="budS" onchange="budgetDemo()"><option>32</option><option>64</option><option selected>128</option><option>256</option></select></div><div><label>bpp</label><select id="budB" onchange="budgetDemo()"><option>1</option><option>2</option><option selected>4</option><option>8</option><option>16</option><option>24</option></select></div></div>
+     <div class="meter"><div id="budgetMeter"></div></div><div id="budgetInfo" class="result"></div>
+   </div>
+   ${mission("budget",["Găsește o configurație fezabilă și una care depășește bugetul.","Completează cele trei scenarii.","Justifică alegerea."])}
+   <div class="panel"><table class="exercise-table"><tr><th>Scenariu</th><th>Latură</th><th>bpp</th><th>De ce?</th></tr>${["Text alb-negru","Hartă schematică","Imagine cu variații de culoare"].map((q,i)=>`<tr><td>${q}</td><td><input id="budget_s_${i}"></td><td><input id="budget_b_${i}"></td><td><input id="budget_j_${i}"></td></tr>`).join("")}</table><button class="primary" onclick="saveBudget()">Verifică fezabilitatea</button><div id="budget_score" class="score"></div></div>
+   ${proofPanel("budget")}${conclusionPanel("budget","De ce «optim» nu are sens fără scop și constrângeri?")}`;
+ },
+ init(){ budgetDemo(); }
+},
+
+/* III. MODEL CONCEPTUAL */
+{
+ id:"bridgeMachine",
+ name:"PUNTE — Ce trebuie să poată face mașina cu informația?",
+ lead:"Reprezentarea există. Acum deduci funcțiile de care ai nevoie pentru a o folosi.",
+ render(){
+   return `
+   <div class="storyline"><b>Până aici:</b> ai creat și dimensionat informație. Dar o colecție de biți este inutilă dacă sistemul nu o poate păstra, găsi, muta și transforma.</div>
+   <div class="panel accent"><div class="panel-title">Construiește lista de nevoi</div>
+     <div class="need-bank">${["păstrează","găsește","mută","calculează / transformă","primește","furnizează","coordonează","decorează"].map((x,i)=>`<div class="need-card" id="need${i}" onclick="toggleNeedV5(${i},'${x}')">${x}</div>`).join("")}</div>
+     <div id="needOut" class="result"></div>
+   </div>
+   ${mission("bridgeMachine",["Selectează funcțiile structurale necesare.","Observă că stocarea și calculul apar ca nevoi înainte să numim vreo piesă.","Validează lista."])}
+   <div class="panel"><button class="primary" onclick="validateNeedsV5()">Validează</button><div id="bridgeMachine_score" class="score"></div></div>
+   ${proofPanel("bridgeMachine")}${conclusionPanel("bridgeMachine","Cum produce reprezentarea informației cerințe asupra mașinii?")}`;
+ },
+ init(){ paintNeedsV5(); }
+},
+{
+ id:"memory",
+ name:"Stocare și adresare: construiește o memorie",
+ lead:"Ca să păstrezi mai multe valori și să le regăsești, ai nevoie de locații distincte și adrese.",
+ render(){
+   return `
+   <div class="storyline"><b>Nevoia:</b> „păstrează” nu este suficient. Trebuie să poți spune exact <i>unde</i> se află o valoare.</div>
+   <div class="panel accent"><div class="panel-title">Memorie conceptuală · 16 locații × 8 biți</div>
+     <div id="memGridV5" class="memory-grid"></div>
+     <div class="row" style="margin-top:10px"><div class="c4"><label>Operație</label><select id="memOpV5"><option>READ</option><option>WRITE</option></select></div><div class="c4"><label>Adresă binară (4 biți)</label><input id="memAddrV5" value="0010"></div><div class="c4"><label>Valoare pentru WRITE</label><input id="memValV5" type="number" value="42"></div></div>
+     <button onclick="memoryOperationV5()">Execută</button><div id="memOutV5" class="result"></div>
+     <p class="small">16 locații ⇒ 4 biți pentru adresă, deoarece 2⁴=16. Valoarea și adresa sunt lucruri diferite.</p>
+   </div>
+   ${mission("memory",["Scrie 42 la 0010, 17 la 0101 și 3 la 0111.","Citește apoi cele trei adrese.","Rezolvă cele 5 întrebări."])}
+   ${tableTool("memory",["16 locații → biți necesari pentru adresă","adresa binară a poziției 5","adresa binară a poziției 13","dacă M[2]=42, READ 0010 întoarce?","8 biți într-o locație pot codifica câte valori distincte?"],"Verifică","checkMemoryV5")}
+   ${proofPanel("memory")}${conclusionPanel("memory","De ce o memorie are nevoie atât de conținut, cât și de adrese?")}`;
+ },
+ init(){ buildMemoryV5(); }
+},
+{
+ id:"processing",
+ name:"Prelucrare: folosește valorile stocate într-un calcul",
+ lead:"Acum informația nu mai este doar păstrată; trebuie transformată și rezultatul trebuie salvat din nou.",
+ render(){
+   return `
+   <div class="storyline"><b>Nevoia:</b> în memorie ai valori. Vrei să ceri sistemului: „adună valoarea de la adresa 2 cu valoarea de la adresa 5 și pune rezultatul la adresa 8”.</div>
+   <div class="panel accent"><div class="panel-title">Traseul unui calcul</div>
+     <div class="calc-path"><div class="calc-node">M[2]<br><b id="procA">7</b></div><div class="calc-arrow">+</div><div class="calc-node">M[5]<br><b id="procB">12</b></div><div class="calc-arrow">→</div><div class="calc-node">M[8]<br><b id="procR">?</b></div></div>
+     <div class="grid3" style="margin-top:10px"><div><label>adresa A</label><input id="procAddrA" type="number" min="0" max="15" value="2" oninput="paintProcessingV5()"></div><div><label>operație</label><select id="procOp" onchange="paintProcessingV5()"><option>ADD</option><option>SUB</option><option>MUL</option></select></div><div><label>adresa B</label><input id="procAddrB" type="number" min="0" max="15" value="5" oninput="paintProcessingV5()"></div></div>
+     <div class="row" style="margin-top:8px"><div class="c6"><label>salvează rezultatul la adresa</label><input id="procDest" type="number" min="0" max="15" value="8"></div><div class="c6"><button onclick="executeProcessingV5()">Execută și salvează</button></div></div>
+     <div id="procTrace" class="trace"></div>
+   </div>
+   ${mission("processing",["Asigură-te că memoria conține M[2]=7 și M[5]=12.","Execută ADD și salvează în M[8].","Încearcă apoi MUL cu alte două adrese și rezolvă cele 4 întrebări."])}
+   ${tableTool("processing",["7+12 = ?","dacă rezultatul este salvat la adresa 8, unde îl regăsești? scrie M[8]","funcția care schimbă datele este: stocare / prelucrare","valoarea de intrare și rezultatul sunt: adrese / date"],"Verifică","checkProcessingV5")}
+   ${proofPanel("processing")}${conclusionPanel("processing","Care este diferența dintre a păstra o valoare și a o prelucra?")}`;
+ },
+ init(){ prepareProcessingV5(); }
+},
+{
+ id:"instruction",
+ name:"O comandă devine instrucțiune: limbaj natural → assembly → biți",
+ lead:"Vezi că și «ce trebuie să facă mașina» trebuie reprezentat, nu doar datele.",
+ render(){
+   return `
+   <div class="storyline"><b>Legătura:</b> ai executat manual un calcul. Acum trebuie să poți transmite acea acțiune mașinii într-o formă neambiguă.</div>
+   <div class="panel accent"><div class="panel-title">Trei niveluri ale aceleiași comenzi</div>
+     <label>Alege o comandă</label><select id="instrChoiceV5" onchange="showInstructionV5()">
+       <option value="load">Citește valoarea de la adresa 5 într-un loc de lucru R1</option>
+       <option value="add">Adună valorile din R1 și R2 și pune rezultatul în R3</option>
+       <option value="store">Salvează valoarea din R3 la adresa 8</option>
+     </select>
+     <div class="encoding-levels">
+       <div class="encoding-level"><div class="tag">1 · Limbaj natural</div><div id="instrNaturalV5"></div></div>
+       <div class="encoding-level"><div class="tag">2 · Assembly didactic</div><div id="instrAsmV5" class="formula"></div></div>
+       <div class="encoding-level"><div class="tag">3 · Cod binar didactic</div><div id="instrBinV5" class="binary-word"></div></div>
+     </div>
+     <p class="small">Codificarea este intenționat simplificată pentru laborator. Nu reprezintă ISA-ul unui procesor real.</p>
+   </div>
+   ${mission("instruction",["Comută între cele trei comenzi și urmărește cum aceeași intenție devine mai formală.","Observă câmpurile: cod operație + registre/adresă.","Rezolvă cele 5 codificări/decodificări."])}
+   ${instructionTableV5()}
+   ${proofPanel("instruction")}${conclusionPanel("instruction","De ce putem spune că și programul/instrucțiunea este informație?")}`;
+ },
+ init(){ showInstructionV5(); }
+},
+{
+ id:"systemSchema",
+ name:"Construiește schema conceptuală a sistemului",
+ lead:"Reunești stocarea, prelucrarea, controlul, I/O și transferul într-o arhitectură funcțională construită de tine.",
+ render(){
+   return `
+   <div class="storyline"><b>Acum ai pe ce mapa hardware-ul:</b> ai întâlnit stocarea, adresele, prelucrarea și instrucțiunile. Mai trebuie să le organizezi și să le conectezi.</div>
+   <div class="panel accent"><div class="panel-title">Constructor de schemă</div>
+     <p>Selectează un card, apoi apasă pe locul în care crezi că trebuie așezat.</p>
+     <div id="schemaBank" class="schema-bank"></div>
+     <div class="schema-board">
+       <div class="schema-slot" data-slot="input" onclick="placeSchemaV5('input')"><b>?</b><br><span class="small">primește informație</span></div>
+       <div class="schema-slot" data-slot="control" onclick="placeSchemaV5('control')"><b>?</b><br><span class="small">coordonează acțiunile</span></div>
+       <div class="schema-slot" data-slot="output" onclick="placeSchemaV5('output')"><b>?</b><br><span class="small">furnizează informație</span></div>
+       <div class="schema-slot" data-slot="storage" onclick="placeSchemaV5('storage')"><b>?</b><br><span class="small">păstrează / regăsește</span></div>
+       <div class="schema-slot" data-slot="processing" onclick="placeSchemaV5('processing')"><b>?</b><br><span class="small">transformă / calculează</span></div>
+       <div class="schema-slot" data-slot="interconnection" onclick="placeSchemaV5('interconnection')"><b>?</b><br><span class="small">mută informația între blocuri</span></div>
+     </div>
+     <button class="primary" onclick="validateSchemaV5()">Validează schema</button><div id="systemSchema_score" class="score"></div>
+   </div>
+   ${mission("systemSchema",["Așază toate cele 6 funcții în schemă.","Validează și corectează dacă este nevoie.","Folosește schema ca model conceptual pentru componenta următoare, unde vei identifica piesele fizice."])}
+   ${proofPanel("systemSchema")}${conclusionPanel("systemSchema","De ce arhitectura este o organizare de funcții și relații, nu doar o listă de piese?")}`;
+ },
+ init(){ initSchemaV5(); }
+},
+
+/* IV. REAL */
+{
+ id:"realpc",
+ name:"Mapează modelul conceptual pe calculatorul real",
+ lead:"Acum fiecare piesă fizică răspunde unei nevoi pe care ai întâlnit-o deja.",
+ render(){
+   return `
+   <div class="storyline"><b>Tranziția:</b> nu mai memorezi componente. Pentru fiecare funcție din schema construită întrebi: „ce componentă reală o realizează predominant?”</div>
+   <div class="panel accent"><div class="panel-title">Funcție conceptuală → componentă fizică</div>
+     <table class="exercise-table"><tr><th>Funcție deja întâlnită</th><th>Componentă reală</th></tr>
+       ${[
+         ["prelucrare / calcul","CPU"],
+         ["stocare de lucru","RAM"],
+         ["stocare persistentă","SSD/HDD"],
+         ["interconectare","placă de bază"],
+         ["intrare / ieșire","porturi și periferice"]
+       ].map((x,i)=>`<tr><td>${x[0]}</td><td><select id="mapReal${i}"><option>CPU</option><option>RAM</option><option>SSD/HDD</option><option>placă de bază</option><option>porturi și periferice</option></select></td></tr>`).join("")}
+     </table><button onclick="checkRealMappingV5()">Verifică maparea</button><div id="realMapScore" class="score"></div>
+   </div>
+   <div class="panel"><div class="panel-title">Pașaportul PC-ului tău</div>
+     <table class="exercise-table"><tr><th>Componentă</th><th>Ce ai găsit</th><th>Ce funcție realizează</th></tr>
+     ${["CPU","RAM","SSD/HDD","Placă de bază / interconectare","I/O"].map((c,i)=>`<tr><td>${c}</td><td><input id="pcv${i}" placeholder="model / valoare / observație"></td><td><input id="pcr${i}" placeholder="rol funcțional"></td></tr>`).join("")}</table>
+     <button class="primary" onclick="savePCPassportV5()">Salvează pașaportul</button><div id="realpc_score" class="score"></div>
+   </div>
+   ${mission("realpc",["Fă mai întâi maparea conceptuală.","Apoi investighează calculatorul real.","Notează modelul/valoarea și funcția pentru minimum 4 componente."])}
+   ${proofPanel("realpc")}${conclusionPanel("realpc","Ce componente reale ai putut explica direct prin schema conceptuală construită anterior?")}`;
+ },
+ init(){}
+},
+{
+ id:"specs",
+ name:"Înțelege caracteristicile principalelor componente",
+ lead:"Nu citești doar 3,2 GHz, 16 GB sau 500 MB/s: experimentezi ce fel de mărime reprezintă fiecare.",
+ render(){
+   return `
+   <div class="storyline"><b>Ultimul pas:</b> componenta este identificată. Acum trebuie să înțelegi ce descriu numerele din fișa ei tehnică.</div>
+   <div class="spec-lab">
+     <div class="panel accent"><div class="panel-title">CPU · ceas și frecvență</div>
+       <p><b>Ceasul</b> este un ritm periodic folosit pentru sincronizare. În fereastra de mai jos vezi exact o secundă.</p>
+       <label>Frecvență demonstrativă</label><input id="freqHzV5" type="range" min="1" max="8" value="2" oninput="drawClockV5()">
+       <div id="clockWindowV5" class="clock-window"><div class="clock-axis"></div></div>
+       <div id="clockTextV5" class="result"></div>
+       <p class="small">Abia acum: 3,2 GHz = 3,2 miliarde de cicluri pe secundă. Nu înseamnă 3,2 miliarde de instrucțiuni/s.</p>
+       <label>Nuclee</label><input id="coresV5" type="range" min="1" max="8" value="4" oninput="drawCoresV5()"><div id="coresTextV5" class="result"></div>
+     </div>
+     <div class="panel accent"><div class="panel-title">RAM · cât încape vs cât de repede circulă</div>
+       <label>Capacitate RAM [GB]</label><input id="ramCapV5" type="range" min="4" max="64" step="4" value="16" oninput="drawRAMV5()">
+       <div class="capacity-box"><div id="ramFillV5" class="capacity-fill"></div></div>
+       <label style="margin-top:8px">Rată de transfer demonstrativă</label><input id="ramRateV5" type="range" min="1" max="10" value="4" oninput="drawRAMV5()">
+       <div class="pipe"><div id="ramPipeV5" class="pipe-flow"></div></div><div id="ramTextV5" class="result"></div>
+     </div>
+     <div class="panel accent"><div class="panel-title">SSD/HDD · capacitate și debit</div>
+       <div class="grid2"><div><label>fișier [GB]</label><input id="fileGBV5" type="number" value="10" oninput="storageSpecV5()"></div><div><label>debit [MB/s]</label><input id="diskRateV5" type="number" value="500" oninput="storageSpecV5()"></div></div>
+       <div id="storageSpecOutV5" class="result"></div>
+       <p class="small">Capacitatea spune cât poți păstra; debitul spune cât de repede poți transfera.</p>
+     </div>
+     <div class="panel accent"><div class="panel-title">I/O · bit/s versus byte/s</div>
+       <label>Legătură [Gbit/s]</label><input id="ioRateV5" type="range" min="1" max="10" value="1" oninput="ioSpecV5()"><div id="ioSpecOutV5" class="result"></div>
+       <p class="small">8 biți = 1 byte. O rată în Gbit/s nu este aceeași unitate cu GB/s.</p>
+     </div>
+   </div>
+   ${mission("specs",["Experimentează cu toate cele patru panouri, nu doar cu frecvența.","Rezolvă cele 5 interpretări de la final.","Completează valorile reale observate pe calculatorul tău."])}
+   ${tableTool("specs",["3,2 GHz înseamnă câte cicluri/s? scrie 3200000000","16 GB RAM descrie: capacitate / rată","500 MB/s SSD descrie: capacitate / debit","1 Gbit/s → MB/s teoretic","Adevărat/Fals: 4 GHz = exact 4 miliarde instrucțiuni/s"],"Verifică","checkSpecsV5")}
+   <div class="panel"><div class="panel-title">Configurația observată</div><div class="grid2"><div><label>CPU</label><input id="obsCPU"></div><div><label>RAM</label><input id="obsRAM"></div><div><label>Stocare</label><input id="obsST"></div><div><label>Alte observații</label><input id="obsOther"></div></div><button onclick="saveObservedSpecsV5()">Salvează configurația</button></div>
+   ${proofPanel("specs")}${conclusionPanel("specs","În 3–5 propoziții: cum se leagă reprezentarea informației, funcțiile sistemului și componentele calculatorului real?")}`;
+ },
+ init(){ drawClockV5(); drawCoresV5(); drawRAMV5(); storageSpecV5(); ioSpecV5(); }
+}
+]
+
+// ---------- navigation ----------
+function buildNav(){
+  let h="";
+  chapters.forEach(ch=>{
+    h+=`<div class="chapter">${ch.name}</div>`;
+    for(let i=ch.from;i<=ch.to;i++){
+      h+=`<button id="nav${i}" class="navbtn" onclick="go(${i})"><span class="dot">${i+1}</span><span>${steps[i].name}</span></button>`;
+    }
+  });
+  $("nav").innerHTML=h;
+}
+function go(i){
+  if(i<0||i>=steps.length)return;
+  if(freqTimer){clearInterval(freqTimer);freqTimer=null;}
+  current=i;
+  const s=steps[i], ch=chapterOf(i);
+  $("chapterLabel").textContent=ch.name;
+  $("title").textContent=`${i+1}. ${s.name}`;
+  $("lead").textContent=s.lead;
+  $("stage").innerHTML=s.render();
+  document.querySelectorAll(".navbtn").forEach(x=>x.classList.remove("active"));
+  $("nav"+i).classList.add("active");
+  $("prevBtn").disabled=i===0;
+  $("nextBtn").textContent=i===steps.length-1?"Finalizează":"Marchează rezolvat și continuă →";
+  if(s.init)s.init();
+  renderProof(s.id);
+  updateProgress();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function finishAndNext(){
+  completed[steps[current].id]=true;
+  persist(); updateProgress();
+  if(current<steps.length-1)go(current+1);
+}
+function updateProgress(){
+  let count=0;
+  steps.forEach((s,i)=>{
+    const d=!!completed[s.id]; if(d)count++;
+    const n=$("nav"+i); if(n)n.classList.toggle("done",d);
+  });
+  $("bar").style.width=`${count/steps.length*100}%`;
+  $("progressText").textContent=`${count} / ${steps.length} aplicații marcate rezolvate`;
+  const activeMap=chapterOf(current).map;
+  for(let m=0;m<4;m++){
+    const el=$("map"+m); el.classList.toggle("active",m===activeMap);
+    const chapterDone=chapters[m] ? steps.slice(chapters[m].from,chapters[m].to+1).every(s=>completed[s.id]) : false;
+    el.classList.toggle("complete",chapterDone);
+  }
+}
+
+// ---------- 1 decimal ----------
+function updateDecimal(){
+  const c=$("decCount"); if(c)c.textContent=decObjects;
+  const box=$("decObjects"); if(box){
+    box.innerHTML="";
+    const show=Math.min(decObjects,60);
+    for(let i=0;i<show;i++){const d=document.createElement("span");d.className="obj";box.appendChild(d);}
+    if(decObjects>60)box.innerHTML+=`<span class="small">+ ${decObjects-60} obiecte</span>`;
+  }
+  const t=Math.floor(decObjects/10),u=decObjects%10;
+  if($("decTens"))$("decTens").textContent=t;
+  if($("decUnits"))$("decUnits").textContent=u;
+  if($("decFormula"))$("decFormula").textContent=`${decObjects} = ${t}·10 + ${u}`;
+}
+function groupDecimal(){const t=Math.floor(decObjects/10),u=decObjects%10;$("decGroups").textContent=`${decObjects} obiecte → ${t} grupuri de 10 + ${u} unități rămase.`;save("decimal",{artifact:"grupare zecimală experimentată",lastValue:decObjects});}
+function checkDecimal(){gradeSimple("decimal",["4","35","80","1","426"],x=>x.trim());}
+
+// ---------- 2 sex ----------
+function updateSexObjects(){
+  const box=$("sexVisual"); if(!box)return;
+  box.innerHTML="";
+  const blocks=Math.min(sexObjects,120);
+  for(let i=0;i<blocks;i++){const d=document.createElement("span");d.className="obj";box.appendChild(d);}
+  if(sexObjects>120)box.innerHTML+=`<span class="small">+ ${sexObjects-120} unități</span>`;
+}
+function groupSex(){
+  const q=Math.floor(sexObjects/60),r=sexObjects%60;
+  $("sexGroupOut").textContent=`${sexObjects} = ${q}·60 + ${r} ⇒ (${q},${r})₆₀`;
+  save("sexagesimal",{artifact:"grupare sexagesimală experimentată",lastValue:sexObjects,lastRepresentation:`${q},${r}`});
+}
+function checkSex(){gradeSimple("sexagesimal",["75","125","180","1,15","2,5"],x=>x.replace(/[()\s]/g,""));}
+
+// ---------- 3 time ----------
+function timeBreakdown(){
+  const h=+$("tmH").value,m=+$("tmM").value,s=+$("tmS").value,total=h*3600+m*60+s;
+  $("timeBreak").textContent=`${h} h = ${h}·60² = ${h*3600} s\n${m} min = ${m}·60 = ${m*60} s\n${s} s = ${s}\nTotal = ${total} s`;
+}
+function checkTime(){
+  const ans=["5400","7215","1:1:1","5400","1:2:3"];
+  gradeSimple("time",ans,x=>x.replace(/\s|°|′|″/g,""));
+}
+
+// ---------- roman ----------
+const RV={I:1,V:5,X:10,L:50,C:100,D:500,M:1000};
+function romanValue(s){let t=0;for(let i=0;i<s.length;i++)t+=(i+1<s.length&&RV[s[i]]<RV[s[i+1]])?-RV[s[i]]:RV[s[i]];return t;}
+function addRoman(x){romanBuilt+=x;paintRoman();}
+function clearRoman(){romanBuilt="";paintRoman();}
+function paintRoman(){if($("romanBuilt"))$("romanBuilt").textContent=romanBuilt||"—";if($("romanValue"))$("romanValue").textContent=`Valoare: ${romanBuilt?romanValue(romanBuilt):"—"}`;}
+function toRoman(n){const m=[["M",1000],["CM",900],["D",500],["CD",400],["C",100],["XC",90],["L",50],["XL",40],["X",10],["IX",9],["V",5],["IV",4],["I",1]];let s="";for(const [c,v] of m){while(n>=v){s+=c;n-=v}}return s}
+function checkRoman(){gradeSimple("roman",["XIV","XLIV","XCIX","75","444"],x=>x.trim().toUpperCase());}
+
+// ---------- base b ----------
+function baseDemo(){
+  const b=+$("baseSlider").value;
+  const ds=$("baseDigits").value.split(",").map(x=>Number(x.trim()));
+  const p=$("basePlaces");
+  if(ds.length!==3||ds.some(x=>!Number.isInteger(x)||x<0||x>=b)){p.innerHTML="";$("baseOut").textContent=`Cifrele trebuie să fie între 0 și ${b-1}.`;return;}
+  p.innerHTML=ds.map((d,i)=>`<div class="place"><div class="power">${b}^${2-i}</div><div class="digit">${d}</div><div class="meaning">pondere ${b**(2-i)}</div></div>`).join("");
+  const v=ds[0]*b*b+ds[1]*b+ds[2];
+  $("baseOut").textContent=`(${ds.join("")}) în baza ${b} = ${ds[0]}·${b}² + ${ds[1]}·${b} + ${ds[2]} = ${v}`;
+}
+function checkBase(){gradeSimple("baseb",["42","45","22","132","11111"],x=>x.replace(/\s/g,"").toUpperCase());}
+
+// ---------- binary ----------
+function toggleBit(i){binaryBits[i]^=1;paintBits();}
+function paintBits(){
+  binaryBits.forEach((v,i)=>{const el=$("bit"+i);if(el){el.textContent=v;el.classList.toggle("on",!!v)}});
+  const s=binaryBits.join(""),v=parseInt(s,2);
+  if($("binaryValue"))$("binaryValue").textContent=`${s}₂ = ${v}₁₀`;
+}
+function enumerateBits(){const all=Array.from({length:8},(_,i)=>i.toString(2).padStart(3,"0"));$("binaryAll").textContent=all.join("   ");}
+function checkBinary(){gradeSimple("binary",["8","256","255","4","7"],x=>x.trim());}
+
+// ---------- ASCII ----------
+function buildASCII(){
+  const g=$("asciiGrid"); if(!g)return;
+  g.innerHTML="";
+  for(let i=32;i<=126;i++){
+    const d=document.createElement("div");d.className="ascii-cell";const ch=String.fromCharCode(i);
+    d.innerHTML=`<b>${esc(ch)}</b>${i}`;
+    d.onclick=()=>{$("asciiPick").textContent=`Caracter: ${ch}\nZecimal: ${i}\nBinar: ${i.toString(2).padStart(8,"0")}\nHex: ${i.toString(16).toUpperCase().padStart(2,"0")}`;};
+    g.appendChild(d);
+  }
+}
+function checkASCII(){gradeSimple("ascii",["65","01011010","35","ASC","INFO"],x=>x.trim().toUpperCase());}
+
+// ---------- bridge image ----------
+let imageChoice=-1;
+function selectImageChoice(i){
+  imageChoice=i;
+  for(let k=0;k<3;k++){const e=$("biChoice"+k);if(e)e.classList.toggle("selected",k===i);}
+  const out=$("biChoiceOut"); if(!out)return;
+  if(i===0)out.textContent="Un singur număr poate identifica imaginea, dar nu descrie local forma astfel încât s-o reconstruiești.";
+  else if(i===1)out.textContent="Textul poate descrie semantic imaginea, dar nu oferă direct o valoare pentru fiecare poziție.";
+  else if(i===2)out.textContent="Grila împarte spațiul în poziții discrete. Fiecărei poziții îi poți atribui o valoare: aceasta este baza unei reprezentări raster.";
+  else out.textContent="Alege o strategie și vezi ce informație poți păstra.";
+}
+function saveImageBridge(){const ok=imageChoice===2;save("bridgeImage",{score:ok?1:0,total:1,artifact:"strategie de reprezentare selectată",choice:imageChoice});$("bridgeImage_score").innerHTML=ok?"<strong>1/1</strong> — ai ales grila de poziții.":"<strong>0/1</strong> — încearcă strategia care permite descriere locală.";}
+
+// ---------- image grid ----------
+function buildPixelGrid(){
+  pixelData=Array.from({length:8},()=>Array(8).fill(0));
+  const g=$("pixelGrid");g.style.gridTemplateColumns="repeat(8,25px)";g.innerHTML="";
+  pixelData.forEach((row,y)=>row.forEach((_,x)=>{const d=document.createElement("div");d.className="pixel";d.onclick=()=>{pixelData[y][x]^=1;d.style.background=pixelData[y][x]?"#111":"#fff";updatePixelInfo();};g.appendChild(d);}));
+  updatePixelInfo();
+}
+function updatePixelInfo(){$("pixelInfo").textContent=`64 poziții · ${pixelData.flat().filter(Boolean).length} poziții cu valoarea 1`;}
+function savePixelMatrix(){const matrix=pixelData.map(r=>r.join("")).join("\n");save("imageGrid",{score:1,total:1,artifact:"matrice binară 8×8",matrix});$("imageGrid_score").textContent=matrix;}
+
+// ---------- levels ----------
+function paintLevels(){
+  const b=+$("levelBits").value,n=2**b,g=$("levelStrip");g.innerHTML="";
+  const shown=Math.min(n,32);
+  for(let i=0;i<shown;i++){const s=document.createElement("span");const x=Math.round(i/(shown-1||1)*255);s.style.background=`rgb(${x},${x},${x})`;g.appendChild(s);}
+  $("levelInfo").textContent=`${b} biți/poziție → ${n} niveluri posibile · grilă 8×8 → ${64*b} biți`;
+}
+function checkLevels(){gradeSimple("levels",["64","128","512","1024","128"],x=>x.trim());}
+
+// ---------- RGB ----------
+function paintRGB(){const r=+$("rR").value,g=+$("rG").value,b=+$("rB").value;$("rgbSwatch").style.background=`rgb(${r},${g},${b})`;$("rgbInfo").textContent=`RGB(${r},${g},${b}) = 3 componente × 8 biți = 24 biți/pixel`;}
+function checkRGB(){gradeSimple("rgb",["4096","4096","12288","10000","8192"],x=>x.trim());}
+
+// ---------- cost ----------
+function costDemo(){const w=+$("costW").value,h=+$("costH").value,b=+$("costB").value,bits=w*h*b;$("costInfo").textContent=`${w}×${h}×${b} = ${bits.toLocaleString("ro-RO")} biți = ${(bits/8).toLocaleString("ro-RO")} bytes ≈ ${(bits/8/1e6).toFixed(3)} MB`;}
+function checkCost(){gradeSimple("cost",["1000000","1000000","6220800","8192","8"],x=>x.trim());}
+
+// ---------- budget ----------
+function budgetDemo(){const s=+$("budS").value,b=+$("budB").value,cost=s*s*b,pct=Math.min(100,cost/65536*100);$("budgetMeter").style.width=pct+"%";$("budgetInfo").innerHTML=`Cost: <b>${cost.toLocaleString("ro-RO")}</b> / 65.536 biți · <span class="${cost<=65536?"goodtxt":"badtxt"}">${cost<=65536?"fezabil":"depășește bugetul"}</span>`;}
+function saveBudget(){let c=0,rows=[];for(let i=0;i<3;i++){const s=+$( `budget_s_${i}`).value,b=+$( `budget_b_${i}`).value,j=$( `budget_j_${i}`).value.trim(),ok=s>0&&b>0&&s*s*b<=65536&&j.length>=5;if(ok)c++;rows.push({s,b,j,cost:s*s*b,ok});}save("budget",{score:c,total:3,attempts:(evidence.budget?.attempts||0)+1,artifact:"3 alegeri sub constrângere",rows});$("budget_score").innerHTML=`<strong>${c}/3</strong> configurații fezabile și justificate`;}
+
+// ---------- bridge machine ----------
+const validNeeds=new Set(["păstrează","găsește","mută","transformă","primește","furnizează"]);
+function toggleNeed(i,name){if(machineNeeds.has(name))machineNeeds.delete(name);else machineNeeds.add(name);paintNeeds();}
+function paintNeeds(){
+  ["păstrează","găsește","mută","transformă","primește","furnizează","decorează","ghicește"].forEach((n,i)=>{const e=$("need"+i);if(e)e.classList.toggle("chosen",machineNeeds.has(n));});
+  const o=$("needOut");if(o)o.textContent=machineNeeds.size?`Selectate: ${[...machineNeeds].join(", ")}`:"Selectează funcțiile pe care le consideri necesare.";
+}
+function validateNeeds(){let correct=0;validNeeds.forEach(x=>{if(machineNeeds.has(x))correct++});["decorează","ghicește"].forEach(x=>{if(!machineNeeds.has(x))correct++});save("bridgeMachine",{score:correct,total:8,artifact:"listă funcțională construită",selected:[...machineNeeds]});$("bridgeMachine_score").innerHTML=`<strong>${correct}/8</strong> decizii corecte`;}
+
+// ---------- functions ----------
+function checkFunctions(){gradeSimple("functions",["intrare","stocare","prelucrare","ieșire","transfer"],x=>x.trim().toLowerCase());}
+
+// ---------- bridge real ----------
+function checkBridgeReal(){
+  const ans=["CPU","RAM","SSD/HDD","placă de bază","porturi și periferice"];let c=0,vals=[];
+  ans.forEach((a,i)=>{const v=$("match"+i).value;if(v===a)c++;vals.push(v);});
+  save("bridgeReal",{score:c,total:5,artifact:"mapare funcție → componentă",answers:vals});
+  $("bridgeReal_score").innerHTML=`<strong>${c}/5</strong> potriviri corecte`;
+}
+
+// ---------- pc passport ----------
+function savePCPassport(){const rows=[];let c=0;for(let i=0;i<5;i++){const v=$("pcv"+i).value.trim(),r=$("pcr"+i).value.trim();if(v&&r)c++;rows.push({observed:v,role:r});}save("realpc",{score:c,total:5,artifact:"pașaport funcțional al PC-ului",rows});$("realpc_score").innerHTML=`<strong>${c}/5</strong> categorii documentate`;}
+
+// ---------- specs ----------
+function startPulse(){
+  if(freqTimer)clearInterval(freqTimer);
+  const hz=+$("freqHz").value;$("freqText").textContent=`${hz} Hz = ${hz} cicluri pe secundă · perioada T=${(1/hz).toFixed(3)} s`;
+  const dot=$("pulseDot");if(!dot)return;
+  let pos=0; const step=3;
+  freqTimer=setInterval(()=>{pos+=step;if(pos>98)pos=0;dot.style.left=pos+"%";},Math.max(20,1000/(hz*30)));
+}
+function checkSpecs(){gradeSimple("specs",[(1/3.2).toFixed(4),"capacitate","debit","125","fals"],x=>x.trim().toLowerCase());}
+function saveObservedSpecs(){const summary=`CPU: ${$("obsCPU").value}; RAM: ${$("obsRAM").value}; Stocare: ${$("obsST").value}; Alte observații: ${$("obsOther").value}`;save("specs",{artifact:"configurație observată",summary});}
+
+
+// ---------- V5 stronger image + conceptual ASC ----------
+let resolutionShapeV5=0;
+function shapeValueV5(n,x,y,shape){
+  const nx=x/(n-1), ny=y/(n-1);
+  if(shape===0){
+    const left=Math.abs(nx-(0.22+0.28*(1-ny)))<0.12;
+    const right=Math.abs(nx-(0.78-0.28*(1-ny)))<0.12;
+    const bar=ny>0.48&&ny<0.62&&nx>0.32&&nx<0.68;
+    return left||right||bar;
+  }
+  const dx=nx-.5,dy=ny-.5,r=Math.sqrt(dx*dx+dy*dy);
+  return (r>.25&&r<.42)||(Math.abs(dx)<.08&&ny>.45);
+}
+function fillMiniGridV5(id,n){
+  const g=$(id); if(!g)return; g.innerHTML=""; g.style.gridTemplateColumns=`repeat(${n},${n<=4?28:n<=8?20:12}px)`;
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){const d=document.createElement("div");d.className="mini-pixel";d.style.width=d.style.height=n<=4?"28px":n<=8?"20px":"12px";d.style.background=shapeValueV5(n,x,y,resolutionShapeV5)?"#222":"#fff";g.appendChild(d);}
+}
+function drawResolutionComparison(){
+  fillMiniGridV5("res4",4);fillMiniGridV5("res8",8);fillMiniGridV5("res16",16);
+  if($("resCompareInfo"))$("resCompareInfo").textContent="Toate cele trei grile descriu aceeași formă. Diferența este numărul de poziții disponibile pentru a reda conturul.";
+}
+function toggleResolutionShape(){resolutionShapeV5^=1;drawResolutionComparison();}
+function checkResolution(){gradeSimple("imageResolution",["16","64","4"],x=>x.trim());}
+
+function sourceColorV5(x,y){
+  const r=Math.round(40+x/7*200), g=Math.round(40+y/7*180), b=Math.round(220-(x+y)/14*160);
+  return [r,g,b];
+}
+function quantGrayV5(gray,levels){
+  if(levels<=1)return 0;
+  const idx=Math.round(gray/255*(levels-1));
+  return Math.round(idx/(levels-1)*255);
+}
+function drawModeGridV5(id,mode){
+  const g=$(id);if(!g)return;g.innerHTML="";g.style.gridTemplateColumns="repeat(8,26px)";
+  const levels=+$("grayLevels").value;
+  for(let y=0;y<8;y++)for(let x=0;x<8;x++){
+    const [r,gc,b]=sourceColorV5(x,y);
+    const gray=Math.round(.299*r+.587*gc+.114*b);
+    const q=quantGrayV5(gray,levels);
+    const bw=gray>=128?255:0;
+    const d=document.createElement("div");d.className="mode-pixel";
+    if(mode==="bw")d.style.background=`rgb(${bw},${bw},${bw})`;
+    if(mode==="gray")d.style.background=`rgb(${q},${q},${q})`;
+    if(mode==="color")d.style.background=`rgb(${r},${gc},${b})`;
+    d.onclick=()=>showModeCellV5(x,y);
+    g.appendChild(d);
+  }
+}
+function drawModeGrids(){drawModeGridV5("bwGrid","bw");drawModeGridV5("grayGrid","gray");drawModeGridV5("colorGrid","color");}
+function showModeCellV5(x,y){
+  const [r,g,b]=sourceColorV5(x,y),gray=Math.round(.299*r+.587*g+.114*b),levels=+$("grayLevels").value,q=quantGrayV5(gray,levels),bw=gray>=128?255:0;
+  $("modeCellInfo").textContent=`Poziția (${x},${y})\nAlb-negru: ${bw===255?1:0}\nGrayscale (${levels} niveluri): ${q}\nRGB: (${r},${g},${b})`;
+}
+function checkImageModes(){gradeSimple("imageModes",["64","128","512","192","1024"],x=>x.trim());}
+
+let needsV5=new Set();
+const goodNeedsV5=new Set(["păstrează","găsește","mută","calculează / transformă","primește","furnizează","coordonează"]);
+function toggleNeedV5(i,name){if(needsV5.has(name))needsV5.delete(name);else needsV5.add(name);paintNeedsV5();}
+function paintNeedsV5(){
+  ["păstrează","găsește","mută","calculează / transformă","primește","furnizează","coordonează","decorează"].forEach((n,i)=>{const e=$("need"+i);if(e)e.classList.toggle("chosen",needsV5.has(n));});
+  if($("needOut"))$("needOut").textContent=needsV5.size?`Selectate: ${[...needsV5].join(", ")}`:"Selectează funcțiile.";
+}
+function validateNeedsV5(){
+  let c=0;goodNeedsV5.forEach(x=>{if(needsV5.has(x))c++});if(!needsV5.has("decorează"))c++;
+  save("bridgeMachine",{score:c,total:8,artifact:"nevoi funcționale deduse",selected:[...needsV5]});
+  $("bridgeMachine_score").innerHTML=`<strong>${c}/8</strong> decizii corecte`;
+}
+
+let memoryV5=Array(16).fill(0);
+function buildMemoryV5(){
+  const g=$("memGridV5");if(!g)return;g.innerHTML="";
+  memoryV5.forEach((v,i)=>{const d=document.createElement("div");d.className="memory-cell";d.innerHTML=`<div class="address">${i.toString(2).padStart(4,"0")} · ${i}</div><input type="number" min="0" max="255" value="${v}" onchange="memoryV5[${i}]=Math.max(0,Math.min(255,+this.value||0))">`;g.appendChild(d);});
+}
+function memoryOperationV5(){
+  const op=$("memOpV5").value,a=$("memAddrV5").value.trim();if(!/^[01]{4}$/.test(a)){$("memOutV5").textContent="Adresa trebuie să aibă 4 biți.";return;}
+  const idx=parseInt(a,2);
+  if(op==="WRITE"){const v=Math.max(0,Math.min(255,+$("memValV5").value||0));memoryV5[idx]=v;buildMemoryV5();$("memOutV5").textContent=`WRITE: adresa ${a} (${idx}) ← valoarea ${v}`;}
+  else $("memOutV5").textContent=`READ: adresa ${a} (${idx}) → valoarea ${memoryV5[idx]}`;
+  save("memory",{artifact:"memorie 16×8 manipulată",lastOperation:op,address:a,value:memoryV5[idx]});
+}
+function checkMemoryV5(){gradeSimple("memory",["4","0101","1101","42","256"],x=>x.trim());}
+
+function prepareProcessingV5(){memoryV5[2]=7;memoryV5[5]=12;memoryV5[7]=3;paintProcessingV5();}
+function paintProcessingV5(){
+  const a=Math.max(0,Math.min(15,+$("procAddrA").value||0)),b=Math.max(0,Math.min(15,+$("procAddrB").value||0));
+  if($("procA"))$("procA").textContent=memoryV5[a];if($("procB"))$("procB").textContent=memoryV5[b];
+}
+function executeProcessingV5(){
+  const a=+$("procAddrA").value,b=+$("procAddrB").value,d=+$("procDest").value,op=$("procOp").value;
+  const x=memoryV5[a]||0,y=memoryV5[b]||0;let r=op==="ADD"?x+y:op==="SUB"?x-y:x*y;
+  memoryV5[d]=r;if($("procR"))$("procR").textContent=r;
+  $("procTrace").textContent=`READ M[${a}] → ${x}\nREAD M[${b}] → ${y}\n${op}(${x},${y}) → ${r}\nWRITE M[${d}] ← ${r}`;
+  save("processing",{artifact:"traseu stocare → calcul → stocare",trace:$("procTrace").textContent,result:r,destination:d});
+}
+function checkProcessingV5(){gradeSimple("processing",["19","m[8]","prelucrare","date"],x=>x.trim().toLowerCase());}
+
+const instrV5={
+ load:{natural:"Citește valoarea de la adresa 5 într-un loc de lucru R1.",asm:"LOAD R1, [5]",bin:"00 01 0101"},
+ add:{natural:"Adună valorile din R1 și R2 și pune rezultatul în R3.",asm:"ADD R3, R1, R2",bin:"10 11 01 10"},
+ store:{natural:"Salvează valoarea din R3 la adresa 8.",asm:"STORE [8], R3",bin:"01 11 1000"}
+};
+function showInstructionV5(){const k=$("instrChoiceV5").value,o=instrV5[k];$("instrNaturalV5").textContent=o.natural;$("instrAsmV5").textContent=o.asm;$("instrBinV5").textContent=o.bin;}
+function instructionTableV5(){
+  return `<div class="panel"><div class="panel-title">Proba practică · 5 cerințe</div><table class="exercise-table">
+  <tr><th>Cerință</th><th>Răspuns</th><th></th></tr>
+  ${[
+    "Natural: citește adresa 5 în R1 → assembly",
+    "LOAD R1,[5] → binar didactic",
+    "Natural: salvează R3 la adresa 8 → assembly",
+    "STORE [8],R3 → binar didactic",
+    "10 11 01 10 → assembly"
+  ].map((q,i)=>`<tr><td>${q}</td><td><input id="instruction_a_${i}"></td><td id="instruction_s_${i}" class="status">—</td></tr>`).join("")}
+  </table><button class="primary" onclick="checkInstructionV5()">Verifică</button><div id="instruction_score" class="score"></div></div>`;
+}
+function checkInstructionV5(){gradeSimple("instruction",["load r1,[5]","00010101","store [8],r3","01111000","add r3,r1,r2"],x=>x.toLowerCase().replace(/\s+/g,"").replace(/,/g,",").trim());}
+
+const schemaLabelsV5={
+ input:"INTRARE",storage:"STOCARE",processing:"PRELUCRARE",control:"CONTROL",output:"IEȘIRE",interconnection:"INTERCONECTARE"
+};
+let selectedSchemaV5=null,placedSchemaV5={};
+function initSchemaV5(){
+  selectedSchemaV5=null;placedSchemaV5={};
+  const bank=$("schemaBank");if(!bank)return;bank.innerHTML="";
+  Object.entries(schemaLabelsV5).forEach(([k,label])=>{const b=document.createElement("div");b.className="schema-token";b.id="schemaToken_"+k;b.textContent=label;b.onclick=()=>{selectedSchemaV5=k;document.querySelectorAll(".schema-token").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");};bank.appendChild(b);});
+}
+function placeSchemaV5(slot){
+  if(!selectedSchemaV5)return;
+  placedSchemaV5[slot]=selectedSchemaV5;
+  const el=document.querySelector(`.schema-slot[data-slot="${slot}"]`);el.classList.add("filled");el.querySelector("b").textContent=schemaLabelsV5[selectedSchemaV5];
+  selectedSchemaV5=null;document.querySelectorAll(".schema-token").forEach(x=>x.classList.remove("selected"));
+}
+function validateSchemaV5(){
+  let c=0;Object.keys(schemaLabelsV5).forEach(k=>{if(placedSchemaV5[k]===k)c++;});
+  save("systemSchema",{score:c,total:6,artifact:"schemă conceptuală construită",schema:placedSchemaV5});
+  $("systemSchema_score").innerHTML=`<strong>${c}/6</strong> poziționări corecte`;
+}
+
+function checkRealMappingV5(){
+  const ans=["CPU","RAM","SSD/HDD","placă de bază","porturi și periferice"];let c=0,vals=[];
+  ans.forEach((a,i)=>{const v=$("mapReal"+i).value;if(v===a)c++;vals.push(v);});
+  save("realpc",{score:c,total:5,attempts:(evidence.realpc?.attempts||0)+1,artifact:"mapare conceptual → fizic",mapping:vals});
+  $("realMapScore").innerHTML=`<strong>${c}/5</strong> potriviri corecte`;
+}
+function savePCPassportV5(){
+  const rows=[];let filled=0;for(let i=0;i<5;i++){const v=$("pcv"+i).value.trim(),r=$("pcr"+i).value.trim();if(v&&r)filled++;rows.push({observed:v,role:r});}
+  save("realpc",{passportScore:filled,passportTotal:5,rows,artifact:"mapare + pașaport funcțional PC"});
+  $("realpc_score").innerHTML=`<strong>${filled}/5</strong> componente documentate`;
+}
+
+function drawClockV5(){
+  const hz=+$("freqHzV5").value,w=$("clockWindowV5");if(!w)return;
+  w.querySelectorAll(".clock-tick,.clock-label").forEach(x=>x.remove());
+  for(let i=0;i<hz;i++){const t=document.createElement("div");t.className="clock-tick";t.style.left=`${10+(i+.5)/hz*90}%`;w.appendChild(t);}
+  const l0=document.createElement("span");l0.className="clock-label";l0.style.left="8px";l0.textContent="0 s";w.appendChild(l0);
+  const l1=document.createElement("span");l1.className="clock-label";l1.style.right="8px";l1.textContent="1 s";w.appendChild(l1);
+  $("clockTextV5").textContent=`În intervalul de 1 secundă vezi ${hz} cicluri. Asta înseamnă ${hz} Hz. 3,2 GHz înseamnă 3.200.000.000 cicluri în fiecare secundă.`;
+}
+function drawCoresV5(){const c=+$("coresV5").value;$("coresTextV5").textContent=`${c} nuclee = ${c} resurse de execuție capabile să lucreze în paralel în anumite situații. Nu înseamnă automat de ${c} ori mai rapid.`;}
+function drawRAMV5(){
+  const cap=+$("ramCapV5").value,rate=+$("ramRateV5").value;
+  $("ramFillV5").style.height=`${cap/64*100}%`;$("ramPipeV5").style.width=`${rate/10*100}%`;
+  $("ramTextV5").textContent=`Capacitate: ${cap} GB = câtă informație de lucru încape. Indicatorul de flux (${rate}/10) reprezintă separat cât de repede pot circula datele.`;
+}
+function storageSpecV5(){const g=+$("fileGBV5").value,r=+$("diskRateV5").value,sec=r>0?g*1000/r:0;$("storageSpecOutV5").textContent=`Fișier ${g} GB la ${r} MB/s → aproximativ ${sec.toFixed(1)} s în modelul idealizat.`;}
+function ioSpecV5(){const g=+$("ioRateV5").value;$("ioSpecOutV5").textContent=`${g} Gbit/s ÷ 8 = ${g*125} MB/s teoretic.`;}
+function checkSpecsV5(){gradeSimple("specs",["3200000000","capacitate","debit","125","fals"],x=>x.trim().toLowerCase());}
+function saveObservedSpecsV5(){const summary=`CPU: ${$("obsCPU").value}; RAM: ${$("obsRAM").value}; Stocare: ${$("obsST").value}; Alte observații: ${$("obsOther").value}`;save("specs",{artifact:"experimente caracteristici + configurație observată",summary});}
+
+// ---------- exports ----------
+function exportJSON(){download(new Blob([JSON.stringify({evidence,completed,exported:new Date().toISOString()},null,2)],{type:"application/json"}),"ASC_Lab1_dovezi.json");}
+function exportReport(){
+  const sections=steps.map((s,i)=>{const e=evidence[s.id]||{};return `<section><h2>${i+1}. ${esc(s.name)}</h2><p><b>Scor:</b> ${e.score!==undefined?`${e.score}/${e.total}`:"—"}</p><p><b>Artefact:</b> ${esc(e.artifact||"—")}</p><p><b>Concluzie:</b> ${esc(e.conclusion||"—")}</p></section>`}).join("");
+  const doc=`<!doctype html><meta charset="utf-8"><title>Raport ASC Lab 1</title><style>body{font-family:Arial,sans-serif;max-width:900px;margin:40px auto;line-height:1.5}section{border-bottom:1px solid #ddd;padding:12px 0}</style><h1>Raport de laborator — ASC Lab 1</h1><p>De la informație la calculator</p>${sections}`;
+  download(new Blob([doc],{type:"text/html;charset=utf-8"}),"ASC_Lab1_raport.html");
+}
+function download(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+function resetAll(){if(!confirm("Ștergi toate dovezile și progresul?"))return;evidence={};completed={};persist();location.reload();}
+
+document.addEventListener("DOMContentLoaded",()=>{buildNav();go(0);});
+</script>
+</body>
+</html>
