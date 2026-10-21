@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laborator 1 – Clase și obiecte | M9 OCW</title>
+<meta name="description" content="Laborator 1 de POO: clasă, obiect, câmpuri, metode și instanțiere în C++, Java și Python, cu accent pe diferența dintre copierea unui obiect și copierea unei referințe." />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  /* pattern cards (algorithm patterns) */
+  .pattern-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem; margin: 1.25rem 0;
+  }
+  .pattern-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow);
+  }
+  .pattern-card .pattern-header {
+    background: var(--surface-2); padding: .6rem 1rem;
+    font-weight: 700; font-size: .85rem; color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .pattern-card pre {
+    margin: 0; padding: .9rem 1.1rem; font-family: var(--mono);
+    font-size: .82rem; overflow-x: auto;
+  }
+
+  /* quiz-style exercises (reused pattern from S3/S4/S5/S6) */
+  .quiz-item { margin: 1.35rem 0; padding-bottom: 1.1rem; border-bottom: 1px solid var(--surface-2); }
+  .quiz-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .quiz-item .qnum {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 24px; height: 24px; padding: 0 .3rem;
+    border-radius: 50%; background: var(--accent-light); color: var(--accent-dark);
+    font-size: .78rem; font-weight: 800; margin-right: .5rem;
+  }
+  .choices {
+    list-style: none; padding: 0; margin: .6rem 0 .8rem;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .4rem .6rem;
+  }
+  .choices li {
+    font-family: var(--mono); font-size: .84rem; color: var(--text);
+    background: var(--surface-2); border: 1px solid var(--border);
+    padding: .4rem .65rem; border-radius: 6px;
+  }
+  .quiz-item details { margin-top: .5rem; }
+  .quiz-item summary { background: var(--accent-light); color: var(--accent-dark); font-size: .82rem; }
+
+  /* Problem-solving methodology blocks: date intrare / date iesire / algoritm / cod (identice cu S4, S5, S6) */
+  .method-block { margin: .9rem 0; }
+  .method-label {
+    font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--accent-dark); margin-bottom: .4rem; display: flex; align-items: center; gap: .4rem;
+  }
+  .method-label i { color: var(--accent); }
+  .io-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .7rem; margin: .3rem 0 .7rem; }
+  .io-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: .55rem .8rem; font-size: .84rem; }
+  .io-box .io-title { font-size: .66rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--text-3); margin-bottom: .3rem; }
+  .io-box code { font-size: .82rem; }
+  .algo-steps { counter-reset: algo; list-style: none; padding: 0; margin: .3rem 0; }
+  .algo-steps li {
+    counter-increment: algo; position: relative; padding: .32rem 0 .32rem 2.1rem;
+    font-size: .87rem; border-bottom: 1px solid var(--surface-2);
+  }
+  .algo-steps li:last-child { border-bottom: none; }
+  .algo-steps li::before {
+    content: counter(algo); position: absolute; left: 0; top: .28rem;
+    width: 20px; height: 20px; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark);
+    font-size: .7rem; font-weight: 800; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Judge-style problem statement (cerinta / date intrare / date iesire / restrictii / exemplu) */
+  .diff-badge {
+    display: inline-flex; align-items: center; font-size: .68rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .04em; padding: .15rem .55rem; border-radius: 20px;
+    margin-left: .5rem;
+  }
+  .diff-badge.usoara { background: var(--green-light); color: var(--green); }
+  .diff-badge.medie  { background: var(--amber-light); color: #b45309; }
+  .diff-badge.grea   { background: #f3e8ff; color: #7c3aed; }
+  .restrictii-list { margin: .2rem 0 0; padding-left: 1.2rem; }
+  .restrictii-list li { font-size: .85rem; margin-bottom: .2rem; }
+  .judge-example { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; margin: .4rem 0 .6rem; }
+  .judge-ex-col { background: #1e2235; border-radius: 8px; overflow: hidden; border: 1px solid #2d3250; }
+  .judge-ex-title {
+    font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
+    color: #7c85b0; padding: .4rem .7rem; background: #252942; border-bottom: 1px solid #2d3250;
+  }
+  .judge-ex-col pre { margin: 0; padding: .6rem .8rem; font-family: var(--mono); font-size: .82rem; color: #e0e4f5; white-space: pre-wrap; }
+  .judge-explicatie { font-size: .87rem; color: var(--text-2); margin: 0; }
+
+  /* vector diagrams (S7): cells with values and indexes */
+  .vec-wrap { margin: 1.1rem 0; overflow-x: auto; }
+  .vec-wrap .vname {
+    font-family: var(--mono); font-size: .78rem; font-weight: 700;
+    color: var(--text-2); margin-bottom: .4rem;
+  }
+  .vec { display: inline-flex; }
+  .vc { display: flex; flex-direction: column; }
+  .vc .cell {
+    min-width: 48px; height: 42px; padding: 0 .55rem;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface); border: 1.5px solid var(--border); margin-left: -1.5px;
+    font-family: var(--mono); font-weight: 700; font-size: .95rem; color: var(--text);
+  }
+  .vc:first-child .cell { margin-left: 0; border-radius: 8px 0 0 8px; }
+  .vc:last-child .cell { border-radius: 0 8px 8px 0; }
+  .vc .cell.a { background: var(--accent-light); border-color: var(--accent); }
+  .vc .cell.g { background: var(--green-light);  border-color: var(--green); }
+  .vc .cell.r { background: var(--red-light);    border-color: var(--red); }
+  .vc .cell.y { background: var(--amber-light);  border-color: var(--amber); }
+  .vc .ix {
+    text-align: center; font-family: var(--mono); font-size: .72rem;
+    color: var(--text-3); margin-top: .3rem;
+  }
+  .vec-wrap .vcap { font-size: .85rem; color: var(--text-2); margin-top: .6rem; }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">M9</span>Programare orientată pe obiecte</a>
+  <div class="topnav-breadcrumb">
+    <a href="index.html">M9</a><span class="sep">›</span> <span>Lab 1 – Clase și obiecte</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="https://www.onlinegdb.com/" target="_blank" class="btn-sm">Compilator online</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <span class="sidebar-label">Această pagină</span>
+    <a class="sidebar-link" href="#prereq"><i class="fa-solid fa-circle-check fa-fw"></i> Prerequisite</a>
+    <a class="sidebar-link" href="#intro"><i class="fa-solid fa-book-open fa-fw"></i> Introducere</a>
+    <a class="sidebar-link" href="#obiective"><i class="fa-solid fa-bullseye fa-fw"></i> Obiective</a>
+    <a class="sidebar-link" href="#definitii"><i class="fa-solid fa-book fa-fw"></i> Clasă și obiect</a>
+    <a class="sidebar-link" href="#definire"><i class="fa-solid fa-pen-to-square fa-fw"></i> Definirea unei clase</a>
+    <a class="sidebar-link" href="#instantiere"><i class="fa-solid fa-cube fa-fw"></i> Instanțierea</a>
+    <a class="sidebar-link" href="#copiere"><i class="fa-solid fa-clone fa-fw"></i> Copierea și referința</a>
+    <a class="sidebar-link" href="#implicit"><i class="fa-solid fa-hashtag fa-fw"></i> Valori inițiale</a>
+    <a class="sidebar-link" href="#vector"><i class="fa-solid fa-table-cells fa-fw"></i> Vector de obiecte</a>
+    <a class="sidebar-link" href="#erori"><i class="fa-solid fa-triangle-exclamation fa-fw"></i> Erori frecvente</a>
+    <a class="sidebar-link" href="#comparatie"><i class="fa-solid fa-language fa-fw"></i> Comparație între limbaje</a>
+    <span class="sidebar-label">Laboratoare POO</span>
+    <a class="sidebar-link" href="lab-0.html">Lab 0 – Mediul de lucru și de la date la obiecte</a>
+    <a class="sidebar-link active" href="lab-1.html">Lab 1 – Clase și obiecte</a>
+    <a class="sidebar-link" href="index.html">← Înapoi la modul</a>
+  </aside>
+
+  <main class="main">
+    <!-- Hero -->
+    <div class="page-hero">
+      <span class="session-tag">Laborator 1 · POO · C++ · Java · Python</span>
+      <h1>Clase și obiecte</h1>
+      <div class="hero-meta">
+        <span class="chip">Clasă · obiect</span>
+        <span class="chip">Câmpuri · metode</span>
+        <span class="chip">Instanțiere</span>
+        <span class="chip">Copie vs. referință</span>
+        <span class="chip">C++ · Java · Python</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="t1-curs">Curs</button>
+      <button class="tab-btn" data-tab="t1-exemple">Exemple</button>
+      <button class="tab-btn" data-tab="t1-lab">Laborator</button>
+      <button class="tab-btn" data-tab="t1-cheat">Cheat Sheet</button>
+      <button class="tab-btn" data-tab="t1-autoevaluare">Autoevaluare</button>
+    </div>
+
+    <div class="tab-wrap">
+      <!-- TAB: CURS -->
+      <div class="tab-pane active" id="t1-curs">
+        <div class="prose">
+
+<div class="prereq-box" id="prereq">
+<h4>Prerequisite – ce trebuie să știi înainte de acest laborator</h4>
+<ul>
+<li>Ai parcurs Laboratorul 0: ai definit un tip cu câmpuri (<code>struct</code> în C++, <code>class</code> în Java și Python), ai creat instanțe și ai accesat câmpurile cu operatorul <code>.</code></li>
+<li>Ai folosit un vector de instanțe și ai aplicat pe el tiparele maxim cu poziție și acumulator (Laborator 0, S6 și S7 din M6)</li>
+<li>Ai văzut în Laboratorul 0 că interschimbarea a două elemente poate însemna <em>copierea</em> instanțelor (C++) sau a <em>referințelor</em> (Java, Python)</li>
+<li>Ai scris și apelat subprograme cu parametri și valoare returnată (Laborator 0)</li>
+<li>Scrii condiții <code>if</code> (S4) și bucle <code>for</code> (S5)</li>
+</ul>
+<p style="font-size:.85rem;color:#78350f;margin:.6rem 0 0;">Subprogramele (funcțiile) sunt reamintite în Laboratorul 0, secțiunea „Reamintire: subprograme”. O metodă este un subprogram definit într-o clasă; aici ea este scrisă cu tipul returnat, parametrii și corpul ei, ca pe orice subprogram.</p>
+</div>
+<h2 id="intro">Introducere</h2>
+<p>În Laboratorul 0 ai grupat datele care aparțin împreună într-un tip nou. Totuși, operațiile asupra acestor date au rămas în afara tipului: dacă ai nevoie de aria unui dreptunghi, scrii <code>d.latime * d.inaltime</code> în fiecare loc din program unde ai nevoie de ea. Dacă formula trebuie schimbată, trebuie găsite și modificate toate locurile. Mai grav, nimic din program nu spune că acea formulă „aparține” dreptunghiului.</p>
+<p>O <strong>clasă</strong> rezolvă problema, deoarece pune în același loc datele și operațiile care le folosesc. Dreptunghiul își știe lățimea, înălțimea și felul în care își calculează aria; programul doar îi cere „spune-mi aria”. Acest laborator introduce vocabularul de bază (clasă, obiect, câmp, metodă, instanțiere) și insistă pe o întrebare care produce confuzii chiar și la programatori experimentați: ce se întâmplă atunci când scrii <code>b = a</code> pentru două obiecte?</p>
+<div class="callout info">
+<span class="callout-icon">💡</span>
+<div class="callout-body">
+<strong>Punct cheie</strong>
+<p>Nimic din ce ai învățat în M6 nu se pierde: o metodă conține variabile, condiții și bucle exact ca orice alt cod. Se schimbă doar <strong>locul</strong> unde scrii operațiile (în interiorul clasei) și <strong>felul în care le apelezi</strong> (pe un obiect: <code>a.arie()</code>).</p>
+</div>
+</div>
+<div class="callout warn">
+<span class="callout-icon">⚠️</span>
+<div class="callout-body">
+<strong>Ce nu dezvoltăm în acest laborator</strong>
+<p>Nu folosim constructori sau inițializatori (în Python, <code>__init__</code>), nu controlăm accesul la câmpuri (în C++ scriem <code>public:</code> și nu discutăm încă <code>private</code>), și nu tratăm moștenirea, polimorfismul, membrii <code>static</code> sau transmiterea obiectelor ca argumente. Nu folosim nici pointeri sau referințe în C++ (vezi sesiunea X). Metodele Java din acest laborator nu sunt <code>static</code> (spre deosebire de subprogramele din Laboratorul 0), pentru că se apelează pe obiecte.</p>
+</div>
+</div>
+<div class="objectives" id="obiective">
+<h3>La finalul acestui laborator vei putea să:</h3>
+<ol>
+<li><strong>Definești</strong> clasa, obiectul, câmpul, metoda și instanțierea și <strong>distingi</strong> clasa de obiect</li>
+<li><strong>Scrii</strong> o clasă cu câmpuri și metode în C++, Java și Python</li>
+<li><strong>Creezi</strong> obiecte (instanțiere) și <strong>apelezi</strong> metodele lor</li>
+<li><strong>Explici</strong> cum o metodă „vede” câmpurile obiectului pe care este apelată (<code>this</code> / <code>self</code>)</li>
+<li><strong>Prezici</strong> efectul lui <code>b = a</code> în C++, Java și Python</li>
+<li><strong>Faci</strong> o copie reală a unui obiect, în fiecare limbaj</li>
+<li><strong>Folosești</strong> un vector de obiecte</li>
+<li><strong>Recunoști și corectezi</strong> erori frecvente: acces privat implicit, referință <code>null</code>, <code>self</code> lipsă, atribut de clasă mutabil partajat</li>
+</ol>
+</div>
+<h2 id="definitii">Clasă și obiect: definiții</h2>
+<p>O <strong>clasă</strong> este un tip definit de programator care descrie, pentru toate obiectele de același fel, <strong>datele</strong> pe care le au (numite <strong>câmpuri</strong>, sau <em>atribute</em>) și <strong>operațiile</strong> pe care le pot executa (numite <strong>metode</strong>). Un <strong>obiect</strong> (numit și <strong>instanță</strong> a clasei) este o realizare concretă a unei clase, cu propriile valori pentru câmpuri. <strong>Instanțierea</strong> este crearea unui obiect pornind de la o clasă. O <strong>metodă</strong> este o funcție definită în interiorul unei clase, care se apelează pe un obiect, de exemplu <code>a.arie()</code>, și lucrează cu câmpurile acelui obiect.</p>
+<p>În limba română, „clasa” este planul, iar „obiectul” este ceea ce construiești după plan. Clasa <code>Dreptunghi</code> spune că orice dreptunghi are o lățime, o înălțime și o arie calculabilă; obiectul <code>a</code> este un anumit dreptunghi, de 4 pe 3. Din aceeași clasă poți crea oricâte obiecte, iar fiecare are propriile valori ale câmpurilor.</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Termen</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+<tbody>
+<tr><td>Clasă</td><td><code>class</code> (sau <code>struct</code>)</td><td><code>class</code></td><td><code>class</code></td></tr><tr><td>Câmp (atribut)</td><td>variabilă membră</td><td>câmp (<em>field</em>)</td><td>atribut (<em>attribute</em>)</td></tr><tr><td>Metodă</td><td>funcție membră</td><td>metodă</td><td>metodă (funcție în clasă)</td></tr><tr><td>Instanțiere</td><td><code>Dreptunghi a;</code></td><td><code>new Dreptunghi()</code></td><td><code>Dreptunghi()</code></td></tr><tr><td>Obiectul curent în metodă</td><td><code>this</code> (opțional)</td><td><code>this</code> (opțional)</td><td><code>self</code> (obligatoriu, primul parametru)</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout info">
+<span class="callout-icon">💡</span>
+<div class="callout-body">
+<strong>Confuzii clasice</strong>
+<p><strong>1. Clasă și obiect nu sunt același lucru.</strong> <code>Dreptunghi</code> este clasa; <code>a</code> și <code>b</code> sunt obiecte. Clasa descrie, obiectul există în program cu valori concrete.</p>
+<p><strong>2. În Java și Python, variabila <code>a</code> nu este obiectul.</strong> Variabila conține o <em>referință</em> către obiect. Specificația Java spune că variabilele de tip clasă păstrează referințe, nu obiecte, iar copierea unei referințe nu copiază obiectul (JLS 4.3.1). Documentația Python spune că „atribuirile nu copiază date, ci doar leagă nume de obiecte”.</p>
+<p><strong>3. <code>class</code> și <code>struct</code> în C++ sunt aproape identice.</strong> Conform cppreference, ele diferă doar prin accesul implicit la membri (și la clasele de bază). Putem verifica diferența direct: într-un <code>struct</code>, câmpul se poate accesa din <code>main</code>; într-un <code>class</code>, nu (vezi „Erori frecvente”).</p>
+<p><strong>4. Metoda nu este o funcție oarecare.</strong> Ea aparține clasei și lucrează pe obiectul pe care este apelată.</p>
+</div>
+</div>
+<h2 id="definire">Definirea unei clase</h2>
+<p>Clasa <code>Dreptunghi</code> are două câmpuri întregi (<code>latime</code> și <code>inaltime</code>) și trei metode: <code>arie</code>, <code>perimetru</code> și <code>scaleaza</code>. Fiecare metodă este scrisă cu <strong>tipul returnat</strong>, <strong>numele</strong>, o listă de <strong>parametri</strong> între paranteze și un <strong>corp</strong> între acolade. Tipul <code>void</code> înseamnă „nu returnează nicio valoare”; în rest, valoarea se returnează cu <code>return</code>. Metoda <code>scaleaza(int k)</code> primește un parametru, <code>k</code>, și modifică ambele câmpuri.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ – class Dreptunghi</span></div>
+<pre><code><span class="kw">class</span> Dreptunghi {
+<span class="kw">public</span>:
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">int</span> arie() {
+        <span class="kw">return</span> latime <span class="op">*</span> inaltime;
+    }
+
+    <span class="tp">int</span> perimetru() {
+        <span class="kw">return</span> <span class="nm">2</span> <span class="op">*</span> (latime <span class="op">+</span> inaltime);
+    }
+
+    <span class="tp">void</span> scaleaza(<span class="tp">int</span> k) {
+        latime <span class="op">=</span> latime <span class="op">*</span> k;
+        inaltime <span class="op">=</span> inaltime <span class="op">*</span> k;
+    }
+};</code></pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Java – class Dreptunghi</span></div>
+<pre><code><span class="kw">class</span> Dreptunghi {
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">int</span> arie() {
+        <span class="kw">return</span> latime <span class="op">*</span> inaltime;
+    }
+
+    <span class="tp">int</span> perimetru() {
+        <span class="kw">return</span> <span class="nm">2</span> <span class="op">*</span> (latime <span class="op">+</span> inaltime);
+    }
+
+    <span class="tp">void</span> scaleaza(<span class="tp">int</span> k) {
+        latime <span class="op">=</span> latime <span class="op">*</span> k;
+        inaltime <span class="op">=</span> inaltime <span class="op">*</span> k;
+    }
+}</code></pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Python – class Dreptunghi</span></div>
+<pre><code><span class="kw">class</span> Dreptunghi:
+    latime <span class="op">=</span> <span class="nm">0</span>
+    inaltime <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">def</span> arie(self):
+        <span class="kw">return</span> self.latime <span class="op">*</span> self.inaltime
+
+    <span class="kw">def</span> perimetru(self):
+        <span class="kw">return</span> <span class="nm">2</span> <span class="op">*</span> (self.latime <span class="op">+</span> self.inaltime)
+
+    <span class="kw">def</span> scaleaza(self, k):
+        self.latime <span class="op">=</span> self.latime <span class="op">*</span> k
+        self.inaltime <span class="op">=</span> self.inaltime <span class="op">*</span> k</code></pre></div>
+<p>Mai multe detalii merită observate. În C++ scriem <code>public:</code> pentru ca membrii să poată fi folosiți din afara clasei, pentru că într-un <code>class</code> accesul implicit este privat; controlul accesului este tratat într-o sesiune ulterioară (vezi sesiunea X). Declarația <code>int latime = 0;</code> din interiorul clasei dă câmpului o valoare inițială, iar în C++ forma aceasta este permisă începând cu C++11 (cppreference, <em>Class declaration</em>). În Java nu scriem aici niciun modificator de acces; subiectul este amânat (vezi sesiunea X).</p>
+<p>În Python, metodele au un prim parametru, numit prin convenție <code>self</code>, prin care primesc obiectul pe care sunt apelate; câmpurile se acced prin <code>self.latime</code>. Documentația spune că numele <code>self</code> este doar o convenție, fără o semnificație specială pentru limbaj. Apelul <code>a.arie()</code> este echivalent cu <code>Dreptunghi.arie(a)</code> (<em>Python Tutorial</em>, cap. 9). În C++ și Java, metoda folosește direct numele câmpurilor; <code>this</code> există și poate fi scris explicit (<code>this-&gt;latime</code> în C++, <code>this.latime</code> în Java), dar în acest laborator nu este necesar.</p>
+<div class="callout warn">
+<span class="callout-icon">⚠️</span>
+<div class="callout-body">
+<strong>Python: valoarea implicită este un atribut al clasei, nu al obiectului</strong>
+<p>Liniile <code>latime = 0</code> și <code>inaltime = 0</code>, scrise direct în clasa Python, creează <strong>atribute ale clasei</strong>, partajate de toate obiectele care nu au propria valoare. Documentația le numește <em>variabile de clasă</em> și le recomandă pentru date comune, nu pentru date proprii fiecărei instanțe. Le folosim aici doar ca să dăm obiectelor o valoare implicită fără un inițializator. Modul obișnuit de a crea câmpuri proprii fiecărui obiect, <code>__init__</code>, este tratat mai târziu (vezi sesiunea X).</p>
+<p>Atribuirea <code>a.latime = 4</code> nu modifică atributul clasei: creează un atribut <em>al obiectului</em> <code>a</code>. Rezultatul rulării programului de mai jos arată diferența:</p>
+</div>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Python</span></div>
+<pre><code><span class="kw">class</span> Dreptunghi:
+    latime <span class="op">=</span> <span class="nm">0</span>
+    inaltime <span class="op">=</span> <span class="nm">0</span>
+
+
+a <span class="op">=</span> Dreptunghi()
+a.latime <span class="op">=</span> <span class="nm">4</span>
+print(Dreptunghi.latime, a.latime)
+print(a.__dict__)</code></pre></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>0 4
+{'latime': 4}</pre></div></div>
+<h2 id="instantiere">Instanțierea și accesul la membri</h2>
+<p>Crearea unui obiect se face diferit în cele trei limbaje, dar rezultatul este similar. În C++, declararea <code>Dreptunghi a;</code> creează direct un obiect. În Java, <code>new Dreptunghi()</code> creează obiectul, iar variabila <code>a</code> primește o referință către el. În Python, apelul <code>Dreptunghi()</code> creează obiectul, iar numele <code>a</code> este legat de el. Odată creat, obiectul are propriile câmpuri, iar acestea se accesează cu operatorul punct; metodele se apelează tot cu punct, urmate de paranteze: <code>a.arie()</code>.</p>
+<p>Obiectele create din aceeași clasă sunt <strong>independente</strong>: modificarea unuia nu o schimbă pe a celuilalt. Programul următor definește o clasă <code>Contor</code> cu un câmp și două metode, creează două contoare și le modifică separat.</p>
+<div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">class</span> Contor {
+<span class="kw">public</span>:
+    <span class="tp">int</span> valoare <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">void</span> creste() {
+        valoare <span class="op">=</span> valoare <span class="op">+</span> <span class="nm">1</span>;
+    }
+
+    <span class="tp">void</span> reseteaza() {
+        valoare <span class="op">=</span> <span class="nm">0</span>;
+    }
+};
+
+<span class="tp">int</span> main() {
+    Contor c;
+    Contor d;
+    c.creste();
+    c.creste();
+    c.creste();
+    d.creste();
+    cout <span class="op">&lt;&lt;</span> c.valoare <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> d.valoare <span class="op">&lt;&lt;</span> endl;
+    c.reseteaza();
+    cout <span class="op">&lt;&lt;</span> c.valoare <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> d.valoare <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · Main.java</div><pre><span class="kw">class</span> Contor {
+    <span class="tp">int</span> valoare <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">void</span> creste() {
+        valoare <span class="op">=</span> valoare <span class="op">+</span> <span class="nm">1</span>;
+    }
+
+    <span class="tp">void</span> reseteaza() {
+        valoare <span class="op">=</span> <span class="nm">0</span>;
+    }
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Main {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Contor c <span class="op">=</span> <span class="kw">new</span> Contor();
+        Contor d <span class="op">=</span> <span class="kw">new</span> Contor();
+        c.creste();
+        c.creste();
+        c.creste();
+        d.creste();
+        System.out.println(c.valoare <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> d.valoare);
+        c.reseteaza();
+        System.out.println(c.valoare <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> d.valoare);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Contor:
+    valoare <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">def</span> creste(self):
+        self.valoare <span class="op">=</span> self.valoare <span class="op">+</span> <span class="nm">1</span>
+
+    <span class="kw">def</span> reseteaza(self):
+        self.valoare <span class="op">=</span> <span class="nm">0</span>
+
+
+c <span class="op">=</span> Contor()
+d <span class="op">=</span> Contor()
+c.creste()
+c.creste()
+c.creste()
+d.creste()
+print(c.valoare, d.valoare)
+c.reseteaza()
+print(c.valoare, d.valoare)</pre></div></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>3 1
+0 1</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>3 1
+0 1</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>3 1
+0 1</pre></div></div>
+<p>După trei apeluri <code>c.creste()</code> și unul <code>d.creste()</code>, contoarele au valorile 3, respectiv 1. Apelul <code>c.reseteaza()</code> aduce <code>c</code> la 0 și lasă <code>d</code> neschimbat. Cele două obiecte au aceleași metode (le definește clasa), dar fiecare lucrează cu propriile câmpuri.</p>
+<h2 id="copiere">Copierea și referința: ce înseamnă b = a</h2>
+<p>Aceasta este diferența cea mai importantă dintre cele trei limbaje. Programul de mai jos creează un dreptunghi <code>a</code> de 4 pe 3, execută <code>b = a</code> (prin <code>Dreptunghi b = a;</code> în C++ și Java, și <code>b = a</code> în Python) și apoi dublează dimensiunile lui <code>b</code>. Ce se întâmplă cu <code>a</code>?</p>
+<div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">class</span> Dreptunghi {
+<span class="kw">public</span>:
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">int</span> arie() {
+        <span class="kw">return</span> latime <span class="op">*</span> inaltime;
+    }
+
+    <span class="tp">int</span> perimetru() {
+        <span class="kw">return</span> <span class="nm">2</span> <span class="op">*</span> (latime <span class="op">+</span> inaltime);
+    }
+
+    <span class="tp">void</span> scaleaza(<span class="tp">int</span> k) {
+        latime <span class="op">=</span> latime <span class="op">*</span> k;
+        inaltime <span class="op">=</span> inaltime <span class="op">*</span> k;
+    }
+};
+
+<span class="tp">int</span> main() {
+    Dreptunghi a;            <span class="cm">// obiect nou; câmpurile primesc 0 din declarație</span>
+    a.latime <span class="op">=</span> <span class="nm">4</span>;
+    a.inaltime <span class="op">=</span> <span class="nm">3</span>;
+
+    Dreptunghi b <span class="op">=</span> a;        <span class="cm">// C++: b este o COPIE a lui a</span>
+    b.scaleaza(<span class="nm">2</span>);
+
+    cout <span class="op">&lt;&lt;</span> <span class="st">"a: "</span> <span class="op">&lt;&lt;</span> a.latime <span class="op">&lt;&lt;</span> <span class="st">"x"</span> <span class="op">&lt;&lt;</span> a.inaltime <span class="op">&lt;&lt;</span> <span class="st">" arie="</span> <span class="op">&lt;&lt;</span> a.arie() <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"b: "</span> <span class="op">&lt;&lt;</span> b.latime <span class="op">&lt;&lt;</span> <span class="st">"x"</span> <span class="op">&lt;&lt;</span> b.inaltime <span class="op">&lt;&lt;</span> <span class="st">" arie="</span> <span class="op">&lt;&lt;</span> b.arie() <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · Main.java</div><pre><span class="kw">class</span> Dreptunghi {
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">int</span> arie() {
+        <span class="kw">return</span> latime <span class="op">*</span> inaltime;
+    }
+
+    <span class="tp">int</span> perimetru() {
+        <span class="kw">return</span> <span class="nm">2</span> <span class="op">*</span> (latime <span class="op">+</span> inaltime);
+    }
+
+    <span class="tp">void</span> scaleaza(<span class="tp">int</span> k) {
+        latime <span class="op">=</span> latime <span class="op">*</span> k;
+        inaltime <span class="op">=</span> inaltime <span class="op">*</span> k;
+    }
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Main {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Dreptunghi a <span class="op">=</span> <span class="kw">new</span> Dreptunghi();   <span class="cm">// obiect nou; câmpurile primesc 0 din declarație</span>
+        a.latime <span class="op">=</span> <span class="nm">4</span>;
+        a.inaltime <span class="op">=</span> <span class="nm">3</span>;
+
+        Dreptunghi b <span class="op">=</span> a;                  <span class="cm">// Java: b și a indică ACELAȘI obiect</span>
+        b.scaleaza(<span class="nm">2</span>);
+
+        System.out.println(<span class="st">"a: "</span> <span class="op">+</span> a.latime <span class="op">+</span> <span class="st">"x"</span> <span class="op">+</span> a.inaltime <span class="op">+</span> <span class="st">" arie="</span> <span class="op">+</span> a.arie());
+        System.out.println(<span class="st">"b: "</span> <span class="op">+</span> b.latime <span class="op">+</span> <span class="st">"x"</span> <span class="op">+</span> b.inaltime <span class="op">+</span> <span class="st">" arie="</span> <span class="op">+</span> b.arie());
+        System.out.println(a <span class="op">==</span> b);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Dreptunghi:
+    latime <span class="op">=</span> <span class="nm">0</span>        <span class="cm"># valoare implicită, la nivel de clasă</span>
+    inaltime <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">def</span> arie(self):
+        <span class="kw">return</span> self.latime <span class="op">*</span> self.inaltime
+
+    <span class="kw">def</span> perimetru(self):
+        <span class="kw">return</span> <span class="nm">2</span> <span class="op">*</span> (self.latime <span class="op">+</span> self.inaltime)
+
+    <span class="kw">def</span> scaleaza(self, k):
+        self.latime <span class="op">=</span> self.latime <span class="op">*</span> k
+        self.inaltime <span class="op">=</span> self.inaltime <span class="op">*</span> k
+
+
+a <span class="op">=</span> Dreptunghi()      <span class="cm"># obiect nou</span>
+a.latime <span class="op">=</span> <span class="nm">4</span>
+a.inaltime <span class="op">=</span> <span class="nm">3</span>
+
+b <span class="op">=</span> a                 <span class="cm"># Python: b și a indică ACELAȘI obiect</span>
+b.scaleaza(<span class="nm">2</span>)
+
+print(<span class="st">"a:"</span>, str(a.latime) <span class="op">+</span> <span class="st">"x"</span> <span class="op">+</span> str(a.inaltime), <span class="st">"arie="</span> <span class="op">+</span> str(a.arie()))
+print(<span class="st">"b:"</span>, str(b.latime) <span class="op">+</span> <span class="st">"x"</span> <span class="op">+</span> str(b.inaltime), <span class="st">"arie="</span> <span class="op">+</span> str(b.arie()))
+print(a <span class="kw">is</span> b)</pre></div></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>a: 4x3 arie=12
+b: 8x6 arie=48</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>a: 8x6 arie=48
+b: 8x6 arie=48
+true</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>a: 8x6 arie=48
+b: 8x6 arie=48
+True</pre></div></div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Limbaj</th><th>Efectul lui <code>b = a</code></th><th>Ce s-a întâmplat cu <code>a</code> după <code>b.scaleaza(2)</code></th></tr></thead>
+<tbody>
+<tr><td>C++</td><td>se creează o <strong>copie</strong> a lui <code>a</code>, câmp cu câmp</td><td>a rămas 4×3</td></tr><tr><td>Java</td><td>se copiază <strong>referința</strong>; <code>a</code> și <code>b</code> indică același obiect (<code>a == b</code> este <code>true</code>)</td><td>a a devenit 8×6</td></tr><tr><td>Python</td><td>numele <code>b</code> este legat de același obiect ca <code>a</code> (<code>a is b</code> este <code>True</code>)</td><td>a a devenit 8×6</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout error">
+<span class="callout-icon">❌</span>
+<div class="callout-body">
+<strong>Nu extinde regula unui limbaj la celelalte</strong>
+<p>Același cod aparent, <code>b = a</code>, are efecte diferite. Nu poți deduce din comportamentul unui limbaj ce se întâmplă în altul. Comportamentul C++ de aici (copiere) este cel implicit pentru tipurile de clasă folosite așa: atribuirea de copiere generată automat copiază câmp cu câmp (cppreference, <em>Copy assignment operator</em>). C++ are și mecanisme care permit comportament apropiat de cel din Java, prin pointeri sau referințe, dar ele nu fac obiectul acestui laborator (vezi sesiunea X).</p>
+</div>
+</div>
+<h3 id="copie-explicita">Copia reală, în Java și Python</h3>
+<p>Când ai nevoie de un obiect nou, independent, cu aceleași valori, în Java și în Python îl creezi explicit și îi copiezi câmpurile. Același procedeu funcționează și în C++. Programul de mai jos face acest lucru: <code>c</code> este un obiect separat, deci modificarea lui nu schimbă pe <code>a</code>.</p>
+<div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">class</span> Dreptunghi {
+<span class="kw">public</span>:
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> arie() { <span class="kw">return</span> latime <span class="op">*</span> inaltime; }
+};
+
+<span class="tp">int</span> main() {
+    Dreptunghi a;
+    Dreptunghi c;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"initial: "</span> <span class="op">&lt;&lt;</span> a.latime <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> a.inaltime <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> a.arie() <span class="op">&lt;&lt;</span> endl;
+    a.latime <span class="op">=</span> <span class="nm">4</span>;
+    a.inaltime <span class="op">=</span> <span class="nm">3</span>;
+    c.latime <span class="op">=</span> a.latime;
+    c.inaltime <span class="op">=</span> a.inaltime;
+    c.latime <span class="op">=</span> <span class="nm">10</span>;
+    cout <span class="op">&lt;&lt;</span> a.latime <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> c.latime <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java</div><pre><span class="kw">class</span> Dreptunghi {
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> arie() { <span class="kw">return</span> latime <span class="op">*</span> inaltime; }
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Copie {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Dreptunghi a <span class="op">=</span> <span class="kw">new</span> Dreptunghi();
+        System.out.println(<span class="st">"initial: "</span> <span class="op">+</span> a.latime <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> a.inaltime <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> a.arie());
+        a.latime <span class="op">=</span> <span class="nm">4</span>;
+        a.inaltime <span class="op">=</span> <span class="nm">3</span>;
+        Dreptunghi c <span class="op">=</span> <span class="kw">new</span> Dreptunghi();
+        c.latime <span class="op">=</span> a.latime;
+        c.inaltime <span class="op">=</span> a.inaltime;
+        c.latime <span class="op">=</span> <span class="nm">10</span>;
+        System.out.println(a.latime <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> c.latime);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Dreptunghi:
+    latime <span class="op">=</span> <span class="nm">0</span>
+    inaltime <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">def</span> arie(self):
+        <span class="kw">return</span> self.latime <span class="op">*</span> self.inaltime
+
+
+a <span class="op">=</span> Dreptunghi()
+print(<span class="st">"initial:"</span>, a.latime, a.inaltime, a.arie())
+a.latime <span class="op">=</span> <span class="nm">4</span>
+a.inaltime <span class="op">=</span> <span class="nm">3</span>
+c <span class="op">=</span> Dreptunghi()
+c.latime <span class="op">=</span> a.latime
+c.inaltime <span class="op">=</span> a.inaltime
+c.latime <span class="op">=</span> <span class="nm">10</span>
+print(a.latime, c.latime)</pre></div></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>initial: 0 0 0
+4 10</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>initial: 0 0 0
+4 10</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>initial: 0 0 0
+4 10</pre></div></div>
+<h2 id="implicit">Ce valoare au câmpurile la început?</h2>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th></th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+<tbody>
+<tr><td>Câmp cu valoare dată în clasă</td><td>primește acea valoare la crearea obiectului (<code>int latime = 0;</code>)</td><td>primește acea valoare (<code>int latime = 0;</code>)</td><td>atributul de clasă este vizibil prin obiect până la prima atribuire</td></tr><tr><td>Câmp fără valoare dată</td><td>pentru un obiect creat ca variabilă locală, câmpul scalar (de exemplu <code>int</code>, <code>double</code>) are o valoare <strong>nedeterminată</strong></td><td>valoare implicită după tip: <code>0</code> pentru numere, <code>0.0</code> pentru <code>double</code>, <code>false</code> pentru <code>boolean</code>, <code>null</code> pentru referințe</td><td>câmpul <strong>nu există</strong> până la prima atribuire (citirea lui produce <code>AttributeError</code>)</td></tr><tr><td>Variabila care ține obiectul</td><td>este obiectul</td><td>o variabilă locală trebuie atribuită înainte de folosire (eroare de compilare altfel)</td><td>numele trebuie legat de un obiect înainte de folosire</td></tr>
+</tbody>
+</table>
+</div>
+<p>Pentru C++, standardul (în forma descrisă de cppreference, <em>Default-initialization</em>) spune că un scalar fără inițializator, cu durată de stocare automată, are o valoare nedeterminată; până la C++23 citirea acestei valori este comportament nedefinit, iar C++26 introduce în locul regulii „comportamentul eronat”. De aceea, în clasele din acest laborator fiecare câmp primește o valoare în declarație. Pentru Java, valorile implicite ale câmpurilor sunt cele din JLS 4.12.5; variabilele locale nu au valori implicite.</p>
+<h2 id="vector">Un vector de obiecte</h2>
+<p>Tiparele din M6 se aplică neschimbat. Programul următor reține, într-un vector de trei dreptunghiuri, <em>poziția</em> celui cu aria cea mai mare. Nu se reține aria: din poziție se obțin atât dreptunghiul, cât și aria lui. Ca în Laboratorul 0, în Java fiecare element trebuie creat cu <code>new</code>.</p>
+<div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">class</span> Dreptunghi {
+<span class="kw">public</span>:
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">int</span> arie() {
+        <span class="kw">return</span> latime <span class="op">*</span> inaltime;
+    }
+};
+
+<span class="tp">int</span> main() {
+    Dreptunghi d[<span class="nm">3</span>];
+    d[<span class="nm">0</span>].latime <span class="op">=</span> <span class="nm">2</span>;  d[<span class="nm">0</span>].inaltime <span class="op">=</span> <span class="nm">3</span>;
+    d[<span class="nm">1</span>].latime <span class="op">=</span> <span class="nm">5</span>;  d[<span class="nm">1</span>].inaltime <span class="op">=</span> <span class="nm">1</span>;
+    d[<span class="nm">2</span>].latime <span class="op">=</span> <span class="nm">4</span>;  d[<span class="nm">2</span>].inaltime <span class="op">=</span> <span class="nm">4</span>;
+
+    <span class="tp">int</span> poz <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+        <span class="kw">if</span> (d[i].arie() <span class="op">&gt;</span> d[poz].arie()) {
+            poz <span class="op">=</span> i;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Dreptunghiul "</span> <span class="op">&lt;&lt;</span> poz <span class="op">+</span> <span class="nm">1</span> <span class="op">&lt;&lt;</span> <span class="st">" are aria "</span> <span class="op">&lt;&lt;</span> d[poz].arie() <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · Main.java</div><pre><span class="kw">class</span> Dreptunghi {
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">int</span> arie() {
+        <span class="kw">return</span> latime <span class="op">*</span> inaltime;
+    }
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Main {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Dreptunghi[] d <span class="op">=</span> <span class="kw">new</span> Dreptunghi[<span class="nm">3</span>];
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            d[i] <span class="op">=</span> <span class="kw">new</span> Dreptunghi();
+        }
+        d[<span class="nm">0</span>].latime <span class="op">=</span> <span class="nm">2</span>;  d[<span class="nm">0</span>].inaltime <span class="op">=</span> <span class="nm">3</span>;
+        d[<span class="nm">1</span>].latime <span class="op">=</span> <span class="nm">5</span>;  d[<span class="nm">1</span>].inaltime <span class="op">=</span> <span class="nm">1</span>;
+        d[<span class="nm">2</span>].latime <span class="op">=</span> <span class="nm">4</span>;  d[<span class="nm">2</span>].inaltime <span class="op">=</span> <span class="nm">4</span>;
+
+        <span class="tp">int</span> poz <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            <span class="kw">if</span> (d[i].arie() <span class="op">&gt;</span> d[poz].arie()) {
+                poz <span class="op">=</span> i;
+            }
+        }
+        System.out.println(<span class="st">"Dreptunghiul "</span> <span class="op">+</span> (poz <span class="op">+</span> <span class="nm">1</span>) <span class="op">+</span> <span class="st">" are aria "</span> <span class="op">+</span> d[poz].arie());
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Dreptunghi:
+    latime <span class="op">=</span> <span class="nm">0</span>
+    inaltime <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">def</span> arie(self):
+        <span class="kw">return</span> self.latime <span class="op">*</span> self.inaltime
+
+
+d <span class="op">=</span> []
+<span class="kw">for</span> l, h <span class="kw">in</span> [(<span class="nm">2</span>, <span class="nm">3</span>), (<span class="nm">5</span>, <span class="nm">1</span>), (<span class="nm">4</span>, <span class="nm">4</span>)]:
+    r <span class="op">=</span> Dreptunghi()
+    r.latime <span class="op">=</span> l
+    r.inaltime <span class="op">=</span> h
+    d.append(r)
+
+poz <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> range(<span class="nm">1</span>, <span class="nm">3</span>):
+    <span class="kw">if</span> d[i].arie() <span class="op">&gt;</span> d[poz].arie():
+        poz <span class="op">=</span> i
+print(<span class="st">"Dreptunghiul"</span>, poz <span class="op">+</span> <span class="nm">1</span>, <span class="st">"are aria"</span>, d[poz].arie())</pre></div></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>Dreptunghiul 3 are aria 16</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>Dreptunghiul 3 are aria 16</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>Dreptunghiul 3 are aria 16</pre></div></div>
+<h2 id="erori">Erori frecvente</h2>
+<h3>Eroarea 1 – Câmp privat în C++ (<code>class</code> fără <code>public:</code>)</h3>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ – greșit</span></div>
+<pre><code><span class="kw">class</span> Punct {
+    <span class="tp">int</span> x <span class="op">=</span> <span class="nm">0</span>;
+};
+
+Punct p;
+p.x <span class="op">=</span> <span class="nm">5</span>;       <span class="cm">// eroare: x este privat</span></code></pre></div>
+<p>Mesajul real al lui <code>g++</code> 13.3 (primele linii) este:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">g++</span></div>
+<pre><code>privat.cpp: In function ‘int main()’:
+privat.cpp:17:7: error: ‘int Punct::x’ is private within this context
+   17 |     p.x = 5;
+      |       ^
+privat.cpp:5:9: note: declared private here</code></pre></div>
+<p>Același cod, cu <code>struct</code> în loc de <code>class</code>, se compilează: acolo accesul implicit este public. Remediul este să scrii <code>public:</code> în clasă sau să folosești <code>struct</code>.</p>
+<h3>Eroarea 2 – Variabilă locală Java neinițializată</h3>
+<div class="code-block"><div class="code-header"><span class="code-lang">Java – greșit</span></div>
+<pre><code>Dreptunghi a;
+a.latime <span class="op">=</span> <span class="nm">4</span>;      <span class="cm">// a nu are încă nicio valoare</span></code></pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">javac</span></div>
+<pre><code>Gresit.java:8: error: variable a might not have been initialized
+        a.latime = 4;
+        ^
+1 error</code></pre></div>
+<p>Remediul este <code>Dreptunghi a = new Dreptunghi();</code>. O variabilă locală Java nu are o valoare implicită; câmpurile, în schimb, au (tabelul de mai sus).</p>
+<h3>Eroarea 3 – Referință <code>null</code> în Java</h3>
+<p>O referință poate fi <code>null</code>, adică poate să nu indice niciun obiect. Folosirea ei ca și cum ar indica un obiect oprește programul cu <code>NullPointerException</code>. Programul de mai jos prinde excepția și afișează numele ei.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">Java – Main.java</span></div>
+<pre><code><span class="kw">class</span> Dreptunghi {
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Main {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Dreptunghi n <span class="op">=</span> <span class="kw">null</span>;
+        <span class="kw">try</span> {
+            System.out.println(n.latime);
+        } <span class="kw">catch</span> (NullPointerException e) {
+            System.out.println(<span class="st">"NullPointerException"</span>);
+        }
+    }
+}</code></pre></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>NullPointerException</pre></div></div>
+<h3>Eroarea 4 – Python: <code>self</code> lipsă sau în plus</h3>
+<p>Metoda Python primește obiectul ca prim parametru. Dacă o apelezi pe clasă, în loc de pe un obiect, <code>self</code> nu are de unde veni; dacă o definești fără <code>self</code> și o apelezi pe un obiect, Python încearcă oricum să transmită obiectul. Mesajele reale, Python 3.13, sunt:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">Python – apel pe clasă (fără obiect)</span></div>
+<pre><code>TypeError: Dreptunghi.arie() missing 1 required positional argument: 'self'</code></pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Python – metodă definită fără self</span></div>
+<pre><code>TypeError: D.arie() takes 0 positional arguments but 1 was given</code></pre></div>
+<h3>Eroarea 5 – Python: listă ca atribut de clasă</h3>
+<p>Un atribut de clasă este partajat de toate obiectele. Dacă valoarea lui este mutabilă, de exemplu o listă, toate obiectele o văd și o modifică împreună. Documentația Python avertizează explicit asupra acestei situații și dă exemplul unei liste de „trucuri” pentru câini. Programul următor arată același efect.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">Python</span></div>
+<pre><code><span class="kw">class</span> Lista:
+    elemente <span class="op">=</span> []
+
+    <span class="kw">def</span> adauga(self, x):
+        self.elemente.append(x)
+
+
+p <span class="op">=</span> Lista()
+q <span class="op">=</span> Lista()
+p.adauga(<span class="nm">1</span>)
+q.adauga(<span class="nm">2</span>)
+print(p.elemente, q.elemente)
+print(p.elemente <span class="kw">is</span> q.elemente)</code></pre></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>[1, 2] [1, 2]
+True</pre></div></div>
+<p>Cele două obiecte, <code>p</code> și <code>q</code>, nu au liste separate: ambele folosesc lista clasei. Remediul este să creezi lista pentru fiecare obiect în parte, în inițializator (vezi sesiunea X).</p>
+<h3>Eroarea 6 – Să crezi că <code>b = a</code> face o copie</h3>
+<p>Este cazul cel mai des întâlnit. În Java și Python modificarea lui <code>b</code> modifică și <code>a</code> (tabelul din secțiunea „Copierea și referința”). Când ai nevoie de un obiect independent, creează-l explicit și copiază-i câmpurile.</p>
+<h2 id="comparatie">Comparație între limbaje</h2>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Concept</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+<tbody>
+<tr><td>Definirea clasei</td><td><code>class D { public: ... };</code> (cu <code>;</code> final)</td><td><code>class D { ... }</code></td><td><code>class D:</code> + corp indentat</td></tr><tr><td>Valoare inițială a unui câmp</td><td><code>int x = 0;</code> în clasă (C++11)</td><td><code>int x = 0;</code> în clasă; altfel valoare implicită după tip</td><td>atribut de clasă <code>x = 0</code> (valoare implicită partajată); altfel nu există</td></tr><tr><td>Crearea obiectului</td><td><code>D a;</code></td><td><code>D a = new D();</code></td><td><code>a = D()</code></td></tr><tr><td>Apelul unei metode</td><td><code>a.arie()</code></td><td><code>a.arie()</code></td><td><code>a.arie()</code></td></tr><tr><td>Obiectul curent în metodă</td><td><code>this</code> (opțional)</td><td><code>this</code> (opțional)</td><td><code>self</code>, primul parametru</td></tr><tr><td>Accesul implicit la membri</td><td><code>class</code>: privat; <code>struct</code>: public</td><td>tratat într-o sesiune ulterioară</td><td>tratat într-o sesiune ulterioară</td></tr><tr><td><code>b = a</code></td><td>copiază obiectul</td><td>copiază referința</td><td>leagă numele de același obiect</td></tr><tr><td>Referință „fără obiect”</td><td>—</td><td><code>null</code></td><td><code>None</code></td></tr><tr><td>Eroare la câmp inexistent</td><td>eroare de compilare</td><td>eroare de compilare</td><td>eroare de execuție (<code>AttributeError</code>)</td></tr>
+</tbody>
+</table>
+</div>
+
+        </div>
+      </div><!-- /tab curs -->
+
+      <!-- TAB: EXEMPLE -->
+      <div class="tab-pane" id="t1-exemple">
+        <div class="prose">
+
+<h2 id="exemple">Exemple rezolvate</h2>
+<p>Aceeași metodologie ca în Laboratorul 0: <strong>cerință</strong>, <strong>proiectare</strong>, <strong>cod</strong> și <strong>rezultat</strong>. Toate programele au fost compilate și rulate în cele trei limbaje; ieșirile afișate sunt cele reale. În Java, fișierul care conține clasa <code>Main</code> trebuie să se numească <code>Main.java</code>.</p>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Un contor<span class="diff-badge usoara">Ușoară</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Definește o clasă <code>Contor</code> cu un câmp <code>valoare</code> (inițial 0) și metodele <code>creste()</code> (adaugă 1) și <code>reseteaza()</code> (readuce valoarea la 0). Creează două contoare, <code>c</code> și <code>d</code>; apelează <code>c.creste()</code> de trei ori și <code>d.creste()</code> o dată; afișează valorile; resetează <code>c</code> și afișează din nou.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Proiectarea algoritmului</div><ol class="algo-steps"><li>Clasa are un câmp și două metode fără parametri și fără valoare returnată (<code>void</code> în C++ și Java).</li><li>Cele două obiecte au câmpuri separate, deci modificarea lui <code>c</code> nu afectează <code>d</code>.</li><li>După <code>c.reseteaza()</code>, <code>c.valoare</code> devine 0, iar <code>d.valoare</code> rămâne 1.</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">class</span> Contor {
+<span class="kw">public</span>:
+    <span class="tp">int</span> valoare <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">void</span> creste() {
+        valoare <span class="op">=</span> valoare <span class="op">+</span> <span class="nm">1</span>;
+    }
+
+    <span class="tp">void</span> reseteaza() {
+        valoare <span class="op">=</span> <span class="nm">0</span>;
+    }
+};
+
+<span class="tp">int</span> main() {
+    Contor c;
+    Contor d;
+    c.creste();
+    c.creste();
+    c.creste();
+    d.creste();
+    cout <span class="op">&lt;&lt;</span> c.valoare <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> d.valoare <span class="op">&lt;&lt;</span> endl;
+    c.reseteaza();
+    cout <span class="op">&lt;&lt;</span> c.valoare <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> d.valoare <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · Main.java</div><pre><span class="kw">class</span> Contor {
+    <span class="tp">int</span> valoare <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">void</span> creste() {
+        valoare <span class="op">=</span> valoare <span class="op">+</span> <span class="nm">1</span>;
+    }
+
+    <span class="tp">void</span> reseteaza() {
+        valoare <span class="op">=</span> <span class="nm">0</span>;
+    }
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Main {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Contor c <span class="op">=</span> <span class="kw">new</span> Contor();
+        Contor d <span class="op">=</span> <span class="kw">new</span> Contor();
+        c.creste();
+        c.creste();
+        c.creste();
+        d.creste();
+        System.out.println(c.valoare <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> d.valoare);
+        c.reseteaza();
+        System.out.println(c.valoare <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> d.valoare);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Contor:
+    valoare <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">def</span> creste(self):
+        self.valoare <span class="op">=</span> self.valoare <span class="op">+</span> <span class="nm">1</span>
+
+    <span class="kw">def</span> reseteaza(self):
+        self.valoare <span class="op">=</span> <span class="nm">0</span>
+
+
+c <span class="op">=</span> Contor()
+d <span class="op">=</span> Contor()
+c.creste()
+c.creste()
+c.creste()
+d.creste()
+print(c.valoare, d.valoare)
+c.reseteaza()
+print(c.valoare, d.valoare)</pre></div></div></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Rezultat</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>3 1
+0 1</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>3 1
+0 1</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>3 1
+0 1</pre></div></div></div>
+</div>
+</div>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num apply">2</div><div class="exercise-title">Dreptunghiul cu aria maximă<span class="diff-badge medie">Medie</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Un vector conține trei dreptunghiuri, cu dimensiunile 2×3, 5×1 și 4×4. Afișează poziția (de la 1) și aria celui cu aria maximă.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Proiectarea algoritmului</div><ol class="algo-steps"><li>Se folosește clasa <code>Dreptunghi</code>, cu metoda <code>arie()</code>.</li><li>Se aplică tiparul <strong>maxim cu poziție</strong>: <code>poz = 0</code>, apoi, pentru <code>i</code> de la 1, dacă <code>d[i].arie() &gt; d[poz].arie()</code> atunci <code>poz = i</code>.</li><li>Aria este calculată de fiecare dată prin metodă, nu este memorată separat; poziția afișată este <code>poz + 1</code>.</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">class</span> Dreptunghi {
+<span class="kw">public</span>:
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">int</span> arie() {
+        <span class="kw">return</span> latime <span class="op">*</span> inaltime;
+    }
+};
+
+<span class="tp">int</span> main() {
+    Dreptunghi d[<span class="nm">3</span>];
+    d[<span class="nm">0</span>].latime <span class="op">=</span> <span class="nm">2</span>;  d[<span class="nm">0</span>].inaltime <span class="op">=</span> <span class="nm">3</span>;
+    d[<span class="nm">1</span>].latime <span class="op">=</span> <span class="nm">5</span>;  d[<span class="nm">1</span>].inaltime <span class="op">=</span> <span class="nm">1</span>;
+    d[<span class="nm">2</span>].latime <span class="op">=</span> <span class="nm">4</span>;  d[<span class="nm">2</span>].inaltime <span class="op">=</span> <span class="nm">4</span>;
+
+    <span class="tp">int</span> poz <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+        <span class="kw">if</span> (d[i].arie() <span class="op">&gt;</span> d[poz].arie()) {
+            poz <span class="op">=</span> i;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Dreptunghiul "</span> <span class="op">&lt;&lt;</span> poz <span class="op">+</span> <span class="nm">1</span> <span class="op">&lt;&lt;</span> <span class="st">" are aria "</span> <span class="op">&lt;&lt;</span> d[poz].arie() <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · Main.java</div><pre><span class="kw">class</span> Dreptunghi {
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">int</span> arie() {
+        <span class="kw">return</span> latime <span class="op">*</span> inaltime;
+    }
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Main {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Dreptunghi[] d <span class="op">=</span> <span class="kw">new</span> Dreptunghi[<span class="nm">3</span>];
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            d[i] <span class="op">=</span> <span class="kw">new</span> Dreptunghi();
+        }
+        d[<span class="nm">0</span>].latime <span class="op">=</span> <span class="nm">2</span>;  d[<span class="nm">0</span>].inaltime <span class="op">=</span> <span class="nm">3</span>;
+        d[<span class="nm">1</span>].latime <span class="op">=</span> <span class="nm">5</span>;  d[<span class="nm">1</span>].inaltime <span class="op">=</span> <span class="nm">1</span>;
+        d[<span class="nm">2</span>].latime <span class="op">=</span> <span class="nm">4</span>;  d[<span class="nm">2</span>].inaltime <span class="op">=</span> <span class="nm">4</span>;
+
+        <span class="tp">int</span> poz <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            <span class="kw">if</span> (d[i].arie() <span class="op">&gt;</span> d[poz].arie()) {
+                poz <span class="op">=</span> i;
+            }
+        }
+        System.out.println(<span class="st">"Dreptunghiul "</span> <span class="op">+</span> (poz <span class="op">+</span> <span class="nm">1</span>) <span class="op">+</span> <span class="st">" are aria "</span> <span class="op">+</span> d[poz].arie());
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Dreptunghi:
+    latime <span class="op">=</span> <span class="nm">0</span>
+    inaltime <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">def</span> arie(self):
+        <span class="kw">return</span> self.latime <span class="op">*</span> self.inaltime
+
+
+d <span class="op">=</span> []
+<span class="kw">for</span> l, h <span class="kw">in</span> [(<span class="nm">2</span>, <span class="nm">3</span>), (<span class="nm">5</span>, <span class="nm">1</span>), (<span class="nm">4</span>, <span class="nm">4</span>)]:
+    r <span class="op">=</span> Dreptunghi()
+    r.latime <span class="op">=</span> l
+    r.inaltime <span class="op">=</span> h
+    d.append(r)
+
+poz <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> range(<span class="nm">1</span>, <span class="nm">3</span>):
+    <span class="kw">if</span> d[i].arie() <span class="op">&gt;</span> d[poz].arie():
+        poz <span class="op">=</span> i
+print(<span class="st">"Dreptunghiul"</span>, poz <span class="op">+</span> <span class="nm">1</span>, <span class="st">"are aria"</span>, d[poz].arie())</pre></div></div></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Rezultat</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>Dreptunghiul 3 are aria 16</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>Dreptunghiul 3 are aria 16</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>Dreptunghiul 3 are aria 16</pre></div></div></div><p class="judge-explicatie"><em>Explicație:</em> ariile sunt 6, 5 și 16; maximul este al treilea dreptunghi.</p>
+</div>
+</div>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num apply">3</div><div class="exercise-title">Copie independentă a unui obiect<span class="diff-badge medie">Medie</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Creează un dreptunghi <code>a</code> (4×3). Creează un al doilea obiect, <code>c</code>, copiindu-i câmpurile din <code>a</code>, apoi modifică lățimea lui <code>c</code> la 10. Afișează valorile inițiale ale unui dreptunghi nou (neatins) și lățimile lui <code>a</code> și <code>c</code> la final.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Proiectarea algoritmului</div><ol class="algo-steps"><li>Un dreptunghi nou are câmpurile 0, deci aria 0 (valorile implicite din clasă).</li><li><code>c</code> se creează separat și primește valorile lui <code>a</code> câmp cu câmp.</li><li>Fiind un obiect separat, <code>c</code> se poate modifica fără ca <code>a</code> să se schimbe.</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">class</span> Dreptunghi {
+<span class="kw">public</span>:
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> arie() { <span class="kw">return</span> latime <span class="op">*</span> inaltime; }
+};
+
+<span class="tp">int</span> main() {
+    Dreptunghi a;
+    Dreptunghi c;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"initial: "</span> <span class="op">&lt;&lt;</span> a.latime <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> a.inaltime <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> a.arie() <span class="op">&lt;&lt;</span> endl;
+    a.latime <span class="op">=</span> <span class="nm">4</span>;
+    a.inaltime <span class="op">=</span> <span class="nm">3</span>;
+    c.latime <span class="op">=</span> a.latime;
+    c.inaltime <span class="op">=</span> a.inaltime;
+    c.latime <span class="op">=</span> <span class="nm">10</span>;
+    cout <span class="op">&lt;&lt;</span> a.latime <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> c.latime <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java</div><pre><span class="kw">class</span> Dreptunghi {
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> arie() { <span class="kw">return</span> latime <span class="op">*</span> inaltime; }
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Copie {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Dreptunghi a <span class="op">=</span> <span class="kw">new</span> Dreptunghi();
+        System.out.println(<span class="st">"initial: "</span> <span class="op">+</span> a.latime <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> a.inaltime <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> a.arie());
+        a.latime <span class="op">=</span> <span class="nm">4</span>;
+        a.inaltime <span class="op">=</span> <span class="nm">3</span>;
+        Dreptunghi c <span class="op">=</span> <span class="kw">new</span> Dreptunghi();
+        c.latime <span class="op">=</span> a.latime;
+        c.inaltime <span class="op">=</span> a.inaltime;
+        c.latime <span class="op">=</span> <span class="nm">10</span>;
+        System.out.println(a.latime <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> c.latime);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Dreptunghi:
+    latime <span class="op">=</span> <span class="nm">0</span>
+    inaltime <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">def</span> arie(self):
+        <span class="kw">return</span> self.latime <span class="op">*</span> self.inaltime
+
+
+a <span class="op">=</span> Dreptunghi()
+print(<span class="st">"initial:"</span>, a.latime, a.inaltime, a.arie())
+a.latime <span class="op">=</span> <span class="nm">4</span>
+a.inaltime <span class="op">=</span> <span class="nm">3</span>
+c <span class="op">=</span> Dreptunghi()
+c.latime <span class="op">=</span> a.latime
+c.inaltime <span class="op">=</span> a.inaltime
+c.latime <span class="op">=</span> <span class="nm">10</span>
+print(a.latime, c.latime)</pre></div></div></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Rezultat</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>initial: 0 0 0
+4 10</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>initial: 0 0 0
+4 10</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>initial: 0 0 0
+4 10</pre></div></div></div>
+</div>
+</div>
+
+        </div>
+      </div><!-- /tab exemple -->
+
+      <!-- TAB: LABORATOR -->
+      <div class="tab-pane" id="t1-lab">
+        <div class="prose">
+
+<h2 id="introductive">Exerciții introductive (fără scriere de cod)</h2>
+<p>Rezolvă pe hârtie, apoi verifică cu răspunsul. Exercițiile sunt în ordinea crescătoare a dificultății și sunt propuse de autorul materialului; nu provin dintr-o sursă externă.</p>
+<div class="quiz-item">
+<p><span class="qnum">1</span>Care este deosebirea dintre o clasă și un obiect? Folosește un exemplu din viața reală. <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Clasa descrie, obiectul există concret. De exemplu, „Mașina” (clasa) descrie ce au toate mașinile: o culoare, o viteză, o operație de pornire; o anumită mașină, roșie, aflată în parcare, este un obiect (o instanță) al acelei clase.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">2</span>Care sunt câmpurile și care sunt metodele clasei <code>Contor</code> din exemplul 1? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Câmpul este <code>valoare</code>. Metodele sunt <code>creste()</code> și <code>reseteaza()</code>.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">3</span>Câte obiecte <code>Dreptunghi</code> există după <code>Dreptunghi a = new Dreptunghi(); Dreptunghi b = a;</code> în Java? Dar după <code>Dreptunghi a; Dreptunghi b = a;</code> în C++? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>În Java există <strong>un singur</strong> obiect: <code>a</code> și <code>b</code> sunt două referințe către el. În C++ există <strong>două</strong> obiecte: <code>b</code> este o copie a lui <code>a</code>.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">4</span>Ce valoare are <code>a.latime</code> după <code>Dreptunghi a;</code> în C++, dacă în clasă câmpul este declarat <code>int latime = 0;</code>? Dar dacă este declarat doar <code>int latime;</code>? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>În primul caz, <code>0</code>. În al doilea, pentru un obiect creat ca variabilă locală, valoarea este nedeterminată, iar citirea ei înainte de atribuire nu este permisă (cppreference, <em>Default-initialization</em>).</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">5</span>Ce este <code>self</code> în metodele Python? Cu ce este echivalent apelul <code>a.arie()</code>? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p><code>self</code> este numele convențional al primului parametru al unei metode, prin care aceasta primește obiectul pe care a fost apelată. Apelul <code>a.arie()</code> este echivalent cu <code>Dreptunghi.arie(a)</code> (<em>Python Tutorial</em>, cap. 9).</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">6</span>De ce produce eroare apelul <code>Dreptunghi.arie()</code> în Python, dacă metoda este definită <code>def arie(self):</code>? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Metoda cere un argument, <code>self</code>, iar apelul pe clasă nu îl furnizează. Mesajul real este: <code>TypeError: Dreptunghi.arie() missing 1 required positional argument: 'self'</code>.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">7</span>După <code>b = a; b.latime = 10;</code>, ce valoare are <code>a.latime</code> în C++, Java și Python, dacă înainte era 4? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>În C++ rămâne <code>4</code> (<code>b</code> este o copie). În Java și Python devine <code>10</code> (<code>a</code> și <code>b</code> sunt același obiect).</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">8</span>Cum obții în Java sau Python un obiect independent, cu aceleași valori ca <code>a</code>? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Creezi explicit un obiect nou și îi copiezi câmpurile (<code>c.latime = a.latime; c.inaltime = a.inaltime;</code>), eventual într-o metodă numită, de exemplu, <code>copie()</code>.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">9</span>Dă un exemplu de cod care funcționează cu <code>struct</code>, dar nu și cu <code>class</code>, în C++, și explică de ce. <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p><code>struct P { int x = 0; }; P p; p.x = 5;</code> se compilează; cu <code>class P { int x = 0; };</code> aceeași secvență produce o eroare, pentru că într-un <code>class</code> membrii sunt privați în mod implicit, iar într-un <code>struct</code> sunt publici. Verificat cu <code>g++</code> 13.3.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">10</span>Două obiecte Python, <code>p</code> și <code>q</code>, ale unei clase cu atributul de clasă <code>elemente = []</code> și metoda <code>adauga(x)</code> care face <code>self.elemente.append(x)</code>. Se apelează <code>p.adauga(1)</code> și <code>q.adauga(2)</code>. Ce conține <code>p.elemente</code>? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p><code>[1, 2]</code>, pentru că lista aparține clasei și este partajată de toate obiectele (<em>Python Tutorial</em>, cap. 9, exemplul cu <code>tricks</code>). Același lucru se vede la rularea programului din secțiunea „Erori frecvente”.</p></details>
+</div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="tracing">Code Tracing – Exerciții</h2>
+<p>Urmărește execuția <strong>fără să rulezi programul</strong>. Notează valorile câmpurilor la fiecare pas și ce se va afișa; apoi verifică rulând. Exercițiile sunt propuse de autor, iar soluțiile au fost verificate prin rulare. Presupune clasa <code>Dreptunghi</code> din secțiunea „Definirea unei clase”.</p>
+<details>
+<summary>Exercițiul 1 — două obiecte, valori implicite</summary>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+<pre><code>Dreptunghi a;
+a.latime <span class="op">=</span> <span class="nm">2</span>;
+a.inaltime <span class="op">=</span> <span class="nm">5</span>;
+Dreptunghi b;
+b.latime <span class="op">=</span> a.latime <span class="op">+</span> <span class="nm">1</span>;
+cout <span class="op">&lt;&lt;</span> a.arie() <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> b.arie();</code></pre></div><p><strong>Soluție:</strong> pentru <code>a</code>: lățime 2, înălțime 5, deci aria 10. Obiectul <code>b</code> primește lățimea 3, dar înălțimea rămâne 0 (valoarea din declarația câmpului), deci aria lui este 0. Se afișează <code>10 0</code>.</p>
+</details>
+<details>
+<summary>Exercițiul 2 — copie în C++</summary>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+<pre><code>Dreptunghi a;
+a.latime <span class="op">=</span> <span class="nm">3</span>;
+a.inaltime <span class="op">=</span> <span class="nm">3</span>;
+Dreptunghi b <span class="op">=</span> a;
+b.scaleaza(<span class="nm">3</span>);
+b.latime <span class="op">=</span> <span class="nm">1</span>;
+cout <span class="op">&lt;&lt;</span> a.latime <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> b.latime <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> b.inaltime;</code></pre></div><p><strong>Soluție:</strong> <code>b</code> este o copie a lui <code>a</code> (3×3). <code>b.scaleaza(3)</code> îl face 9×9. Apoi <code>b.latime = 1</code> îl face 1×9. Obiectul <code>a</code> nu s-a schimbat: lățimea lui este 3. Se afișează <code>3 1 9</code>.</p>
+</details>
+<details>
+<summary>Exercițiul 3 — același cod, în Java</summary>
+<div class="code-block"><div class="code-header"><span class="code-lang">Java</span></div>
+<pre><code>Dreptunghi a <span class="op">=</span> <span class="kw">new</span> Dreptunghi();
+a.latime <span class="op">=</span> <span class="nm">3</span>;
+a.inaltime <span class="op">=</span> <span class="nm">3</span>;
+Dreptunghi b <span class="op">=</span> a;
+b.scaleaza(<span class="nm">3</span>);
+b.latime <span class="op">=</span> <span class="nm">1</span>;
+System.out.println(a.latime <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> b.latime <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> b.inaltime);</code></pre></div><p><strong>Soluție:</strong> <code>b = a</code> copiază referința, deci <code>a</code> și <code>b</code> sunt același obiect. După <code>b.scaleaza(3)</code> obiectul este 9×9, iar după <code>b.latime = 1</code> este 1×9. Prin <code>a</code> se vede aceeași stare. Se afișează <code>1 1 9</code>.</p>
+</details>
+<details>
+<summary>Exercițiul 4 — Python: atribut de clasă și atribut de obiect</summary>
+<div class="code-block"><div class="code-header"><span class="code-lang">Python</span></div>
+<pre><code><span class="kw">class</span> C:
+    x <span class="op">=</span> <span class="nm">1</span>
+
+
+a <span class="op">=</span> C()
+b <span class="op">=</span> C()
+a.x <span class="op">=</span> <span class="nm">5</span>
+print(a.x, b.x, C.x)</code></pre></div><p><strong>Soluție:</strong> inițial <code>x = 1</code> este atribut al clasei <code>C</code>. Atribuirea <code>a.x = 5</code> creează un atribut <em>al obiectului</em> <code>a</code>; clasa și obiectul <code>b</code> nu se schimbă. Se afișează <code>5 1 1</code>.</p>
+</details>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="lab">Laborator – Aplicații de rezolvat</h2>
+<p>Lucrează în C++ (sau în limbajul indicat de profesor), apoi portează soluția în celelalte două. Exercițiile sunt propuse de autorul materialului.</p>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Contul bancar<span class="diff-badge usoara">Ușoară</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Completează clasa <code>Cont</code> și scrie un program care: creează un cont, depune 100, încearcă o retragere de 30, apoi una de 100 (afișând <code>OK</code> sau <code>REFUZ</code> după fiecare), și la final afișează soldul.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-bullseye"></i> Obiectiv</div><p>Să scrii metode cu parametri și cu valoare returnată și să le apelezi pe un obiect.</p></div><div class="code-block"><div class="code-header"><span class="code-lang">C++ – schelet</span></div>
+<pre><code><span class="kw">class</span> Cont {
+<span class="kw">public</span>:
+    <span class="tp">int</span> sold <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">void</span> depune(<span class="tp">int</span> suma) {
+        <span class="cm">// TODO: adaugă suma la sold</span>
+    }
+
+    <span class="tp">bool</span> retrage(<span class="tp">int</span> suma) {
+        <span class="cm">// TODO: dacă suma &lt;= sold, scade suma din sold și returnează true;</span>
+        <span class="cm">//       altfel nu modifica soldul și returnează false</span>
+    }
+};</code></pre></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Pași</div><ol class="algo-steps"><li>Completează <code>depune</code>: <code>sold = sold + suma;</code>.</li><li>Completează <code>retrage</code> cu o condiție: dacă <code>suma &lt;= sold</code>, scade și returnează <code>true</code>; altfel returnează <code>false</code>.</li><li>În <code>main</code>, creează obiectul și apelează metodele în ordinea din cerință; decide cu un <code>if</code> ce mesaj afișezi.</li><li>Rulează și compară cu rezultatul așteptat. Portează apoi în Java (tipul returnat este <code>boolean</code>) și în Python.</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Rezultat așteptat</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>OK
+REFUZ
+sold: 70</pre></div></div></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-pencil"></i> Sarcini independente</div><ul><li>Adaugă metoda <code>adaugaDobanda(int procent)</code>, care mărește soldul cu <code>sold * procent / 100</code>. Atenție la împărțirea întreagă: ce se întâmplă pentru un sold de 70 și <code>procent = 10</code>? Dar pentru <code>procent = 1</code>? Verifică prin rulare.</li><li>Adaugă metoda <code>poateRetrage(int suma)</code>, care returnează <code>true</code> dacă retragerea ar reuși, dar nu modifică soldul. Folosește-o în <code>retrage</code>.</li></ul></div><details>
+<summary>Soluția pasului 1 (cele trei limbaje, verificate prin rulare)</summary>
+<div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">class</span> Cont {
+<span class="kw">public</span>:
+    <span class="tp">int</span> sold <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">void</span> depune(<span class="tp">int</span> suma) {
+        sold <span class="op">=</span> sold <span class="op">+</span> suma;
+    }
+
+    <span class="tp">bool</span> retrage(<span class="tp">int</span> suma) {
+        <span class="kw">if</span> (suma <span class="op">&lt;=</span> sold) {
+            sold <span class="op">=</span> sold <span class="op">-</span> suma;
+            <span class="kw">return</span> <span class="kw">true</span>;
+        }
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+};
+
+<span class="tp">int</span> main() {
+    Cont c;
+    c.depune(<span class="nm">100</span>);
+    <span class="kw">if</span> (c.retrage(<span class="nm">30</span>)) {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"OK"</span> <span class="op">&lt;&lt;</span> endl;
+    } <span class="kw">else</span> {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"REFUZ"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">if</span> (c.retrage(<span class="nm">100</span>)) {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"OK"</span> <span class="op">&lt;&lt;</span> endl;
+    } <span class="kw">else</span> {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"REFUZ"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    cout <span class="op">&lt;&lt;</span> <span class="st">"sold: "</span> <span class="op">&lt;&lt;</span> c.sold <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · Main.java</div><pre><span class="kw">class</span> Cont {
+    <span class="tp">int</span> sold <span class="op">=</span> <span class="nm">0</span>;
+
+    <span class="tp">void</span> depune(<span class="tp">int</span> suma) {
+        sold <span class="op">=</span> sold <span class="op">+</span> suma;
+    }
+
+    <span class="tp">boolean</span> retrage(<span class="tp">int</span> suma) {
+        <span class="kw">if</span> (suma <span class="op">&lt;=</span> sold) {
+            sold <span class="op">=</span> sold <span class="op">-</span> suma;
+            <span class="kw">return</span> <span class="kw">true</span>;
+        }
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Main {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Cont c <span class="op">=</span> <span class="kw">new</span> Cont();
+        c.depune(<span class="nm">100</span>);
+        <span class="kw">if</span> (c.retrage(<span class="nm">30</span>)) {
+            System.out.println(<span class="st">"OK"</span>);
+        } <span class="kw">else</span> {
+            System.out.println(<span class="st">"REFUZ"</span>);
+        }
+        <span class="kw">if</span> (c.retrage(<span class="nm">100</span>)) {
+            System.out.println(<span class="st">"OK"</span>);
+        } <span class="kw">else</span> {
+            System.out.println(<span class="st">"REFUZ"</span>);
+        }
+        System.out.println(<span class="st">"sold: "</span> <span class="op">+</span> c.sold);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Cont:
+    sold <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">def</span> depune(self, suma):
+        self.sold <span class="op">=</span> self.sold <span class="op">+</span> suma
+
+    <span class="kw">def</span> retrage(self, suma):
+        <span class="kw">if</span> suma <span class="op">&lt;=</span> self.sold:
+            self.sold <span class="op">=</span> self.sold <span class="op">-</span> suma
+            <span class="kw">return</span> <span class="kw">True</span>
+        <span class="kw">return</span> <span class="kw">False</span>
+
+
+c <span class="op">=</span> Cont()
+c.depune(<span class="nm">100</span>)
+<span class="kw">if</span> c.retrage(<span class="nm">30</span>):
+    print(<span class="st">"OK"</span>)
+<span class="kw">else</span>:
+    print(<span class="st">"REFUZ"</span>)
+<span class="kw">if</span> c.retrage(<span class="nm">100</span>):
+    print(<span class="st">"OK"</span>)
+<span class="kw">else</span>:
+    print(<span class="st">"REFUZ"</span>)
+print(<span class="st">"sold:"</span>, c.sold)</pre></div></div>
+</details>
+</div>
+</div>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num apply">2</div><div class="exercise-title">Punctul în plan<span class="diff-badge medie">Medie</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Definește clasa <code>Punct</code> cu câmpurile întregi <code>x</code> și <code>y</code> și metodele <code>deplaseaza(int dx, int dy)</code> (adaugă <code>dx</code> la <code>x</code> și <code>dy</code> la <code>y</code>) și <code>norma2()</code> (returnează <code>x*x + y*y</code>). Creează punctul (3, 4), afișează <code>norma2()</code>, deplasează-l cu (2, 1) și afișează noile coordonate și <code>norma2()</code>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-bullseye"></i> Obiectiv</div><p>Să scrii singur o clasă completă, pornind de la specificație, în cele trei limbaje.</p></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Rezultat așteptat (calculat și verificat cu o implementare de referință în C++)</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>25
+5 5 50</pre></div></div></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-pencil"></i> Sarcini independente</div><ul><li>Adaugă metoda <code>oglindeste()</code>, care interschimbă <code>x</code> cu <code>y</code>. De ce ai nevoie de o variabilă ajutătoare?</li><li>Creează două puncte și demonstrează, cu un program, că modificarea unuia nu o schimbă pe a celuilalt. Apoi repetă experimentul cu <code>q = p</code> în fiecare limbaj și notează ce observi.</li></ul></div>
+</div>
+</div>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num combine">3</div><div class="exercise-title">Valoarea stocului<span class="diff-badge medie">Medie</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Definește clasa <code>Produs</code> cu câmpurile întregi <code>pret</code> și <code>cantitate</code> și metoda <code>valoare()</code>, care returnează <code>pret * cantitate</code>. Memorează trei produse într-un vector: (preț 10, cantitate 3), (5, 4) și (8, 2). Afișează valoarea totală a stocului.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-bullseye"></i> Obiectiv</div><p>Să combini o clasă cu metodă și un vector de obiecte, cu tiparul acumulator.</p></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Rezultat așteptat (calculat și verificat cu o implementare de referință în C++)</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>66</pre></div></div></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-pencil"></i> Sarcini independente</div><ul><li>Afișează și poziția produsului cu cea mai mare valoare (maxim cu poziție, ca în exemplul 2).</li><li>Afișează câte produse au valoarea mai mare decât media valorilor. Atenție la tipul în care calculezi media.</li></ul></div>
+</div>
+</div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="extra">Exerciții extra</h2>
+<p>Pentru cei care termină mai repede. Fiecare are un răspuns care se deschide separat.</p>
+<div class="quiz-item">
+<p><span class="qnum">1</span>Adaugă clasei <code>Dreptunghi</code> metodele <code>estePatrat()</code> (returnează dacă lățimea este egală cu înălțimea) și <code>copie()</code> (returnează un obiect nou, cu aceleași dimensiuni). Ce afișează programul în care <code>a</code> este 4×4, <code>b = a.copie()</code>, apoi <code>b.latime = 9</code>, iar la final se afișează <code>a.estePatrat()</code>, <code>b.estePatrat()</code>, <code>a.latime</code> și <code>b.latime</code>? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Valorile sunt cele din rularea programului: C++ afișează <code>1 0 4 9</code>, Java <code>true false 4 9</code>, Python <code>True False 4 9</code>. Diferența dintre <code>1</code>/<code>0</code>, <code>true</code>/<code>false</code> și <code>True</code>/<code>False</code> ține de regulile de afișare ale limbajelor, nu de logică.</p><div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+<span class="kw">class</span> Dreptunghi {
+<span class="kw">public</span>:
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">bool</span> estePatrat() { <span class="kw">return</span> latime <span class="op">==</span> inaltime; }
+    Dreptunghi copie() {
+        Dreptunghi r;
+        r.latime <span class="op">=</span> latime;
+        r.inaltime <span class="op">=</span> inaltime;
+        <span class="kw">return</span> r;
+    }
+};
+<span class="tp">int</span> main() {
+    Dreptunghi a; a.latime <span class="op">=</span> <span class="nm">4</span>; a.inaltime <span class="op">=</span> <span class="nm">4</span>;
+    Dreptunghi b <span class="op">=</span> a.copie();
+    b.latime <span class="op">=</span> <span class="nm">9</span>;
+    cout <span class="op">&lt;&lt;</span> a.estePatrat() <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> b.estePatrat() <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> a.latime <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> b.latime <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · ExPatrat.java</div><pre><span class="kw">class</span> Dreptunghi {
+    <span class="tp">int</span> latime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">int</span> inaltime <span class="op">=</span> <span class="nm">0</span>;
+    <span class="tp">boolean</span> estePatrat() { <span class="kw">return</span> latime <span class="op">==</span> inaltime; }
+    Dreptunghi copie() {
+        Dreptunghi r <span class="op">=</span> <span class="kw">new</span> Dreptunghi();
+        r.latime <span class="op">=</span> latime;
+        r.inaltime <span class="op">=</span> inaltime;
+        <span class="kw">return</span> r;
+    }
+}
+<span class="kw">public</span> <span class="kw">class</span> ExPatrat {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Dreptunghi a <span class="op">=</span> <span class="kw">new</span> Dreptunghi(); a.latime <span class="op">=</span> <span class="nm">4</span>; a.inaltime <span class="op">=</span> <span class="nm">4</span>;
+        Dreptunghi b <span class="op">=</span> a.copie();
+        b.latime <span class="op">=</span> <span class="nm">9</span>;
+        System.out.println(a.estePatrat() <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> b.estePatrat() <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> a.latime <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> b.latime);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Dreptunghi:
+    latime <span class="op">=</span> <span class="nm">0</span>
+    inaltime <span class="op">=</span> <span class="nm">0</span>
+
+    <span class="kw">def</span> este_patrat(self):
+        <span class="kw">return</span> self.latime <span class="op">==</span> self.inaltime
+
+    <span class="kw">def</span> copie(self):
+        r <span class="op">=</span> Dreptunghi()
+        r.latime <span class="op">=</span> self.latime
+        r.inaltime <span class="op">=</span> self.inaltime
+        <span class="kw">return</span> r
+
+
+a <span class="op">=</span> Dreptunghi(); a.latime <span class="op">=</span> <span class="nm">4</span>; a.inaltime <span class="op">=</span> <span class="nm">4</span>
+b <span class="op">=</span> a.copie()
+b.latime <span class="op">=</span> <span class="nm">9</span>
+print(a.este_patrat(), b.este_patrat(), a.latime, b.latime)</pre></div></div></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">2</span>Ce se întâmplă în Java la <code>Dreptunghi[] d = new Dreptunghi[3]; d[0].latime = 2;</code>? Cum corectezi? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Programul se compilează, dar la rulare produce <code>NullPointerException</code>: <code>d[0]</code> este <code>null</code>, pentru că vectorul conține doar locuri pentru referințe (JLS 4.12.5). Se corectează cu <code>d[0] = new Dreptunghi();</code> înainte de atribuire.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">3</span>Ce afișează programul Python din secțiunea „Eroarea 5” dacă, în loc de <code>p.adauga(1)</code> și <code>q.adauga(2)</code>, se apelează de trei ori <code>p.adauga(7)</code> și nimic pe <code>q</code>? Ce afișează <code>q.elemente</code>? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p><code>q.elemente</code> este <code>[7, 7, 7]</code> (aceeași listă a clasei), deși nimic nu a fost adăugat prin <code>q</code>. Corectarea corectă, cu liste proprii fiecărui obiect, folosește un inițializator (vezi sesiunea X).</p></details>
+</div>
+
+        </div>
+      </div><!-- /tab lab -->
+
+      <!-- TAB: CHEAT SHEET -->
+      <div class="tab-pane" id="t1-cheat">
+        <div class="prose">
+
+<h2 id="cheat">Fișă rapidă – Laborator 1</h2>
+<p>Referință compactă pentru folosit în laborator.</p>
+<div class="cheat-grid">
+<div class="cheat-card">
+<div class="cheat-card-header">Definirea clasei</div>
+<pre>C++:
+class D {
+public:
+    int x = 0;
+    int f() { return x; }
+};     // ; la final
+
+Java:
+class D {
+    int x = 0;
+    int f() { return x; }
+}
+
+Python:
+class D:
+    x = 0
+    def f(self):
+        return self.x</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">Obiecte și metode</div>
+<pre>C++:    D a;
+Java:   D a = new D();
+Python: a = D()
+
+camp:   a.x = 4;
+metoda: a.f()
+
+Vector:
+C++:    D v[3];
+Java:   D[] v = new D[3];
+        v[i] = new D();   // altfel null
+Python: v = [D(), D(), D()]</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">this / self</div>
+<pre>C++, Java: metoda foloseste
+   direct numele campului: x
+   (this-&gt;x / this.x optional)
+
+Python: self = primul parametru
+   self.x
+   a.f()  &lt;=&gt;  D.f(a)</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">b = a</div>
+<pre>C++:    b este o COPIE a lui a
+Java:   a si b = acelasi obiect
+        (a == b este true)
+Python: a si b = acelasi obiect
+        (a is b este True)
+
+Copie reala (Java, Python):
+   c = obiect nou;
+   c.x = a.x;  c.y = a.y;</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">Valori implicite</div>
+<pre>C++: camp cu "= 0" in clasa -&gt; 0
+     fara -&gt; nedeterminat (local)
+Java: camp fara valoare:
+     0 / 0.0 / false / null
+     variabila locala: trebuie
+     atribuita inainte de folosire
+Python: camp inexistent pana la
+     atribuire (AttributeError)</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">Erori frecvente</div>
+<pre>C++ class fara public: -&gt; "private"
+Java D a; a.x = 1; -&gt; "might not
+     have been initialized"
+Java v[i] fara new -&gt; NullPointer
+Python def f(): fara self -&gt;
+     "takes 0 positional arguments"
+Python lista ca atribut de clasa
+     -&gt; partajata de toate obiectele</pre>
+</div>
+</div>
+
+        </div>
+      </div><!-- /tab cheat -->
+
+      <!-- TAB: AUTOEVALUARE -->
+      <div class="tab-pane" id="t1-autoevaluare">
+        <div class="prose">
+
+<h2 id="verificare">Întrebări de autoevaluare</h2>
+<details><summary>1. Ce este o clasă și ce este un obiect?</summary>
+<p>Clasa este un tip definit de programator care descrie datele (câmpuri) și operațiile (metode) comune obiectelor de același fel. Obiectul (instanța) este o realizare concretă a clasei, cu propriile valori ale câmpurilor.</p>
+</details>
+<details><summary>2. Ce este instanțierea și cum se face în C++, Java și Python?</summary>
+<p>Este crearea unui obiect pornind de la o clasă. În C++: <code>Dreptunghi a;</code>. În Java: <code>Dreptunghi a = new Dreptunghi();</code>. În Python: <code>a = Dreptunghi()</code>.</p>
+</details>
+<details><summary>3. Ce este o metodă și cum se deosebește de o funcție obișnuită?</summary>
+<p>O metodă este o funcție definită într-o clasă, apelată pe un obiect (<code>a.arie()</code>), care lucrează cu câmpurile acelui obiect.</p>
+</details>
+<details><summary>4. Cum accesează o metodă câmpurile obiectului pe care este apelată?</summary>
+<p>În C++ și Java folosește direct numele câmpului (opțional <code>this</code>). În Python primește obiectul ca prim parametru, <code>self</code>, și scrie <code>self.latime</code>.</p>
+</details>
+<details><summary>5. Ce efect are <code>b = a</code> în C++, Java și Python?</summary>
+<p>În C++ se creează o copie a obiectului (câmp cu câmp). În Java se copiază referința, deci <code>a</code> și <code>b</code> indică același obiect. În Python numele <code>b</code> este legat de același obiect ca <code>a</code>.</p>
+</details>
+<details><summary>6. Cum obții o copie independentă a unui obiect în Java sau Python?</summary>
+<p>Creezi un obiect nou și îi copiezi câmpurile unul câte unul (de regulă într-o metodă numită, de exemplu, <code>copie()</code>).</p>
+</details>
+<details><summary>7. Ce valoare au câmpurile unui obiect la creare, în fiecare limbaj?</summary>
+<p>În C++ și Java, câmpul cu valoare dată în clasă o primește. Fără valoare dată: în Java, valoarea implicită după tip (<code>0</code>, <code>0.0</code>, <code>false</code>, <code>null</code>); în C++, pentru un obiect local, un câmp scalar are valoare nedeterminată. În Python, câmpul nu există până la prima atribuire (sau este vizibil atributul clasei, dacă există).</p>
+</details>
+<details><summary>8. Ce este <code>NullPointerException</code> și când apare?</summary>
+<p>Este excepția Java produsă când folosești o referință <code>null</code> ca și cum ar indica un obiect, de exemplu un element al unui vector creat cu <code>new</code>, dar necompletat cu obiecte.</p>
+</details>
+<details><summary>9. De ce un atribut de clasă de tip listă, în Python, este o capcană?</summary>
+<p>Pentru că este partajat de toate obiectele clasei: modificarea listei prin unul dintre obiecte este vizibilă prin toate (<em>Python Tutorial</em>, cap. 9).</p>
+</details>
+<details><summary>10. Prin ce diferă <code>class</code> și <code>struct</code> în C++?</summary>
+<p>Sunt aproape identice; diferă prin accesul implicit la membri: privat pentru <code>class</code>, public pentru <code>struct</code> (cppreference, <em>Class declaration</em>; verificat prin compilare).</p>
+</details>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="rezumat">Rezumat – De reținut</h2>
+<div class="callout ok">
+<span class="callout-icon">✅</span>
+<div class="callout-body">
+<strong>Cele mai importante idei din acest laborator</strong>
+
+</div>
+</div>
+<ol><li>O <strong>clasă</strong> descrie câmpurile și metodele comune; un <strong>obiect</strong> este o instanță concretă, cu propriile valori. Din aceeași clasă se pot crea oricâte obiecte independente.</li><li>O <strong>metodă</strong> se definește în clasă și se apelează pe un obiect: <code>a.arie()</code>. Ea lucrează cu câmpurile acelui obiect (<code>this</code> opțional în C++ și Java; <code>self</code> obligatoriu în Python).</li><li><code>b = a</code> <strong>copiază obiectul</strong> în C++ și <strong>copiază referința</strong> în Java și Python. Nu extinde regula unui limbaj la celelalte.</li><li>Pentru o copie independentă în Java și Python, creezi un obiect nou și îi copiezi câmpurile.</li><li>Câmpurile C++ cu valoare dată în clasă sunt inițializate; fără valoare, un câmp scalar al unui obiect local este nedeterminat. În Java, câmpurile au valori implicite, iar variabilele locale nu.</li><li>În Java, un vector de obiecte conține inițial <code>null</code>; fiecare obiect trebuie creat cu <code>new</code>.</li><li>În Python, un atribut de clasă este partajat; unul mutabil (listă) este o capcană. Atribuirea <code>a.x = ...</code> creează un atribut al obiectului, nu modifică clasa.</li><li>Tiparele din M6 (maxim cu poziție, acumulator, căutare) se aplică neschimbat pe vectori de obiecte.</li></ol>
+<h2 id="glosar">Glosar</h2>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Termen</th><th>Definiție</th></tr></thead>
+<tbody>
+<tr><td><strong>Clasă</strong></td><td>Tip definit de programator care descrie câmpurile și metodele comune obiectelor de același fel</td></tr><tr><td><strong>Obiect (instanță)</strong></td><td>Realizare concretă a unei clase, cu propriile valori ale câmpurilor</td></tr><tr><td><strong>Câmp (atribut)</strong></td><td>Dată cu nume și tip, aparținând unui obiect</td></tr><tr><td><strong>Metodă</strong></td><td>Funcție definită într-o clasă, apelată pe un obiect</td></tr><tr><td><strong>Instanțiere</strong></td><td>Crearea unui obiect pornind de la o clasă</td></tr><tr><td><strong><code>this</code> / <code>self</code></strong></td><td>Obiectul pe care a fost apelată metoda curentă</td></tr><tr><td><strong>Referință</strong></td><td>Valoare care indică un obiect; variabilele de tip clasă din Java și Python conțin referințe</td></tr><tr><td><strong><code>null</code> / <code>None</code></strong></td><td>Valoarea unei referințe (Java), respectiv a unui nume (Python) care nu indică un obiect</td></tr><tr><td><strong>Copiere</strong></td><td>Crearea unui obiect nou cu aceleași valori ale câmpurilor</td></tr><tr><td><strong>Atribut de clasă (Python)</strong></td><td>Atribut definit direct în clasă, partajat de toate obiectele</td></tr><tr><td><strong>Valoare nedeterminată (C++)</strong></td><td>Valoarea unui scalar creat fără inițializare; nu se citește înainte de atribuire</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="ce-urmeaza">Ce urmează?</h2>
+<div class="callout info">
+<span class="callout-icon">💡</span>
+<div class="callout-body">
+<strong>Ce rămâne de învățat</strong>
+<p>Ai scris clase în care fiecare câmp este setat din afară, după crearea obiectului. Un obiect nou poate astfel exista un moment într-o stare incompletă, iar capcana din Python cu atributele de clasă arată de ce este util un loc dedicat pentru inițializare. Acest loc se numește constructor (în Python, <code>__init__</code>) și este tratat într-o sesiune ulterioară (vezi sesiunea X), împreună cu controlul accesului la câmpuri (vezi sesiunea X).</p>
+</div>
+</div>
+<h2 id="surse">Surse</h2>
+<ul><li><a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html" target="_blank" rel="noopener">JLS SE 21, cap. 4 (4.3.1 și 4.12.5)</a> – obiecte și referințe; valori implicite ale câmpurilor</li><li><a href="https://docs.python.org/3/tutorial/classes.html" target="_blank" rel="noopener">Python Tutorial – Classes</a> – <code>self</code>, variabile de clasă și de instanță, atribuirea nu copiază</li><li><a href="https://en.cppreference.com/cpp/language/class" target="_blank" rel="noopener">cppreference – Class declaration</a> – <code>class</code> și <code>struct</code> diferă prin accesul implicit; membri cu inițializator (C++11)</li><li><a href="https://en.cppreference.com/cpp/language/default_initialization" target="_blank" rel="noopener">cppreference – Default-initialization</a> – valori nedeterminate; schimbarea din C++26</li><li><a href="https://en.cppreference.com/cpp/language/copy_assignment" target="_blank" rel="noopener">cppreference – Copy assignment operator</a> – atribuirea implicită copiază membru cu membru</li></ul>
+
+        </div>
+      </div><!-- /tab autoevaluare -->
+
+    </div><!-- /tab-wrap -->
+
+    <footer class="page-footer">
+      <span>M9 · Lab 1 – Clase și obiecte</span>
+      <div class="footer-nav">
+        <a href="lab-0.html" class="footer-link">← Lab 0 – Mediul de lucru și de la date la obiecte</a>
+        
+      </div>
+    </footer>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

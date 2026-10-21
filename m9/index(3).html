@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>M9 – Programare orientată pe obiecte | OCW</title>
+<meta name="description" content="Documentație OpenCourseWare pentru Modulul 9 – Programare orientată pe obiecte (C++, Java, Python), nivel colegiu terțiar." />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  /* Index-specific */
+  .hero-index {
+    background: linear-gradient(135deg, #1a1d2e 0%, #2d3250 100%);
+    color: #e0e4f5; padding: 4rem 3rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 2.5rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-index::before {
+    content: 'POO';
+    position: absolute; right: 2rem; top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--mono); font-size: 8rem;
+    font-weight: 900; opacity: .06; color: #fff;
+    pointer-events: none; line-height: 1;
+  }
+  .hero-index .overline {
+    font-size: .75rem; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: #7c85b0; margin-bottom: .75rem;
+  }
+  .hero-index h1 {
+    font-family: var(--serif);
+    font-size: 2.4rem; font-weight: 700;
+    line-height: 1.2; color: #fff;
+    margin-bottom: 1rem;
+  }
+  .hero-index p {
+    font-size: 1rem; color: #b0b8d8;
+    max-width: 56ch; line-height: 1.7; margin-bottom: 1.5rem;
+  }
+  .hero-chips { display: flex; flex-wrap: wrap; gap: .6rem; }
+  .hero-chip {
+    font-size: .78rem; font-weight: 600;
+    background: rgba(255,255,255,.1); color: #c5cfff;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 20px; padding: .3rem .85rem;
+  }
+
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1rem; margin: 1.5rem 0;
+  }
+
+  .module-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.4rem;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+    transition: box-shadow .15s, border-color .15s;
+  }
+  .module-card:hover {
+    box-shadow: var(--shadow-lg); border-color: var(--accent);
+  }
+  .module-card a { text-decoration: none; color: inherit; }
+
+  .card-session {
+    font-size: .7rem; font-weight: 700;
+    letter-spacing: .07em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: .35rem;
+  }
+
+  .card-title {
+    font-size: 1rem; font-weight: 700;
+    color: var(--text); margin-bottom: .5rem; line-height: 1.35;
+  }
+
+  .card-desc {
+    font-size: .83rem; color: var(--text-2);
+    line-height: 1.55; flex: 1; margin-bottom: .85rem;
+  }
+
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: .77rem;
+  }
+
+  .card-status {
+    display: flex; align-items: center; gap: .35rem;
+    font-weight: 600; font-size: .75rem;
+  }
+  .card-status.available { color: var(--green); }
+  .card-status.current { color: var(--accent); }
+  .card-status.upcoming { color: var(--text-3); }
+
+  .card-status .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+  }
+  .card-status.available .dot { background: var(--green); }
+  .card-status.current .dot { background: var(--accent); }
+  .card-status.upcoming .dot { background: var(--text-3); }
+
+  .card-link {
+    font-size: .8rem; font-weight: 700; color: var(--accent);
+  }
+
+  .intro-card {
+    border-left: 4px solid var(--accent);
+  }
+
+  .section-header {
+    display: flex; align-items: baseline; gap: .75rem;
+    margin: 2rem 0 1rem;
+  }
+  .section-header h2 {
+    font-family: var(--serif); font-size: 1.4rem;
+    font-weight: 700; color: var(--text); margin: 0;
+  }
+  .section-header .count {
+    font-size: .78rem; color: var(--text-3); font-weight: 600;
+  }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: .75rem; margin-bottom: 2rem;
+  }
+
+  .ov-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+    text-align: center;
+  }
+  .ov-card .ov-number {
+    font-size: 2rem; font-weight: 800; color: var(--accent);
+    line-height: 1;
+  }
+  .ov-card .ov-label {
+    font-size: .78rem; color: var(--text-3); margin-top: .3rem;
+  }
+
+  .resource-list { list-style: none; padding: 0; margin: .75rem 0; }
+  .resource-list li {
+    padding: .5rem 0;
+    border-bottom: 1px solid var(--surface-2);
+    font-size: .9rem; display: flex; align-items: center; gap: .5rem;
+  }
+  .resource-list li:last-child { border-bottom: none; }
+  .resource-list .ricon { font-size: 1rem; }
+</style>
+</head>
+<body>
+
+<!-- ========== TOP NAV ========== -->
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html">
+    <span class="badge">M9</span> Programare orientată pe obiecte
+  </a>
+  <div class="topnav-breadcrumb">
+    <span>Colegiu terțiar</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="../index.html" class="btn-sm">Portal</a>
+    <a href="lab-0.html" class="btn-sm primary">Începe cursul</a>
+  </div>
+</nav>
+
+<!-- ========== LAYOUT ========== -->
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <span class="sidebar-label">Modul</span>
+    <a class="sidebar-link active" href="index.html">
+      <i class="fa-solid fa-table-list fa-fw"></i>
+      Prezentare generală
+    </a>
+
+    <span class="sidebar-label">Laboratoare introductive</span>
+    <a class="sidebar-link" href="lab-0.html">
+      <i class="fa-solid fa-terminal fa-fw"></i>
+      Lab 0 – Mediul de lucru și de la date la obiecte
+      <span class="sidebar-tag done">✓</span>
+    </a>
+    <a class="sidebar-link" href="lab-1.html">
+      <i class="fa-solid fa-cubes fa-fw"></i>
+      Lab 1 – Clase și obiecte
+      <span class="sidebar-tag done">✓</span>
+    </a>
+
+    <span class="sidebar-label" style="margin-top:.5rem;">Urmează</span>
+    <span class="sidebar-link" style="opacity:.4;pointer-events:none;font-size:.8rem;padding:.35rem 1.25rem;">
+      <i class="fa-solid fa-rotate fa-fw"></i> Sesiuni în pregătire
+    </span>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- Hero -->
+    <div class="hero-index">
+      <div class="overline">Colegiu terțiar · Programare orientată pe obiecte · 150 ore</div>
+      <h1>Modulul 9<br>Programare orientată pe obiecte</h1>
+      <p>De la programe procedurale la programe organizate în clase și obiecte. Același concept, urmărit în C++, Java și Python, cu atenție la ce este comun și la ce diferă.</p>
+      <div class="hero-chips">
+        <span class="hero-chip">C++</span>
+        <span class="hero-chip">Java</span>
+        <span class="hero-chip">Python</span>
+        <span class="hero-chip">25 sesiuni × 6 ore</span>
+        <span class="hero-chip">Teorie + Laborator</span>
+        <span class="hero-chip">Colegiu terțiar</span>
+      </div>
+    </div>
+
+    <!-- Overview numbers -->
+    <div class="overview-grid">
+      <div class="ov-card"><div class="ov-number">150</div><div class="ov-label">Ore totale</div></div>
+      <div class="ov-card"><div class="ov-number">25</div><div class="ov-label">Sesiuni planificate</div></div>
+      <div class="ov-card"><div class="ov-number">6h</div><div class="ov-label">Per sesiune</div></div>
+      <div class="ov-card"><div class="ov-number" style="color:var(--green)">2</div><div class="ov-label">Laboratoare disponibile</div></div>
+      <div class="ov-card"><div class="ov-number">3</div><div class="ov-label">Limbaje comparate</div></div>
+      <div class="ov-card"><div class="ov-number">C++</div><div class="ov-label">Limbaj principal</div></div>
+    </div>
+
+    <!-- Ce vei învăța -->
+    <div class="section-header">
+      <h2>Ce vei învăța</h2>
+    </div>
+    <div class="prose">
+      <p>Modulul M9 introduce programarea orientată pe obiecte pornind de la ce știi din M6: variabile, condiții, bucle, vectori și subprograme. Primele laboratoare pregătesc mediul de lucru în cele trei limbaje, arată de ce datele care aparțin împreună trebuie grupate și definesc noțiunile de bază: clasă, obiect, câmp, metodă și instanțiere.</p>
+      <p>Exemplele sunt scrise în <strong>C++</strong> și comparate, pe același program, cu <strong>Java</strong> și <strong>Python</strong>. Accentul este pe <strong>înțelegerea a ceea ce se întâmplă efectiv</strong> (de exemplu, ce înseamnă <code>b = a</code> în fiecare limbaj), nu pe memorarea sintaxei; fiecare afirmație tehnică din materiale este însoțită de rularea codului sau de o sursă.</p>
+    </div>
+
+    <!-- Laboratoare introductive -->
+    <div class="section-header" style="margin-top:2rem;">
+      <h2>Laboratoare introductive</h2>
+      <span class="count">2 laboratoare</span>
+    </div>
+    <div class="modules-grid">
+
+      <div class="module-card">
+        <div class="card-session">Laborator 0</div>
+        <div class="card-title">Mediul de lucru și de la date la obiecte</div>
+        <div class="card-desc">Compilare și rulare în C++, Java și Python, reamintirea subprogramelor, problema vectorilor paraleli și primul tip definit de programator (struct / class cu câmpuri).</div>
+        <div class="card-footer">
+          <div class="card-status available"><span class="dot"></span>Disponibil</div>
+          <a class="card-link" href="lab-0.html">Deschide →</a>
+        </div>
+      </div>
+
+      <div class="module-card" style="border-color: var(--accent);">
+        <div class="card-session">Laborator 1</div>
+        <div class="card-title">Clase și obiecte</div>
+        <div class="card-desc">Clasă, obiect, câmp, metodă și instanțiere în cele trei limbaje; diferența dintre copierea unui obiect și copierea unei referințe; vector de obiecte; erori frecvente.</div>
+        <div class="card-footer">
+          <div class="card-status available"><span class="dot"></span>Disponibil</div>
+          <a class="card-link" href="lab-1.html">Deschide →</a>
+        </div>
+      </div>
+
+    </div><!-- /modules-grid -->
+
+    <div style="margin: .5rem 0 2rem; padding: .85rem 1.25rem;
+                background: var(--surface); border: 1px solid var(--border);
+                border-radius: var(--radius-lg); font-size: .85rem; color: var(--text-3);
+                display: flex; align-items: center; gap: .65rem;">
+      <i class="fa-solid fa-rotate fa-fw" style="color:var(--accent);opacity:.7;"></i>
+      Următoarele sesiuni vor apărea pe măsură ce materialele sunt finalizate.
+    </div>
+
+    <!-- Resurse -->
+    <div class="section-header" style="margin-top:2.5rem;">
+      <h2>Resurse recomandate</h2>
+    </div>
+    <div class="prose">
+      <ul class="resource-list">
+        <li><span class="ricon"><i class="fa-solid fa-book fa-fw"></i></span> <a href="https://en.cppreference.com/w/" target="_blank" rel="noopener">cppreference.com</a> – referința completă a limbajului C++ (engleză)</li>
+        <li><span class="ricon"><i class="fa-solid fa-book fa-fw"></i></span> <a href="https://docs.oracle.com/javase/tutorial/" target="_blank" rel="noopener">The Java Tutorials</a> – tutorial oficial Oracle pentru Java (engleză)</li>
+        <li><span class="ricon"><i class="fa-solid fa-book fa-fw"></i></span> <a href="https://docs.python.org/3/tutorial/classes.html" target="_blank" rel="noopener">Python Tutorial – Classes</a> – capitolul despre clase din documentația oficială Python (engleză)</li>
+        <li><span class="ricon"><i class="fa-solid fa-terminal fa-fw"></i></span> <a href="https://www.onlinegdb.com/" target="_blank" rel="noopener">OnlineGDB</a> – compilator online, fără instalare</li>
+        <li><span class="ricon"><i class="fa-solid fa-code fa-fw"></i></span> <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">Visual Studio Code</a> – editor recomandat pentru laborator</li>
+      </ul>
+    </div>
+
+    <footer class="page-footer">
+      <span>M9 – Programare orientată pe obiecte · Colegiu terțiar</span>
+      <div class="footer-nav">
+        <a href="lab-0.html" class="footer-link fwd">Începe cu Lab 0 →</a>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laborator 0 – Mediul de lucru și de la date la obiecte | M9 OCW</title>
+<meta name="description" content="Laborator 0 de POO: compilarea și rularea unui program minim în C++, Java și Python, problema vectorilor paraleli și primul tip definit de programator (struct / class cu câmpuri), cu comparații între cele trei limbaje." />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  /* pattern cards (algorithm patterns) */
+  .pattern-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem; margin: 1.25rem 0;
+  }
+  .pattern-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow);
+  }
+  .pattern-card .pattern-header {
+    background: var(--surface-2); padding: .6rem 1rem;
+    font-weight: 700; font-size: .85rem; color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .pattern-card pre {
+    margin: 0; padding: .9rem 1.1rem; font-family: var(--mono);
+    font-size: .82rem; overflow-x: auto;
+  }
+
+  /* quiz-style exercises (reused pattern from S3/S4/S5/S6) */
+  .quiz-item { margin: 1.35rem 0; padding-bottom: 1.1rem; border-bottom: 1px solid var(--surface-2); }
+  .quiz-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .quiz-item .qnum {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 24px; height: 24px; padding: 0 .3rem;
+    border-radius: 50%; background: var(--accent-light); color: var(--accent-dark);
+    font-size: .78rem; font-weight: 800; margin-right: .5rem;
+  }
+  .choices {
+    list-style: none; padding: 0; margin: .6rem 0 .8rem;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .4rem .6rem;
+  }
+  .choices li {
+    font-family: var(--mono); font-size: .84rem; color: var(--text);
+    background: var(--surface-2); border: 1px solid var(--border);
+    padding: .4rem .65rem; border-radius: 6px;
+  }
+  .quiz-item details { margin-top: .5rem; }
+  .quiz-item summary { background: var(--accent-light); color: var(--accent-dark); font-size: .82rem; }
+
+  /* Problem-solving methodology blocks: date intrare / date iesire / algoritm / cod (identice cu S4, S5, S6) */
+  .method-block { margin: .9rem 0; }
+  .method-label {
+    font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--accent-dark); margin-bottom: .4rem; display: flex; align-items: center; gap: .4rem;
+  }
+  .method-label i { color: var(--accent); }
+  .io-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .7rem; margin: .3rem 0 .7rem; }
+  .io-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: .55rem .8rem; font-size: .84rem; }
+  .io-box .io-title { font-size: .66rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--text-3); margin-bottom: .3rem; }
+  .io-box code { font-size: .82rem; }
+  .algo-steps { counter-reset: algo; list-style: none; padding: 0; margin: .3rem 0; }
+  .algo-steps li {
+    counter-increment: algo; position: relative; padding: .32rem 0 .32rem 2.1rem;
+    font-size: .87rem; border-bottom: 1px solid var(--surface-2);
+  }
+  .algo-steps li:last-child { border-bottom: none; }
+  .algo-steps li::before {
+    content: counter(algo); position: absolute; left: 0; top: .28rem;
+    width: 20px; height: 20px; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark);
+    font-size: .7rem; font-weight: 800; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Judge-style problem statement (cerinta / date intrare / date iesire / restrictii / exemplu) */
+  .diff-badge {
+    display: inline-flex; align-items: center; font-size: .68rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .04em; padding: .15rem .55rem; border-radius: 20px;
+    margin-left: .5rem;
+  }
+  .diff-badge.usoara { background: var(--green-light); color: var(--green); }
+  .diff-badge.medie  { background: var(--amber-light); color: #b45309; }
+  .diff-badge.grea   { background: #f3e8ff; color: #7c3aed; }
+  .restrictii-list { margin: .2rem 0 0; padding-left: 1.2rem; }
+  .restrictii-list li { font-size: .85rem; margin-bottom: .2rem; }
+  .judge-example { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; margin: .4rem 0 .6rem; }
+  .judge-ex-col { background: #1e2235; border-radius: 8px; overflow: hidden; border: 1px solid #2d3250; }
+  .judge-ex-title {
+    font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
+    color: #7c85b0; padding: .4rem .7rem; background: #252942; border-bottom: 1px solid #2d3250;
+  }
+  .judge-ex-col pre { margin: 0; padding: .6rem .8rem; font-family: var(--mono); font-size: .82rem; color: #e0e4f5; white-space: pre-wrap; }
+  .judge-explicatie { font-size: .87rem; color: var(--text-2); margin: 0; }
+
+  /* vector diagrams (S7): cells with values and indexes */
+  .vec-wrap { margin: 1.1rem 0; overflow-x: auto; }
+  .vec-wrap .vname {
+    font-family: var(--mono); font-size: .78rem; font-weight: 700;
+    color: var(--text-2); margin-bottom: .4rem;
+  }
+  .vec { display: inline-flex; }
+  .vc { display: flex; flex-direction: column; }
+  .vc .cell {
+    min-width: 48px; height: 42px; padding: 0 .55rem;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface); border: 1.5px solid var(--border); margin-left: -1.5px;
+    font-family: var(--mono); font-weight: 700; font-size: .95rem; color: var(--text);
+  }
+  .vc:first-child .cell { margin-left: 0; border-radius: 8px 0 0 8px; }
+  .vc:last-child .cell { border-radius: 0 8px 8px 0; }
+  .vc .cell.a { background: var(--accent-light); border-color: var(--accent); }
+  .vc .cell.g { background: var(--green-light);  border-color: var(--green); }
+  .vc .cell.r { background: var(--red-light);    border-color: var(--red); }
+  .vc .cell.y { background: var(--amber-light);  border-color: var(--amber); }
+  .vc .ix {
+    text-align: center; font-family: var(--mono); font-size: .72rem;
+    color: var(--text-3); margin-top: .3rem;
+  }
+  .vec-wrap .vcap { font-size: .85rem; color: var(--text-2); margin-top: .6rem; }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">M9</span>Programare orientată pe obiecte</a>
+  <div class="topnav-breadcrumb">
+    <a href="index.html">M9</a><span class="sep">›</span> <span>Lab 0 – Mediul de lucru și de la date la obiecte</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="https://www.onlinegdb.com/" target="_blank" class="btn-sm">Compilator online</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <span class="sidebar-label">Această pagină</span>
+    <a class="sidebar-link" href="#prereq"><i class="fa-solid fa-circle-check fa-fw"></i> Prerequisite</a>
+    <a class="sidebar-link" href="#intro"><i class="fa-solid fa-book-open fa-fw"></i> Introducere</a>
+    <a class="sidebar-link" href="#obiective"><i class="fa-solid fa-bullseye fa-fw"></i> Obiective</a>
+    <a class="sidebar-link" href="#mediu"><i class="fa-solid fa-terminal fa-fw"></i> Mediul de lucru</a>
+    <a class="sidebar-link" href="#subprograme"><i class="fa-solid fa-rotate-left fa-fw"></i> Reamintire: subprograme</a>
+    <a class="sidebar-link" href="#paralele"><i class="fa-solid fa-table-columns fa-fw"></i> Date ținute separat</a>
+    <a class="sidebar-link" href="#inregistrare"><i class="fa-solid fa-cubes fa-fw"></i> Un tip care grupează datele</a>
+    <a class="sidebar-link" href="#erori"><i class="fa-solid fa-triangle-exclamation fa-fw"></i> Erori frecvente</a>
+    <a class="sidebar-link" href="#comparatie"><i class="fa-solid fa-language fa-fw"></i> Comparație între limbaje</a>
+    <span class="sidebar-label">Laboratoare POO</span>
+    <a class="sidebar-link active" href="lab-0.html">Lab 0 – Mediul de lucru și de la date la obiecte</a>
+    <a class="sidebar-link" href="lab-1.html">Lab 1 – Clase și obiecte</a>
+    <a class="sidebar-link" href="index.html">← Înapoi la modul</a>
+  </aside>
+
+  <main class="main">
+    <!-- Hero -->
+    <div class="page-hero">
+      <span class="session-tag">Laborator 0 · POO · C++ · Java · Python</span>
+      <h1>Mediul de lucru și de la date la obiecte</h1>
+      <div class="hero-meta">
+        <span class="chip">Compilare și rulare</span>
+        <span class="chip">Vectori paraleli</span>
+        <span class="chip">Tip cu câmpuri</span>
+        <span class="chip">Instanțe</span>
+        <span class="chip">C++ · Java · Python</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="t0-curs">Curs</button>
+      <button class="tab-btn" data-tab="t0-exemple">Exemple</button>
+      <button class="tab-btn" data-tab="t0-lab">Laborator</button>
+      <button class="tab-btn" data-tab="t0-cheat">Cheat Sheet</button>
+      <button class="tab-btn" data-tab="t0-autoevaluare">Autoevaluare</button>
+    </div>
+
+    <div class="tab-wrap">
+      <!-- TAB: CURS -->
+      <div class="tab-pane active" id="t0-curs">
+        <div class="prose">
+
+<div class="prereq-box" id="prereq">
+<h4>Prerequisite – ce trebuie să știi înainte de acest laborator</h4>
+<ul>
+<li>Ai parcurs sesiunile din M6 despre mediul de lucru și C++: ai compilat și ai rulat un program (S1 – Calculator și C++) și ai văzut o eroare de compilare</li>
+<li>Declari variabile <code>int</code>, <code>double</code> și <code>bool</code> (S2) și scrii bucle <code>for</code> (S5)</li>
+<li>Ai scris subprograme (funcții): definire, apel, parametri, <code>return</code>; ele sunt reamintite pe scurt în secțiunea „Reamintire: subprograme”, pentru că metodele din Laboratorul 1 sunt subprograme</li>
+<li>Lucrezi cu vectori: parcurgi, cauți maximul cu poziție, interschimbi două elemente și sortezi prin metoda bulelor (S7 – Vectori)</li>
+<li>Ai folosit șiruri de caractere ca vectori de <code>char</code> (<code>char nume[20]</code>), împreună cu funcții precum <code>strcpy</code>; în C++ le folosim așa și aici</li>
+<li>Ai văzut în M6 comparații scurte între C++, Java și Python (S7, secțiunea „Comparație între limbaje”); <strong>nu</strong> se presupune că știi să programezi în Java sau în Python</li>
+</ul>
+</div>
+<h2 id="intro">Introducere</h2>
+<p>În M6 ai scris programe în care datele erau variabile izolate sau vectori de valori de același fel: un vector de numere întregi, un vector de numere reale. Cât timp o problemă are un singur fel de date, această organizare este suficientă. Lucrurile se complică atunci când un același „obiect din lumea reală”, de exemplu un student, are mai multe caracteristici de tipuri diferite: un nume (text) și o notă (număr real). Cum le ții împreună?</p>
+<p>Acest laborator are trei scopuri. Primul este practic: același program minim este compilat și rulat în C++, Java și Python, pentru ca mediul de lucru să nu mai fie o necunoscută în laboratoarele următoare. Al doilea este să vezi, pe un exemplu care funcționează în toate cele trei limbaje, de ce vectorii de valori „paralele” sunt o soluție fragilă. Al treilea este să faci primul pas către programarea orientată pe obiecte: definirea unui <strong>tip nou, care grupează datele care aparțin împreună</strong>. Operațiile asupra acestor date (metodele) apar abia în Laboratorul 1.</p>
+<div class="callout info">
+<span class="callout-icon">💡</span>
+<div class="callout-body">
+<strong>Punct cheie</strong>
+<p>Ideile programării din M6 (variabile, condiții, bucle, vectori) rămân valabile: nu înlocuim nimic din ce știi. Se schimbă doar <strong>unitatea cu care lucrezi</strong>: în loc de două sau trei șiruri de valori care trebuie ținute sincronizate de programator, ai un singur șir de „înregistrări”, fiecare conținând toate datele unui student.</p>
+</div>
+</div>
+<div class="callout warn">
+<span class="callout-icon">⚠️</span>
+<div class="callout-body">
+<strong>Ce nu dezvoltăm în acest laborator</strong>
+<p>Nu definim metode (funcții în interiorul unei clase), nici constructori, nu controlăm accesul la date și nu tratăm moștenirea sau polimorfismul (vezi sesiunea X). Nu folosim pointeri sau referințe C++. În C++ numele sunt memorate în vectori de <code>char</code>, ca în cursurile tale anterioare; în Java și Python folosim tipurile text obișnuite ale limbajelor (<code>String</code>, respectiv <code>str</code>), fără să le detaliem.</p>
+</div>
+</div>
+<div class="objectives" id="obiective">
+<h3>La finalul acestui laborator vei putea să:</h3>
+<ol>
+<li><strong>Reamintești</strong> și <strong>compari</strong> definirea și apelul unui subprogram în cele trei limbaje</li>
+<li><strong>Compilezi</strong> și <strong>rulezi</strong> un program minim în C++, Java și Python și <strong>numești</strong> ce produce fiecare pas</li>
+<li><strong>Citești</strong> un mesaj de eroare de compilare sau de sintaxă și <strong>localizezi</strong> greșeala</li>
+<li><strong>Explici</strong> de ce vectorii paraleli sunt o soluție fragilă</li>
+<li><strong>Definești</strong> un tip care grupează date (<code>struct</code> în C++, <code>class</code> în Java și Python)</li>
+<li><strong>Creezi</strong>, <strong>completezi</strong> și <strong>afișezi</strong> instanțe ale acestui tip, accesând câmpurile cu operatorul <code>.</code></li>
+<li><strong>Aplici</strong> tiparele din M6 (medie, maxim cu poziție, sortare) pe un vector de instanțe și <strong>spui</strong> ce se interschimbă, în fiecare limbaj, când două elemente își schimbă locul</li>
+</ol>
+</div>
+<h2 id="mediu">Mediul de lucru: de la fișierul sursă la program</h2>
+<p>Un <strong>fișier sursă</strong> este un fișier text care conține codul scris de programator. Calculatorul nu îl poate executa direct, iar drumul de la sursă la program care rulează diferă de la un limbaj la altul. În C++, compilatorul (de exemplu <code>g++</code>) traduce fișierul sursă într-un <strong>fișier executabil</strong>, pe care sistemul de operare îl poate rula. În Java, compilatorul <code>javac</code> produce un fișier <code>.class</code> care conține <strong>bytecode</strong>, iar comanda <code>java</code> pornește mașina virtuală Java (JVM), care execută acel bytecode. În Python, programul se dă direct interpretorului (<code>python3</code>), care îl rulează fără ca tu să creezi un executabil.</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Pas</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+<tbody>
+<tr><td>Fișier sursă</td><td><code>hello.cpp</code></td><td><code>Hello.java</code></td><td><code>hello.py</code></td></tr><tr><td>Pas de traducere explicit</td><td><code>g++ ... hello.cpp -o hello</code> → executabil</td><td><code>javac Hello.java</code> → <code>Hello.class</code> (bytecode)</td><td>niciunul pe care să-l scrii tu</td></tr><tr><td>Rulare</td><td><code>./hello</code></td><td><code>java Hello</code></td><td><code>python3 hello.py</code></td></tr><tr><td>Eroare de sintaxă apare</td><td>la compilare</td><td>la compilare</td><td>la pornirea programului, înainte să se execute vreo instrucțiune din fișier</td></tr>
+</tbody>
+</table>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Linie de comandă – comenzile de mai sus, într-un terminal Linux</span></div>
+<pre><code># C++
+g++ -std=c++17 -Wall -Wextra hello.cpp -o hello
+./hello
+
+# Java
+javac Hello.java
+java Hello
+
+# Python
+python3 hello.py</code></pre></div>
+<p>Comenzile de mai sus au fost rulate în acest material cu <code>g++</code> 13.3, JDK 21 și Python 3.13; pe alt sistem de operare sau cu alte versiuni, numele exact al fișierului executabil și comanda de pornire pot diferi. Opțiunile <code>-Wall -Wextra</code> cer compilatorului să avertizeze asupra construcțiilor suspecte; ele nu sunt obligatorii, dar sunt o bună obișnuință. Java permite și pornirea directă dintr-un singur fișier sursă, <code>java Hello.java</code>, începând cu JDK 11 (JEP 330); în acest material folosim forma în doi pași, <code>javac</code> apoi <code>java</code>, pentru că arată clar fiecare etapă.</p>
+<h3 id="hello">Programul minim în cele trei limbaje</h3>
+<div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++ · hello.cpp</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Salut, POO!"</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · Hello.java</div><pre><span class="kw">public</span> <span class="kw">class</span> Hello {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        System.out.println(<span class="st">"Salut, POO!"</span>);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python · hello.py</div><pre>print(<span class="st">"Salut, POO!"</span>)</pre></div></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>Salut, POO!</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>Salut, POO!</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>Salut, POO!</pre></div></div>
+<p>Toate cele trei programe afișează același mesaj, dar structura lor diferă. În C++, execuția pornește din funcția <code>main</code>, iar <code>cout</code> vine din biblioteca inclusă cu <code>#include &lt;iostream&gt;</code>. În Java, orice instrucțiune trebuie să se afle într-o <strong>clasă</strong>; execuția pornește din metoda <code>main</code> a clasei indicate la comanda <code>java</code>. În Python nu există o structură obligatorie: instrucțiunile fișierului se execută una după alta, de sus în jos.</p>
+<div class="callout info">
+<span class="callout-icon">💡</span>
+<div class="callout-body">
+<strong>Clasic: „C++ e compilat, Java e interpretat, Python e interpretat”</strong>
+<p>Formularea este prea simplă. Java este mai întâi <strong>compilat</strong> (în bytecode) și abia apoi bytecode-ul este executat de JVM. Documentația Python spune că Python este un limbaj interpretat, dar adaugă că distincția „poate fi neclară din cauza compilatorului de bytecode”: codul sursă este compilat în bytecode, intern, în implementarea CPython, iar acesta este executat de o mașină virtuală. Corect este să descrii <strong>ce pași apar și ce produce fiecare</strong>, nu să aplici o etichetă unică limbajului. Mai mult, un limbaj nu este în sine „compilat” sau „interpretat”: modul de execuție ține de implementare. Aici vorbim despre <code>g++</code>, <code>javac</code> + JVM și CPython.</p>
+</div>
+</div>
+<h2 id="subprograme">Reamintire: subprograme</h2>
+<p>Un <strong>subprogram</strong> (numit în C++ și Python <em>funcție</em>, în Java <em>metodă</em>) este o secvență de instrucțiuni cu un nume, care poate fi apelată de oricâte ori și, la nevoie, primește date și returnează un rezultat. Definiția conține <strong>tipul returnat</strong> (în C++ și Java), <strong>numele</strong>, lista de <strong>parametri</strong> și <strong>corpul</strong>; <strong>apelul</strong> scrie numele și, între paranteze, valorile (argumentele) cu care se execută. Tipul <code>void</code> arată că subprogramul nu returnează nicio valoare, iar instrucțiunea <code>return</code> încheie execuția și trimite rezultatul. Variabilele declarate în interiorul unui subprogram sunt <strong>locale</strong>: există numai cât timp se execută el. Chiar <code>main</code> este un subprogram, cel din care pornește execuția în C++ și Java.</p>
+<p>Programul de mai jos conține trei subprograme: <code>maxim</code> returnează cel mai mare dintre două numere, <code>afiseazaNota</code> afișează un mesaj și nu returnează nimic, iar <code>incearcaSaSchimbi</code> modifică parametrul primit. Ultimul arată un fapt important: pentru un număr întreg trimis ca argument, subprogramul lucrează pe propria lui valoare, iar variabila din care a fost luat argumentul nu se schimbă.</p>
+<div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++ · functii.cpp</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> maxim(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+    <span class="kw">if</span> (a <span class="op">&gt;</span> b) {
+        <span class="kw">return</span> a;
+    }
+    <span class="kw">return</span> b;
+}
+
+<span class="tp">void</span> afiseazaNota(<span class="tp">double</span> nota) {
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Nota: "</span> <span class="op">&lt;&lt;</span> nota <span class="op">&lt;&lt;</span> endl;
+}
+
+<span class="tp">void</span> incearcaSaSchimbi(<span class="tp">int</span> x) {
+    x <span class="op">=</span> <span class="nm">100</span>;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"in functie: "</span> <span class="op">&lt;&lt;</span> x <span class="op">&lt;&lt;</span> endl;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> m <span class="op">=</span> maxim(<span class="nm">7</span>, <span class="nm">12</span>);
+    cout <span class="op">&lt;&lt;</span> m <span class="op">&lt;&lt;</span> endl;
+    afiseazaNota(<span class="nm">9.5</span>);
+
+    <span class="tp">int</span> y <span class="op">=</span> <span class="nm">5</span>;
+    incearcaSaSchimbi(y);
+    cout <span class="op">&lt;&lt;</span> y <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · Functii.java</div><pre><span class="kw">public</span> <span class="kw">class</span> Functii {
+    <span class="kw">static</span> <span class="tp">int</span> maxim(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+        <span class="kw">if</span> (a <span class="op">&gt;</span> b) {
+            <span class="kw">return</span> a;
+        }
+        <span class="kw">return</span> b;
+    }
+
+    <span class="kw">static</span> <span class="tp">void</span> afiseazaNota(<span class="tp">double</span> nota) {
+        System.out.println(<span class="st">"Nota: "</span> <span class="op">+</span> nota);
+    }
+
+    <span class="kw">static</span> <span class="tp">void</span> incearcaSaSchimbi(<span class="tp">int</span> x) {
+        x <span class="op">=</span> <span class="nm">100</span>;
+        System.out.println(<span class="st">"in functie: "</span> <span class="op">+</span> x);
+    }
+
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">int</span> m <span class="op">=</span> maxim(<span class="nm">7</span>, <span class="nm">12</span>);
+        System.out.println(m);
+        afiseazaNota(<span class="nm">9.5</span>);
+
+        <span class="tp">int</span> y <span class="op">=</span> <span class="nm">5</span>;
+        incearcaSaSchimbi(y);
+        System.out.println(y);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python · functii.py</div><pre><span class="kw">def</span> maxim(a, b):
+    <span class="kw">if</span> a <span class="op">&gt;</span> b:
+        <span class="kw">return</span> a
+    <span class="kw">return</span> b
+
+
+<span class="kw">def</span> afiseaza_nota(nota):
+    print(<span class="st">"Nota:"</span>, nota)
+
+
+<span class="kw">def</span> incearca_sa_schimbi(x):
+    x <span class="op">=</span> <span class="nm">100</span>
+    print(<span class="st">"in functie:"</span>, x)
+
+
+m <span class="op">=</span> maxim(<span class="nm">7</span>, <span class="nm">12</span>)
+print(m)
+afiseaza_nota(<span class="nm">9.5</span>)
+
+y <span class="op">=</span> <span class="nm">5</span>
+incearca_sa_schimbi(y)
+print(y)</pre></div></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>12
+Nota: 9.5
+in functie: 100
+5</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>12
+Nota: 9.5
+in functie: 100
+5</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>12
+Nota: 9.5
+in functie: 100
+5</pre></div></div>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Aspect</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+<tbody>
+<tr><td>Cuvânt de definire</td><td>tipul returnat: <code>int maxim(int a, int b)</code></td><td><code>static int maxim(int a, int b)</code></td><td><code>def maxim(a, b):</code></td></tr><tr><td>Unde se scrie</td><td>la nivelul fișierului, în afara lui <code>main</code></td><td>în interiorul unei clase</td><td>oriunde, la nivelul fișierului, înainte de primul apel</td></tr><tr><td>Fără rezultat</td><td><code>void</code></td><td><code>void</code></td><td>nu se scrie niciun tip; fără <code>return</code> sau cu <code>return</code> simplu</td></tr><tr><td>Tipurile parametrilor</td><td>se scriu</td><td>se scriu</td><td>nu se scriu</td></tr><tr><td>Apel</td><td><code>maxim(7, 12)</code></td><td><code>maxim(7, 12)</code> (în aceeași clasă)</td><td><code>maxim(7, 12)</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>În Java, subprogramele trebuie să se afle într-o clasă; aici ele sunt marcate cu <code>static</code>, deoarece sunt apelate din <code>main</code> fără să existe un obiect. Cuvântul <code>static</code> își găsește rostul abia când apar obiectele (vezi sesiunea X): deocamdată, scrie-l. În Laboratorul 1, subprogramele din clase vor fi apelate pe obiecte și nu vor mai avea <code>static</code>. În Python, o definiție trebuie executată înainte ca subprogramul să fie apelat, deci <code>def</code> se scrie mai sus în fișier decât primul apel.</p>
+<div class="callout warn">
+<span class="callout-icon">⚠️</span>
+<div class="callout-body">
+<strong>Ce se păstrează doar pentru numere simple</strong>
+<p>Observația „variabila din apelant nu se schimbă” a fost verificată aici pentru un argument numeric (<code>int</code>). Pentru vectori și pentru obiecte regula nu este aceeași în cele trei limbaje, iar acest laborator nu o tratează (vezi sesiunea X). Nu extinde concluzia de la <code>int</code> la orice tip de argument.</p>
+</div>
+</div>
+<h2 id="paralele">Problema: date care aparțin împreună, ținute separat</h2>
+<p>Fie trei studenți, fiecare cu un nume și o notă. Cu ce știi din M6, soluția naturală este un vector pentru nume și un vector pentru note, în care <strong>elementele cu același indice se referă la același student</strong>: <code>nume[0]</code> și <code>nota[0]</code> descriu primul student. Legătura dintre cei doi vectori nu este înscrisă nicăieri în program, ci există numai în mintea programatorului. Este suficient să uiți această legătură într-un singur loc pentru ca datele să devină false, fără ca vreun compilator să protesteze.</p>
+<p>Programul de mai jos ordonează studenții descrescător după notă, cu metoda bulelor din S7, dar interschimbă <strong>doar notele</strong>. Numele rămân pe loc.</p>
+<div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++ · paralele.cpp</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">char</span> nume[<span class="nm">3</span>][<span class="nm">20</span>] <span class="op">=</span> {<span class="st">"Ana"</span>, <span class="st">"Bogdan"</span>, <span class="st">"Cezar"</span>};
+    <span class="tp">double</span> nota[<span class="nm">3</span>] <span class="op">=</span> {<span class="nm">7.0</span>, <span class="nm">9.5</span>, <span class="nm">8.5</span>};
+
+    <span class="cm">// sortare descrescatoare dupa nota (metoda bulelor), dar se muta DOAR notele</span>
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">2</span>; i<span class="op">++</span>) {
+        <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> <span class="nm">2</span> <span class="op">-</span> i; j<span class="op">++</span>) {
+            <span class="kw">if</span> (nota[j] <span class="op">&lt;</span> nota[j <span class="op">+</span> <span class="nm">1</span>]) {
+                <span class="tp">double</span> aux <span class="op">=</span> nota[j];
+                nota[j] <span class="op">=</span> nota[j <span class="op">+</span> <span class="nm">1</span>];
+                nota[j <span class="op">+</span> <span class="nm">1</span>] <span class="op">=</span> aux;
+            }
+        }
+    }
+
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+        cout <span class="op">&lt;&lt;</span> nume[i] <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> nota[i] <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · Paralele.java</div><pre><span class="kw">public</span> <span class="kw">class</span> Paralele {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">String</span>[] nume <span class="op">=</span> {<span class="st">"Ana"</span>, <span class="st">"Bogdan"</span>, <span class="st">"Cezar"</span>};
+        <span class="tp">double</span>[] nota <span class="op">=</span> {<span class="nm">7.0</span>, <span class="nm">9.5</span>, <span class="nm">8.5</span>};
+
+        <span class="cm">// sortare descrescatoare dupa nota (metoda bulelor), dar se muta DOAR notele</span>
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">2</span>; i<span class="op">++</span>) {
+            <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> <span class="nm">2</span> <span class="op">-</span> i; j<span class="op">++</span>) {
+                <span class="kw">if</span> (nota[j] <span class="op">&lt;</span> nota[j <span class="op">+</span> <span class="nm">1</span>]) {
+                    <span class="tp">double</span> aux <span class="op">=</span> nota[j];
+                    nota[j] <span class="op">=</span> nota[j <span class="op">+</span> <span class="nm">1</span>];
+                    nota[j <span class="op">+</span> <span class="nm">1</span>] <span class="op">=</span> aux;
+                }
+            }
+        }
+
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            System.out.println(nume[i] <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> nota[i]);
+        }
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python · paralele.py</div><pre>nume <span class="op">=</span> [<span class="st">"Ana"</span>, <span class="st">"Bogdan"</span>, <span class="st">"Cezar"</span>]
+nota <span class="op">=</span> [<span class="nm">7.0</span>, <span class="nm">9.5</span>, <span class="nm">8.5</span>]
+
+<span class="cm"># sortare descrescatoare dupa nota (metoda bulelor), dar se muta DOAR notele</span>
+<span class="kw">for</span> i <span class="kw">in</span> range(<span class="nm">2</span>):
+    <span class="kw">for</span> j <span class="kw">in</span> range(<span class="nm">2</span> <span class="op">-</span> i):
+        <span class="kw">if</span> nota[j] <span class="op">&lt;</span> nota[j <span class="op">+</span> <span class="nm">1</span>]:
+            aux <span class="op">=</span> nota[j]
+            nota[j] <span class="op">=</span> nota[j <span class="op">+</span> <span class="nm">1</span>]
+            nota[j <span class="op">+</span> <span class="nm">1</span>] <span class="op">=</span> aux
+
+<span class="kw">for</span> i <span class="kw">in</span> range(<span class="nm">3</span>):
+    print(nume[i], nota[i])</pre></div></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>Ana 9.5
+Bogdan 8.5
+Cezar 7</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>Ana 9.5
+Bogdan 8.5
+Cezar 7.0</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>Ana 9.5
+Bogdan 8.5
+Cezar 7.0</pre></div></div>
+<p>Programul se compilează și rulează fără nicio eroare, dar rezultatul este fals: Ana, care avea nota 7, apare acum cu 9.5, iar Cezar, care avea 8.5, apare cu 7. Notele sunt corect ordonate, însă ele au fost desprinse de numele cărora le aparțineau. Dacă studentul ar fi avut și alte caracteristici (grupa, anul), fiecare interschimbare ar fi cerut o variabilă ajutătoare și o interschimbare pentru <em>fiecare</em> dintre vectori, iar uitarea unuia dintre ei ar fi produs aceeași eroare tăcută.</p>
+<div class="callout warn">
+<span class="callout-icon">⚠️</span>
+<div class="callout-body">
+<strong>Diferența de afișare pentru 7.0</strong>
+<p>Observă ultima linie: C++ afișează <code>7</code>, iar Java și Python afișează <code>7.0</code>. Valoarea din memorie este aceeași, <code>7.0</code>; diferă doar regulile de afișare ale fiecărui limbaj. Nu o confunda cu o diferență a datelor.</p>
+</div>
+</div>
+<h2 id="inregistrare">Soluția: un tip nou care grupează datele</h2>
+<p>Un <strong>tip definit de programator</strong> descrie un grup de date care aparțin aceluiași lucru. Datele din grup se numesc <strong>câmpuri</strong> (în engleză <em>fields</em> sau <em>members</em>), fiecare având un nume și un tip. O <strong>instanță</strong> a tipului este o valoare concretă, care conține câte o valoare pentru fiecare câmp: pentru tipul <code>Student</code> cu câmpurile <code>nume</code> și <code>nota</code>, „Ana, 7.0” este o instanță. Câmpul unei instanțe se accesează cu <strong>operatorul punct</strong>: <code>s.nota</code> înseamnă „câmpul <code>nota</code> al instanței <code>s</code>”.</p>
+<p>În C++ cuvântul cheie folosit în acest laborator este <code>struct</code>. În Java și în Python se folosește <code>class</code>; în Laboratorul 1 vei vedea că o clasă poate conține nu doar date, ci și operații asupra lor. Aici clasele Java și Python conțin <strong>numai câmpuri</strong>, deci joacă același rol ca un <code>struct</code>.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ – tipul Student ca struct; numele este un vector de char</span></div>
+<pre><code><span class="kw">struct</span> Student {
+    <span class="tp">char</span> nume[<span class="nm">20</span>];
+    <span class="tp">double</span> nota;
+};</code></pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Java – tipul Student ca clasă cu două câmpuri</span></div>
+<pre><code><span class="kw">class</span> Student {
+    <span class="tp">String</span> nume;
+    <span class="tp">double</span> nota;
+}</code></pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Python – clasă goală; câmpurile apar la atribuire</span></div>
+<pre><code><span class="kw">class</span> Student:
+    <span class="kw">pass</span>
+
+
+s <span class="op">=</span> Student()
+s.nume <span class="op">=</span> <span class="st">"Ana"</span>
+s.nota <span class="op">=</span> <span class="nm">7.0</span></code></pre></div>
+<p>În C++, un vector de <code>char</code> nu poate primi un text prin atribuire: <code>s.nume = "Ana";</code> nu se compilează. Textul se copiază cu <code>strcpy</code> din <code>&lt;cstring&gt;</code>, ca în exercițiile tale cu <code>char[]</code>: <code>strcpy(s.nume, "Ana");</code>. Mesajul real al lui <code>g++</code> 13.3 pentru atribuirea directă este:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">g++</span></div>
+<pre><code>atrib.cpp: In function ‘int main()’:
+atrib.cpp:11:12: error: incompatible types in assignment of ‘const char [4]’ to ‘char [20]’
+   11 |     s.nume = "Ana";
+      |     ~~~~~~~^~~~~~~</code></pre></div>
+<p>Observă diferența din Python: clasa nu declară câmpurile. Un obiect Python primește un atribut în momentul în care i se atribuie o valoare, de exemplu <code>s.nume = "Ana"</code>; clasa <code>Student</code> de mai sus este doar un „recipient” gol. Acesta este un mod de lucru adecvat pentru acest laborator, dar nu singurul și nu cel obișnuit în programele mai mari; modul uzual, cu un inițializator, este tratat mai târziu (vezi sesiunea X).</p>
+<h3 id="vector-inreg">Un vector de instanțe</h3>
+<p>Cu tipul <code>Student</code> definit, cei trei studenți formează <strong>un singur vector</strong>, iar interschimbarea a două elemente mută cu totul un student, cu nume și notă. Programul de mai jos face aceeași sortare ca mai înainte, dar rezultatul este corect.</p>
+<div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++ · inregistrare.cpp</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="pp">#include &lt;cstring&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">struct</span> Student {
+    <span class="tp">char</span> nume[<span class="nm">20</span>];
+    <span class="tp">double</span> nota;
+};
+
+<span class="tp">int</span> main() {
+    Student s[<span class="nm">3</span>];
+    strcpy(s[<span class="nm">0</span>].nume, <span class="st">"Ana"</span>);    s[<span class="nm">0</span>].nota <span class="op">=</span> <span class="nm">7.0</span>;
+    strcpy(s[<span class="nm">1</span>].nume, <span class="st">"Bogdan"</span>); s[<span class="nm">1</span>].nota <span class="op">=</span> <span class="nm">9.5</span>;
+    strcpy(s[<span class="nm">2</span>].nume, <span class="st">"Cezar"</span>);  s[<span class="nm">2</span>].nota <span class="op">=</span> <span class="nm">8.5</span>;
+
+    <span class="cm">// sortare descrescatoare dupa nota: se interschimba Studentii intregi</span>
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">2</span>; i<span class="op">++</span>) {
+        <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> <span class="nm">2</span> <span class="op">-</span> i; j<span class="op">++</span>) {
+            <span class="kw">if</span> (s[j].nota <span class="op">&lt;</span> s[j <span class="op">+</span> <span class="nm">1</span>].nota) {
+                Student aux <span class="op">=</span> s[j];
+                s[j] <span class="op">=</span> s[j <span class="op">+</span> <span class="nm">1</span>];
+                s[j <span class="op">+</span> <span class="nm">1</span>] <span class="op">=</span> aux;
+            }
+        }
+    }
+
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+        cout <span class="op">&lt;&lt;</span> s[i].nume <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> s[i].nota <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java · Inregistrare.java</div><pre><span class="kw">class</span> Student {
+    <span class="tp">String</span> nume;
+    <span class="tp">double</span> nota;
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Inregistrare {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Student[] s <span class="op">=</span> <span class="kw">new</span> Student[<span class="nm">3</span>];
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            s[i] <span class="op">=</span> <span class="kw">new</span> Student();
+        }
+        s[<span class="nm">0</span>].nume <span class="op">=</span> <span class="st">"Ana"</span>;    s[<span class="nm">0</span>].nota <span class="op">=</span> <span class="nm">7.0</span>;
+        s[<span class="nm">1</span>].nume <span class="op">=</span> <span class="st">"Bogdan"</span>; s[<span class="nm">1</span>].nota <span class="op">=</span> <span class="nm">9.5</span>;
+        s[<span class="nm">2</span>].nume <span class="op">=</span> <span class="st">"Cezar"</span>;  s[<span class="nm">2</span>].nota <span class="op">=</span> <span class="nm">8.5</span>;
+
+        <span class="cm">// sortare descrescatoare dupa nota: se interschimba referintele la Student</span>
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">2</span>; i<span class="op">++</span>) {
+            <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> <span class="nm">2</span> <span class="op">-</span> i; j<span class="op">++</span>) {
+                <span class="kw">if</span> (s[j].nota <span class="op">&lt;</span> s[j <span class="op">+</span> <span class="nm">1</span>].nota) {
+                    Student aux <span class="op">=</span> s[j];
+                    s[j] <span class="op">=</span> s[j <span class="op">+</span> <span class="nm">1</span>];
+                    s[j <span class="op">+</span> <span class="nm">1</span>] <span class="op">=</span> aux;
+                }
+            }
+        }
+
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            System.out.println(s[i].nume <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> s[i].nota);
+        }
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python · inregistrare.py</div><pre><span class="kw">class</span> Student:
+    <span class="kw">pass</span>
+
+
+s <span class="op">=</span> []
+<span class="kw">for</span> nume, nota <span class="kw">in</span> [(<span class="st">"Ana"</span>, <span class="nm">7.0</span>), (<span class="st">"Bogdan"</span>, <span class="nm">9.5</span>), (<span class="st">"Cezar"</span>, <span class="nm">8.5</span>)]:
+    st <span class="op">=</span> Student()
+    st.nume <span class="op">=</span> nume
+    st.nota <span class="op">=</span> nota
+    s.append(st)
+
+<span class="cm"># sortare descrescatoare dupa nota: se interschimba obiectele Student</span>
+<span class="kw">for</span> i <span class="kw">in</span> range(<span class="nm">2</span>):
+    <span class="kw">for</span> j <span class="kw">in</span> range(<span class="nm">2</span> <span class="op">-</span> i):
+        <span class="kw">if</span> s[j].nota <span class="op">&lt;</span> s[j <span class="op">+</span> <span class="nm">1</span>].nota:
+            aux <span class="op">=</span> s[j]
+            s[j] <span class="op">=</span> s[j <span class="op">+</span> <span class="nm">1</span>]
+            s[j <span class="op">+</span> <span class="nm">1</span>] <span class="op">=</span> aux
+
+<span class="kw">for</span> i <span class="kw">in</span> range(<span class="nm">3</span>):
+    print(s[i].nume, s[i].nota)</pre></div></div>
+<div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>Bogdan 9.5
+Cezar 8.5
+Ana 7</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>Bogdan 9.5
+Cezar 8.5
+Ana 7.0</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>Bogdan 9.5
+Cezar 8.5
+Ana 7.0</pre></div></div>
+<p>Nu există niciun vector paralel de care să uiți: <code>s[j]</code> este un student întreg. Programul face însă două lucruri diferite după limbaj, deși codul de interschimbare arată aproape la fel.</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Limbaj</th><th>Ce este un element al vectorului</th><th>Ce face <code>aux = s[j]</code></th></tr></thead>
+<tbody>
+<tr><td>C++</td><td>un <code>Student</code> întreg, păstrat chiar în vector</td><td>creează o <strong>copie</strong> a studentului (se copiază fiecare câmp); atribuirea <code>s[j] = s[j + 1]</code> copiază și ea câmpurile</td></tr><tr><td>Java</td><td>o <strong>referință</strong> la un obiect <code>Student</code></td><td>copiază doar referința; obiectul rămâne într-un singur exemplar, iar interschimbarea mută referințele</td></tr><tr><td>Python</td><td>o <strong>referință</strong> la un obiect <code>Student</code></td><td>leagă numele <code>aux</code> de același obiect; nu se copiază nimic</td></tr>
+</tbody>
+</table>
+</div>
+<p>Pentru C++, atribuirea de copiere generată automat pentru un tip cu câmpuri copiază câmp cu câmp, iar un câmp care este vector (aici <code>nume</code>) este copiat element cu element (cppreference, <em>Copy assignment operator</em>). Pentru Java, o variabilă de tip clasă nu conține obiectul, ci o referință la el, iar copierea unei referințe nu copiază obiectul (JLS 4.3.1). Pentru Python, documentația spune că atribuirile nu copiază date, ci doar leagă nume de obiecte (<em>Python Tutorial</em>, cap. 9). Consecințele acestei diferențe sunt tema centrală a Laboratorului 1.</p>
+<div class="callout warn">
+<span class="callout-icon">⚠️</span>
+<div class="callout-body">
+<strong>Java: crearea vectorului nu creează studenții</strong>
+<p>În Java, <code>new Student[3]</code> creează un vector cu <strong>trei locuri pentru referințe</strong>, toate având inițial valoarea <code>null</code> (JLS 4.12.5), adică nu indică niciun obiect. De aceea programul Java de mai sus are o buclă care execută <code>s[i] = new Student();</code> pentru fiecare loc. În C++, <code>Student s[3];</code> creează direct trei instanțe. În Python, lista pornește goală și primește obiecte prin <code>append</code>.</p>
+</div>
+</div>
+<h2 id="erori">Erori frecvente</h2>
+<h3>Eroarea 1 – Ai uitat un caracter obligatoriu (<code>;</code> sau o paranteză)</h3>
+<p>Cu o instrucțiune neterminată, programul nici nu pornește. Mesajele cele mai utile sunt primele: ele spun fișierul, linia și ce lipsește. Mesajele de mai jos sunt cele reale produse de <code>g++</code> 13.3, <code>javac</code> 21 și Python 3.13 pentru programul „Salut, POO!” din care s-a șters <code>;</code> (în C++ și Java), respectiv paranteza de închidere (în Python).</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">g++ – primele 3 linii ale mesajului</span></div>
+<pre><code>e1.cpp: In function ‘int main()’:
+e1.cpp:5:34: error: expected ‘;’ before ‘return’
+    5 |     cout &lt;&lt; "Salut, POO!" &lt;&lt; endl</code></pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">javac</span></div>
+<pre><code>E1.java:3: error: ';' expected
+        System.out.println("Salut, POO!")
+                                         ^
+1 error</code></pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">python3</span></div>
+<pre><code>    print("Salut, POO!"
+         ^
+SyntaxError: '(' was never closed</code></pre></div>
+<p>Observă că <code>g++</code> indică linia 5 (<code>cout</code>), deși <code>;</code> trebuia pus la sfârșitul ei: compilatorul își dă seama de lipsă abia când întâlnește <code>return</code> pe linia următoare. Locul unde <em>se vede</em> eroarea nu coincide întotdeauna cu locul unde <em>a apărut</em>. În Python, mesajul se referă la paranteza deschisă, nu la finalul fișierului.</p>
+<h3>Eroarea 2 – Numele clasei publice nu coincide cu numele fișierului (Java)</h3>
+<p>Fișierul <code>E2.java</code> conține clasa publică <code>Altceva</code>. Compilarea cu <code>javac</code> eșuează:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">javac E2.java</span></div>
+<pre><code>E2.java:1: error: class Altceva is public, should be declared in a file named Altceva.java
+public class Altceva {
+       ^
+1 error</code></pre></div>
+<p>Regula este impusă de <code>javac</code>, nu de limbajul Java în sine: specificația limbajului (JLS 7.6) spune că sistemul gazdă <em>poate</em> impune ca un tip public să se afle într-un fișier cu același nume, dacă pachetele sunt păstrate într-un sistem de fișiere. În practică, folosind <code>javac</code>, trebuie să respecți regula: clasa publică <code>Hello</code> se află în <code>Hello.java</code>.</p>
+<h3>Eroarea 3 – Folosești un element al vectorului Java înainte de <code>new</code></h3>
+<div class="code-block"><div class="code-header"><span class="code-lang">Java – greșit: elementul s[0] este null</span></div>
+<pre><code>Student[] s <span class="op">=</span> <span class="kw">new</span> Student[<span class="nm">3</span>];
+s[<span class="nm">0</span>].nume <span class="op">=</span> <span class="st">"Ana"</span>;     <span class="cm">// s[0] nu indică niciun obiect</span></code></pre></div>
+<p>Programul se compilează, dar oprește execuția cu o excepție. Mesajul real produs de JDK 21 este:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">java Npe</span></div>
+<pre><code>Exception in thread "main" java.lang.NullPointerException: Cannot assign field "nume" because "&lt;local1&gt;[0]" is null
+	at Npe.main(Npe.java:9)</code></pre></div>
+<p>Mesajul exact poate diferi între versiuni ale JDK; ce rămâne constant este tipul excepției, <code>NullPointerException</code>. Remediul este să creezi mai întâi obiectul: <code>s[0] = new Student();</code>.</p>
+<h3>Eroarea 4 – Vectori paraleli desincronizați</h3>
+<p>Este eroarea din secțiunea anterioară: rezultatul este fals, dar programul nu semnalează nimic. Singurul remediu este să nu mai separi datele care aparțin împreună, adică să folosești un tip care le grupează.</p>
+<h2 id="comparatie">Comparație între limbaje</h2>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Concept</th><th>C++</th><th>Java</th><th>Python</th></tr></thead>
+<tbody>
+<tr><td>Fișier sursă</td><td><code>.cpp</code></td><td><code>.java</code>; clasa publică are numele fișierului</td><td><code>.py</code></td></tr><tr><td>Subprogram</td><td>funcție la nivelul fișierului</td><td><code>static</code> metodă într-o clasă (aici)</td><td><code>def</code></td></tr><tr><td>Punct de intrare</td><td>funcția <code>main</code></td><td>metoda <code>main</code> a unei clase</td><td>prima instrucțiune din fișier</td></tr><tr><td>Afișare</td><td><code>cout &lt;&lt; x</code></td><td><code>System.out.println(x)</code></td><td><code>print(x)</code></td></tr><tr><td>Tip care grupează date</td><td><code>struct Student { ... };</code></td><td><code>class Student { ... }</code></td><td><code>class Student:</code> + atribute create la atribuire</td></tr><tr><td>Crearea unei instanțe</td><td><code>Student s;</code></td><td><code>Student s = new Student();</code></td><td><code>s = Student()</code></td></tr><tr><td>Accesul la un câmp</td><td><code>s.nota</code></td><td><code>s.nota</code></td><td><code>s.nota</code></td></tr><tr><td>Vector de instanțe, imediat după creare</td><td>instanțe (cu câmpurile în starea de la declarare)</td><td>referințe <code>null</code></td><td>listă goală, apoi <code>append</code></td></tr><tr><td>Copierea unei instanțe cu <code>=</code></td><td>copiază câmpurile</td><td>copiază referința</td><td>leagă un nume nou de același obiect</td></tr><tr><td>Afișarea lui <code>7.0</code></td><td><code>7</code></td><td><code>7.0</code></td><td><code>7.0</code></td></tr>
+</tbody>
+</table>
+</div>
+
+        </div>
+      </div><!-- /tab curs -->
+
+      <!-- TAB: EXEMPLE -->
+      <div class="tab-pane" id="t0-exemple">
+        <div class="prose">
+
+<h2 id="exemple">Exemple rezolvate</h2>
+<p>Aplicăm metodologia din M6: <strong>cerință</strong>, <strong>date</strong>, <strong>rezultat</strong>, <strong>proiectarea algoritmului</strong> și <strong>cod</strong>. În acest laborator datele sunt fixate în program, pentru a ne concentra pe definirea tipului și pe accesul la câmpuri. Toate programele au fost compilate și rulate în cele trei limbaje, iar ieșirile afișate sunt cele reale.</p>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Un student ca grup de date<span class="diff-badge usoara">Ușoară</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Definește tipul <code>Student</code> cu un nume și o notă. Creează un student, completează-i câmpurile (Ana, 9.5) și afișează un mesaj de forma „Ana are nota 9.5”.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Proiectarea algoritmului</div><ol class="algo-steps"><li>Se definește tipul cu două câmpuri: <code>nume</code> (text) și <code>nota</code> (număr real).</li><li>Se creează o instanță, fiecare limbaj în felul lui (<code>Student s;</code>, <code>new Student()</code>, <code>Student()</code>).</li><li>Se atribuie valori câmpurilor prin operatorul punct: <code>s.nume = "Ana";</code> și <code>s.nota = 9.5;</code>.</li><li>Se afișează câmpurile, cu textul dintre ele.</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="pp">#include &lt;cstring&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">struct</span> Student {
+    <span class="tp">char</span> nume[<span class="nm">20</span>];
+    <span class="tp">double</span> nota;
+};
+
+<span class="tp">int</span> main() {
+    Student s;
+    strcpy(s.nume, <span class="st">"Ana"</span>);
+    s.nota <span class="op">=</span> <span class="nm">9.5</span>;
+    cout <span class="op">&lt;&lt;</span> s.nume <span class="op">&lt;&lt;</span> <span class="st">" are nota "</span> <span class="op">&lt;&lt;</span> s.nota <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java</div><pre><span class="kw">class</span> Student {
+    <span class="tp">String</span> nume;
+    <span class="tp">double</span> nota;
+}
+
+<span class="kw">public</span> <span class="kw">class</span> UnStudent {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Student s <span class="op">=</span> <span class="kw">new</span> Student();
+        s.nume <span class="op">=</span> <span class="st">"Ana"</span>;
+        s.nota <span class="op">=</span> <span class="nm">9.5</span>;
+        System.out.println(s.nume <span class="op">+</span> <span class="st">" are nota "</span> <span class="op">+</span> s.nota);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Student:
+    <span class="kw">pass</span>
+
+
+s <span class="op">=</span> Student()
+s.nume <span class="op">=</span> <span class="st">"Ana"</span>
+s.nota <span class="op">=</span> <span class="nm">9.5</span>
+print(s.nume, <span class="st">"are nota"</span>, s.nota)</pre></div></div></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Rezultat</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>Ana are nota 9.5</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>Ana are nota 9.5</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>Ana are nota 9.5</pre></div></div></div><p class="judge-explicatie"><em>Observație:</em> cele trei ieșiri coincid, pentru că 9.5 este afișat identic în toate limbajele; spre deosebire de <code>7.0</code> din secțiunea anterioară, 9.5 nu are partea fracționară nulă.</p>
+</div>
+</div>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num warm">2</div><div class="exercise-title">Media notelor dintr-un vector de studenți<span class="diff-badge usoara">Ușoară</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Un vector conține trei studenți: Ana (7.0), Bogdan (9.5) și Cezar (8.5). Se afișează media notelor lor.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Proiectarea algoritmului</div><ol class="algo-steps"><li>Se creează vectorul de studenți (în Java, fiecare loc primește un <code>new Student()</code>).</li><li>Se aplică tiparul <strong>acumulator</strong> din S6: <code>suma</code> pornește de la 0 și primește, pe rând, <code>s[i].nota</code>.</li><li>Se împarte suma la 3. Pentru că <code>suma</code> este de tip real, împărțirea este reală.</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="pp">#include &lt;cstring&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">struct</span> Student {
+    <span class="tp">char</span> nume[<span class="nm">20</span>];
+    <span class="tp">double</span> nota;
+};
+
+<span class="tp">int</span> main() {
+    Student s[<span class="nm">3</span>];
+    strcpy(s[<span class="nm">0</span>].nume, <span class="st">"Ana"</span>);    s[<span class="nm">0</span>].nota <span class="op">=</span> <span class="nm">7.0</span>;
+    strcpy(s[<span class="nm">1</span>].nume, <span class="st">"Bogdan"</span>); s[<span class="nm">1</span>].nota <span class="op">=</span> <span class="nm">9.5</span>;
+    strcpy(s[<span class="nm">2</span>].nume, <span class="st">"Cezar"</span>);  s[<span class="nm">2</span>].nota <span class="op">=</span> <span class="nm">8.5</span>;
+
+    <span class="tp">double</span> suma <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+        suma <span class="op">+=</span> s[i].nota;
+    }
+    cout <span class="op">&lt;&lt;</span> suma <span class="op">/</span> <span class="nm">3</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java</div><pre><span class="kw">class</span> Student {
+    <span class="tp">String</span> nume;
+    <span class="tp">double</span> nota;
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Media {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Student[] s <span class="op">=</span> <span class="kw">new</span> Student[<span class="nm">3</span>];
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            s[i] <span class="op">=</span> <span class="kw">new</span> Student();
+        }
+        s[<span class="nm">0</span>].nume <span class="op">=</span> <span class="st">"Ana"</span>;    s[<span class="nm">0</span>].nota <span class="op">=</span> <span class="nm">7.0</span>;
+        s[<span class="nm">1</span>].nume <span class="op">=</span> <span class="st">"Bogdan"</span>; s[<span class="nm">1</span>].nota <span class="op">=</span> <span class="nm">9.5</span>;
+        s[<span class="nm">2</span>].nume <span class="op">=</span> <span class="st">"Cezar"</span>;  s[<span class="nm">2</span>].nota <span class="op">=</span> <span class="nm">8.5</span>;
+
+        <span class="tp">double</span> suma <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            suma <span class="op">+=</span> s[i].nota;
+        }
+        System.out.println(suma <span class="op">/</span> <span class="nm">3</span>);
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Student:
+    <span class="kw">pass</span>
+
+
+s <span class="op">=</span> []
+<span class="kw">for</span> nume, nota <span class="kw">in</span> [(<span class="st">"Ana"</span>, <span class="nm">7.0</span>), (<span class="st">"Bogdan"</span>, <span class="nm">9.5</span>), (<span class="st">"Cezar"</span>, <span class="nm">8.5</span>)]:
+    st <span class="op">=</span> Student()
+    st.nume <span class="op">=</span> nume
+    st.nota <span class="op">=</span> nota
+    s.append(st)
+
+suma <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> range(<span class="nm">3</span>):
+    suma <span class="op">+=</span> s[i].nota
+print(suma <span class="op">/</span> <span class="nm">3</span>)</pre></div></div></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Rezultat</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>8.33333</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>8.333333333333334</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>8.333333333333334</pre></div></div></div><p class="judge-explicatie"><em>Observație:</em> valoarea matematică este 25 / 3 = 8,333…, dar numărul de cifre afișate diferă: C++ afișează <code>8.33333</code>, iar Java și Python afișează mai multe cifre (<code>8.333333333333334</code>). Valoarea calculată este aceeași: dacă în C++ se cere afișarea cu 17 cifre semnificative (<code>setprecision(17)</code>), se obține <code>8.3333333333333339</code>, adică același număr <code>double</code> pe care Python îl afișează ca <code>8.333333333333334</code>). Diferența este, deci, una de afișare, nu de calcul.</p>
+</div>
+</div>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num apply">3</div><div class="exercise-title">Studentul cu nota maximă<span class="diff-badge medie">Medie</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Pentru același vector de studenți, se afișează numele studentului cu nota cea mai mare și poziția lui, numărată de la 1.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Proiectarea algoritmului</div><ol class="algo-steps"><li>Se aplică tiparul <strong>maxim cu poziție</strong> din S7: se reține <em>indicele</em> <code>poz</code> al celui mai bun student, nu nota lui.</li><li>Se pornește cu <code>poz = 0</code> și se parcurg elementele de la indicele 1; dacă <code>s[i].nota &gt; s[poz].nota</code>, atunci <code>poz = i</code>.</li><li>Din indice se obțin ambele informații: numele (<code>s[poz].nume</code>) și poziția (<code>poz + 1</code>, pentru că indicii încep de la 0).</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="pattern-grid"><div class="pattern-card"><div class="pattern-header">C++</div><pre><span class="pp">#include &lt;iostream&gt;</span>
+<span class="pp">#include &lt;cstring&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">struct</span> Student {
+    <span class="tp">char</span> nume[<span class="nm">20</span>];
+    <span class="tp">double</span> nota;
+};
+
+<span class="tp">int</span> main() {
+    Student s[<span class="nm">3</span>];
+    strcpy(s[<span class="nm">0</span>].nume, <span class="st">"Ana"</span>);    s[<span class="nm">0</span>].nota <span class="op">=</span> <span class="nm">7.0</span>;
+    strcpy(s[<span class="nm">1</span>].nume, <span class="st">"Bogdan"</span>); s[<span class="nm">1</span>].nota <span class="op">=</span> <span class="nm">9.5</span>;
+    strcpy(s[<span class="nm">2</span>].nume, <span class="st">"Cezar"</span>);  s[<span class="nm">2</span>].nota <span class="op">=</span> <span class="nm">8.5</span>;
+
+    <span class="tp">int</span> poz <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+        <span class="kw">if</span> (s[i].nota <span class="op">&gt;</span> s[poz].nota) {
+            poz <span class="op">=</span> i;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> s[poz].nume <span class="op">&lt;&lt;</span> <span class="st">" pe pozitia "</span> <span class="op">&lt;&lt;</span> poz <span class="op">+</span> <span class="nm">1</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre></div><div class="pattern-card"><div class="pattern-header">Java</div><pre><span class="kw">class</span> Student {
+    <span class="tp">String</span> nume;
+    <span class="tp">double</span> nota;
+}
+
+<span class="kw">public</span> <span class="kw">class</span> Maxim {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="tp">void</span> main(<span class="tp">String</span>[] args) {
+        Student[] s <span class="op">=</span> <span class="kw">new</span> Student[<span class="nm">3</span>];
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            s[i] <span class="op">=</span> <span class="kw">new</span> Student();
+        }
+        s[<span class="nm">0</span>].nume <span class="op">=</span> <span class="st">"Ana"</span>;    s[<span class="nm">0</span>].nota <span class="op">=</span> <span class="nm">7.0</span>;
+        s[<span class="nm">1</span>].nume <span class="op">=</span> <span class="st">"Bogdan"</span>; s[<span class="nm">1</span>].nota <span class="op">=</span> <span class="nm">9.5</span>;
+        s[<span class="nm">2</span>].nume <span class="op">=</span> <span class="st">"Cezar"</span>;  s[<span class="nm">2</span>].nota <span class="op">=</span> <span class="nm">8.5</span>;
+
+        <span class="tp">int</span> poz <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+            <span class="kw">if</span> (s[i].nota <span class="op">&gt;</span> s[poz].nota) {
+                poz <span class="op">=</span> i;
+            }
+        }
+        System.out.println(s[poz].nume <span class="op">+</span> <span class="st">" pe pozitia "</span> <span class="op">+</span> (poz <span class="op">+</span> <span class="nm">1</span>));
+    }
+}</pre></div><div class="pattern-card"><div class="pattern-header">Python</div><pre><span class="kw">class</span> Student:
+    <span class="kw">pass</span>
+
+
+s <span class="op">=</span> []
+<span class="kw">for</span> nume, nota <span class="kw">in</span> [(<span class="st">"Ana"</span>, <span class="nm">7.0</span>), (<span class="st">"Bogdan"</span>, <span class="nm">9.5</span>), (<span class="st">"Cezar"</span>, <span class="nm">8.5</span>)]:
+    st <span class="op">=</span> Student()
+    st.nume <span class="op">=</span> nume
+    st.nota <span class="op">=</span> nota
+    s.append(st)
+
+poz <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> range(<span class="nm">1</span>, <span class="nm">3</span>):
+    <span class="kw">if</span> s[i].nota <span class="op">&gt;</span> s[poz].nota:
+        poz <span class="op">=</span> i
+print(s[poz].nume, <span class="st">"pe pozitia"</span>, poz <span class="op">+</span> <span class="nm">1</span>)</pre></div></div></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Rezultat</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – C++</div><pre>Bogdan pe pozitia 2</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Java</div><pre>Bogdan pe pozitia 2</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează – Python</div><pre>Bogdan pe pozitia 2</pre></div></div></div>
+</div>
+</div>
+
+        </div>
+      </div><!-- /tab exemple -->
+
+      <!-- TAB: LABORATOR -->
+      <div class="tab-pane" id="t0-lab">
+        <div class="prose">
+
+<h2 id="introductive">Exerciții introductive (fără scriere de cod)</h2>
+<p>Rezolvă pe hârtie, apoi verifică cu răspunsul. Exercițiile sunt în ordinea crescătoare a dificultății și sunt propuse de autorul materialului; nu provin dintr-o sursă externă.</p>
+<div class="quiz-item">
+<p><span class="qnum">1</span>Ce primești după ce rulezi <code>g++ -std=c++17 hello.cpp -o hello</code>: un fișier text, un fișier executabil sau un fișier cu bytecode? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Un <strong>fișier executabil</strong> numit <code>hello</code>. Un fișier cu bytecode apare în Java, după <code>javac</code>.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">2</span>Ce conține fișierul <code>Hello.class</code> și cine îl execută? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Conține <strong>bytecode</strong>, produs de compilatorul <code>javac</code>. Este executat de mașina virtuală Java (JVM), pornită prin comanda <code>java Hello</code> (Oracle, <em>The Java Tutorials</em>).</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">3</span>Programul din secțiunea „Problema” nu are nicio eroare de compilare, dar afișează date false. Explică, într-o propoziție, de ce. <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Notele au fost interschimbate, iar numele nu, deci perechile nume–notă din cei doi vectori nu mai corespund; legătura dintre vectori exista numai în mintea programatorului.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">4</span>Un student are nume, nota, grupa și anul de studiu. Câți vectori paraleli ar fi necesari? Câte interschimbări de elemente trebuie scrise pentru a muta un student, cu vectori paraleli, respectiv cu un vector de instanțe? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Patru vectori paraleli, deci <strong>patru</strong> interschimbări (fiecare cu variabila ei ajutătoare). Cu un vector de instanțe este nevoie de <strong>o singură</strong> interschimbare, cea a elementelor vectorului.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">5</span>Ce afișează <code>cout &lt;&lt; 7.0;</code> în C++? Dar <code>System.out.println(7.0);</code> în Java? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>C++ afișează <code>7</code>, iar Java afișează <code>7.0</code> (rezultatele programelor din această pagină). Valoarea din memorie este aceeași; diferă regulile de afișare.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">6</span>Ce conține <code>s[0]</code> imediat după <code>Student[] s = new Student[3];</code> în Java? Dar după <code>Student s[3];</code> în C++? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>În Java, <code>s[0]</code> este <code>null</code>: un loc pentru referință, care nu indică încă niciun obiect (JLS 4.12.5). În C++, <code>s[0]</code> este deja un obiect <code>Student</code>, creat prin inițializare implicită; câmpurile lui, <code>nume</code> (vector de <code>char</code>) și <code>nota</code> (<code>double</code>), rămân neinițializate (valori nedeterminate), deci citirea lor înainte de atribuire nu este permisă (cppreference, <em>Default-initialization</em>).</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">7</span>Un fișier Python conține, pe linia 1, <code>print("a")</code> și, pe linia 2, <code>print("b"</code> (fără paranteza de închidere). Se va afișa „a”? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Nu. Fișierul este compilat în întregime înainte de execuție, deci eroarea de sintaxă din linia 2 este raportată înainte să se execute linia 1. Verificat prin rulare cu Python 3.13: se afișează numai mesajul <code>SyntaxError</code>.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">8</span>În secvența <code>Student aux = s[j]; s[j] = s[j + 1]; s[j + 1] = aux;</code>, ce se mută efectiv în C++, în Java și în Python? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>În C++ se <strong>copiază</strong> câmpurile fiecărui student, deoarece elementele vectorului sunt chiar instanțele. În Java și în Python elementele vectorului (listei) sunt referințe, deci se interschimbă referințele, iar obiectele nu se mută și nu se copiază. Rezultatul vizibil al sortării este același în cele trei limbaje.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">9</span>Ce afișează programul din secțiunea „Reamintire: subprograme” după apelul <code>incearcaSaSchimbi(y)</code>, pentru <code>y = 5</code>? De ce? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Se afișează <code>5</code> (după linia „in functie: 100”). Subprogramul a modificat propria valoare a parametrului <code>x</code>, nu variabila <code>y</code> din apelant; ieșirile reale sunt în secțiunea respectivă. Concluzia este verificată doar pentru argumente numerice.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">10</span>Care este diferența dintre un subprogram care returnează o valoare și unul <code>void</code>? Dă un exemplu din programul de mai sus. <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p><code>maxim</code> returnează un <code>int</code> prin <code>return</code>, iar rezultatul se folosește (<code>int m = maxim(7, 12);</code>). <code>afiseazaNota</code> este <code>void</code>: nu returnează nimic, ci doar afișează un mesaj.</p></details>
+</div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="tracing">Code Tracing – Exerciții</h2>
+<p>Urmărește execuția <strong>fără să rulezi programul</strong>. Notează valorile câmpurilor la fiecare pas și ce se va afișa; apoi verifică rulând codul. Exercițiile sunt propuse de autor, iar soluțiile au fost verificate prin rulare.</p>
+<details>
+<summary>Exercițiul 1 — copierea unei instanțe în C++</summary>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ (tipul Student ca în secțiunea anterioară)</span></div>
+<pre><code><span class="kw">struct</span> Student {
+    <span class="tp">char</span> nume[<span class="nm">20</span>];
+    <span class="tp">double</span> nota;
+};
+
+Student a;
+strcpy(a.nume, <span class="st">"Ana"</span>);
+a.nota <span class="op">=</span> <span class="nm">6.0</span>;
+Student b <span class="op">=</span> a;
+b.nota <span class="op">=</span> b.nota <span class="op">+</span> <span class="nm">2</span>;
+cout <span class="op">&lt;&lt;</span> a.nota <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> b.nota;</code></pre></div><p><strong>Soluție:</strong> <code>Student b = a;</code> creează o <strong>copie</strong> a lui <code>a</code>, cu <code>nota = 6.0</code>. Apoi se modifică numai <code>b</code>, care ajunge la 8. Se afișează <code>6 8</code> (C++ nu afișează partea fracționară nulă).</p>
+</details>
+<details>
+<summary>Exercițiul 2 — interschimbarea a două instanțe</summary>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div>
+<pre><code>Student s[<span class="nm">2</span>];
+strcpy(s[<span class="nm">0</span>].nume, <span class="st">"Ana"</span>);    s[<span class="nm">0</span>].nota <span class="op">=</span> <span class="nm">5.0</span>;
+strcpy(s[<span class="nm">1</span>].nume, <span class="st">"Bogdan"</span>); s[<span class="nm">1</span>].nota <span class="op">=</span> <span class="nm">9.0</span>;
+Student aux <span class="op">=</span> s[<span class="nm">0</span>];
+s[<span class="nm">0</span>] <span class="op">=</span> s[<span class="nm">1</span>];
+s[<span class="nm">1</span>] <span class="op">=</span> aux;
+cout <span class="op">&lt;&lt;</span> s[<span class="nm">0</span>].nume <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> s[<span class="nm">1</span>].nume;</code></pre></div><p><strong>Soluție:</strong> <code>aux</code> primește o copie a lui <code>s[0]</code> (Ana). <code>s[0] = s[1]</code> copiază câmpurile lui Bogdan peste <code>s[0]</code>. <code>s[1] = aux</code> copiază câmpurile lui Ana în <code>s[1]</code>. Vectorul este acum Bogdan, Ana. Se afișează <code>Bogdan Ana</code>.</p>
+</details>
+<details>
+<summary>Exercițiul 3 — același cod ca în exercițiul 1, în Python</summary>
+<div class="code-block"><div class="code-header"><span class="code-lang">Python</span></div>
+<pre><code><span class="kw">class</span> Student:
+    <span class="kw">pass</span>
+
+
+a <span class="op">=</span> Student()
+a.nota <span class="op">=</span> <span class="nm">6</span>
+b <span class="op">=</span> a
+b.nota <span class="op">=</span> b.nota <span class="op">+</span> <span class="nm">2</span>
+print(a.nota, b.nota)</code></pre></div><p><strong>Soluție:</strong> spre deosebire de C++, <code>b = a</code> nu creează o copie: <code>a</code> și <code>b</code> sunt două nume pentru <strong>același obiect</strong>. Modificarea <code>b.nota = b.nota + 2</code> se vede și prin <code>a</code>. Se afișează <code>8 8</code>. (În Java, o secvență echivalentă dă același rezultat: <code>b = a</code> copiază referința.)</p>
+</details>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="lab">Laborator – Aplicații de rezolvat</h2>
+<p>Lucrează în limbajul indicat de profesor (implicit C++), apoi portează soluția în celelalte două. Exercițiile sunt propuse de autorul materialului.</p>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Pregătirea mediului de lucru<span class="diff-badge usoara">Ușoară</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Verifică ce instrumente sunt instalate pe calculatorul din laborator și rulează programul minim în cele trei limbaje.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-bullseye"></i> Obiectiv</div><p>Să parcurgi, cu mâna ta, pașii compilare / rulare descriși în secțiunea „Mediul de lucru”.</p></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Pași</div><ol class="algo-steps"><li>Deschide un terminal și verifică versiunile: <code>g++ --version</code>, <code>javac -version</code>, <code>python3 --version</code>. Dacă o comandă nu este recunoscută, notează-o: instrumentul respectiv lipsește sau nu este în calea de căutare a sistemului.</li><li>Creează trei fișiere: <code>hello.cpp</code>, <code>Hello.java</code>, <code>hello.py</code>, cu conținutul din secțiunea „Programul minim”.</li><li>Compilează și rulează fiecare program cu comenzile din tabel.</li><li>Schimbă mesajul afișat în cele trei programe și rulează din nou. Verifică, pentru C++ și Java, că ai refăcut și pasul de compilare.</li><li>Șterge un <code>;</code> din programul C++ și apoi din cel Java; citește mesajul produs și notează linia indicată.</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Verificare</div><p>Fiecare program afișează mesajul tău. Pentru programul fără <code>;</code>, compilatorul oprește procesul și nu produce executabil / <code>.class</code> actualizat.</p></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-pencil"></i> Sarcini independente</div><ul><li>Redenumește fișierul <code>Hello.java</code> în <code>Salut.java</code> fără să schimbi clasa. Ce mesaj apare la compilare? Explică-l.</li><li>Rulează <code>java Hello.java</code> (JDK 11 sau mai nou) și compară cu varianta în doi pași: ce fișiere au apărut în director în fiecare caz?</li></ul></div>
+</div>
+</div>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num apply">2</div><div class="exercise-title">De la vectori paraleli la un vector de instanțe<span class="diff-badge medie">Medie</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Pornind de la programul cu vectori paraleli, produce versiunea corectă care sortează studenții descrescător după notă, folosind un tip <code>Student</code>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-bullseye"></i> Obiectiv</div><p>Să înlocuiești două structuri de date sincronizate manual cu una singură, fără să schimbi algoritmul de sortare.</p></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Pași</div><ol class="algo-steps"><li>Copiază programul <code>paralele</code> (în limbajul ales) și rulează-l; observă rezultatul fals.</li><li>Adaugă la program tipul <code>Student</code> cu câmpurile <code>nume</code> și <code>nota</code>.</li><li>Înlocuiește cei doi vectori cu un vector de trei <code>Student</code>; completează-i câmpurile.</li><li>Schimbă condiția sortării în <code>s[j].nota &lt; s[j + 1].nota</code> și corpul ei în interschimbarea a două elemente <code>Student</code>.</li><li>Rulează și compară rezultatul cu cel din secțiunea „Soluția”.</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Rezultat așteptat</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se afișează (ordinea și numele, în C++)</div><pre>Bogdan 9.5
+Cezar 8.5
+Ana 7</pre></div></div></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-pencil"></i> Sarcini independente</div><ul><li>Adaugă un al patrulea student și un al treilea câmp, <code>grupa</code> (număr întreg). Câte linii ai modificat în algoritmul de sortare? Câte ar fi fost necesare cu vectori paraleli?</li><li>Sortează crescător după nume, nu după notă. Ce operator de comparație poți folosi între două texte în fiecare limbaj? Verifică prin încercare și notează ce ai constatat; nu presupune că regula este aceeași în cele trei limbaje.</li></ul></div>
+</div>
+</div>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num combine">3</div><div class="exercise-title">Biblioteca mică<span class="diff-badge medie">Medie</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Definește tipul <code>Carte</code> cu câmpurile <code>titlu</code> (text), <code>pagini</code> (întreg) și <code>pret</code> (număr real). Memorează patru cărți într-un vector și afișează: (a) titlul celei mai groase cărți (cu cele mai multe pagini); (b) prețul total al celor patru cărți.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-bullseye"></i> Obiectiv</div><p>Să aplici singur tiparele <strong>maxim cu poziție</strong> și <strong>acumulator</strong> pe un vector de instanțe, în cele trei limbaje.</p></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Indicații</div><ol class="algo-steps"><li>Alege tu valorile celor patru cărți și calculează rezultatul așteptat pe hârtie, înainte de a scrie programul.</li><li>Pentru maxim, reține indicele, nu numărul de pagini.</li><li>Pentru preț total, folosește o variabilă <code>double</code> inițializată cu 0.</li><li>În Java, nu uita să creezi fiecare <code>Carte</code> cu <code>new</code>.</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-pencil"></i> Sarcini independente</div><ul><li>Afișează, în plus, câte cărți au mai mult de 300 de pagini.</li><li>Caută o carte după titlu și afișează prețul ei sau mesajul <code>NU EXISTA</code>. Folosește tiparul de căutare liniară din S7.</li></ul></div>
+</div>
+</div>
+<div class="exercise">
+<div class="exercise-header"><div class="exercise-num apply">4</div><div class="exercise-title">Subprograme pentru note<span class="diff-badge medie">Medie</span></div></div>
+<div class="exercise-body">
+<p class="cerinta">Cerință</p><p>Scrie două subprograme: <code>medie(a, b)</code>, care returnează media aritmetică a două note reale, și <code>esteReusit(nota)</code>, care returnează <code>true</code> dacă nota este cel puțin 5. Apelează-le din <code>main</code> pentru notele 7.0 și 9.5 și pentru nota 4.5.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-bullseye"></i> Obiectiv</div><p>Să scrii și să apelezi subprograme cu parametri și valoare returnată în cele trei limbaje, înainte de a le folosi ca metode în Laboratorul 1.</p></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Indicații</div><ol class="algo-steps"><li>Alege tipul returnat: <code>double</code> pentru medie, <code>bool</code> (C++), <code>boolean</code> (Java) sau fără tip (Python) pentru a doua.</li><li>Atenție la împărțire: media a două numere reale se calculează cu <code>(a + b) / 2</code>.</li><li>În Java, scrie subprogramele <code>static</code>, în aceeași clasă cu <code>main</code>.</li><li>Calculează rezultatele așteptate pe hârtie înainte de rulare.</li></ol></div><div class="method-block"><div class="method-label"><i class="fa-solid fa-pencil"></i> Sarcini independente</div><ul><li>Scrie un subprogram care primește trei note și returnează cea mai mare.</li><li>Modifică <code>esteReusit</code> astfel încât pragul să fie al doilea parametru.</li></ul></div>
+</div>
+</div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="extra">Exerciții extra</h2>
+<p>Pentru cei care termină mai repede. Fiecare are un răspuns care se deschide separat.</p>
+<div class="quiz-item">
+<p><span class="qnum">1</span>De ce nu este necesară, în Python, declararea câmpurilor în clasa <code>Student</code> din acest laborator? Ce se întâmplă dacă un obiect nu primește niciodată câmpul <code>nota</code> și programul îi citește <code>s.nota</code>? <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Un atribut al unui obiect Python este creat în momentul atribuirii (<code>s.nota = 7.0</code>). Dacă nu a fost atribuit, citirea lui produce o eroare de execuție, <code>AttributeError</code>. Este o diferență față de C++ și Java, unde câmpurile sunt declarate în tip și toate instanțele le au.</p></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">2</span>Scrie, în Java, secvența care creează un vector de două <code>Student</code> și le completează (Ana 7.0, Bogdan 9.5), apoi spune câte obiecte <code>Student</code> există după execuție. <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Sunt <strong>două</strong> obiecte (nu trei): vectorul conține referințe, iar vectorul în sine nu este un <code>Student</code>.</p><div class="code-block"><div class="code-header"><span class="code-lang">Java</span></div>
+<pre><code>Student[] s <span class="op">=</span> <span class="kw">new</span> Student[<span class="nm">2</span>];
+s[<span class="nm">0</span>] <span class="op">=</span> <span class="kw">new</span> Student();
+s[<span class="nm">1</span>] <span class="op">=</span> <span class="kw">new</span> Student();
+s[<span class="nm">0</span>].nume <span class="op">=</span> <span class="st">"Ana"</span>;    s[<span class="nm">0</span>].nota <span class="op">=</span> <span class="nm">7.0</span>;
+s[<span class="nm">1</span>].nume <span class="op">=</span> <span class="st">"Bogdan"</span>; s[<span class="nm">1</span>].nota <span class="op">=</span> <span class="nm">9.5</span>;</code></pre></div></details>
+</div>
+<div class="quiz-item">
+<p><span class="qnum">3</span>Programul C++ <code>Student s; cout &lt;&lt; s.nota;</code> compilează fără probleme. Este corect să-l folosești pentru a afișa o notă implicită? Răspunde cu ajutorul sursei. <span class="pill">Propus de autor</span></p>
+
+<details><summary>Vezi răspunsul</summary><p>Nu. Pentru un obiect cu durată de stocare automată, câmpul <code>nota</code>, de tip scalar, nu primește nicio valoare la declarare și are o valoare nedeterminată; până la C++23, citirea unei astfel de valori este comportament nedefinit, iar C++26 înlocuiește regula cu „comportament eronat” (cppreference, <em>Default-initialization</em>). Indiferent de standard, nu se citește un câmp înainte de a-l fi completat.</p></details>
+</div>
+
+        </div>
+      </div><!-- /tab lab -->
+
+      <!-- TAB: CHEAT SHEET -->
+      <div class="tab-pane" id="t0-cheat">
+        <div class="prose">
+
+<h2 id="cheat">Fișă rapidă – Laborator 0</h2>
+<p>Referință compactă pentru folosit în laborator.</p>
+<div class="cheat-grid">
+<div class="cheat-card">
+<div class="cheat-card-header">Compilare și rulare</div>
+<pre>C++:    g++ -std=c++17 -Wall -Wextra f.cpp -o f
+        ./f
+Java:   javac Hello.java
+        java Hello
+Python: python3 hello.py
+
+Java: clasa publica Hello -&gt; Hello.java
+(javac verifica acest lucru)</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">Subprograme</div>
+<pre>C++:
+int maxim(int a, int b) {
+    return a &gt; b ? a : b;
+}
+void afis(double n) { ... }
+
+Java: static int maxim(int a, int b)
+Python: def maxim(a, b):
+
+Apel: maxim(7, 12)
+void = nu returneaza nimic
+Parametru numeric: valoarea
+din apelant NU se schimba</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">Tip cu câmpuri</div>
+<pre>C++:
+struct Student {
+    char nume[20];
+    double nota;
+};
+
+Java:
+class Student {
+    String nume;
+    double nota;
+}
+
+Python:
+class Student:
+    pass</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">Instanțe și câmpuri</div>
+<pre>C++:    Student s;
+         strcpy(s.nume, "Ana");
+         s.nota = 9.5;
+Java:    Student s = new Student();
+         s.nota = 9.5;
+Python:  s = Student()
+         s.nota = 9.5
+
+Acces la camp: s.camp</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">Vector de instanțe</div>
+<pre>C++:    Student v[3];
+Java:    Student[] v = new Student[3];
+         for (...) v[i] = new Student();
+         // altfel v[i] este null
+Python:  v = []
+         v.append(Student())
+
+Maxim cu pozitie: retine INDICELE
+         v[i].nota &gt; v[poz].nota</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">Copiere</div>
+<pre>aux = a;
+C++:    copie a campurilor
+Java:   copie a referintei
+        (acelasi obiect)
+Python: acelasi obiect
+        (a is aux -&gt; True)</pre>
+</div>
+<div class="cheat-card">
+<div class="cheat-card-header">Erori frecvente</div>
+<pre>; sau ) lipsa -&gt; eroare de
+   compilare / sintaxa
+Java: clasa publica != fisier
+Java: NullPointerException
+   (element al vectorului fara new)
+Vectori paraleli: date false,
+   fara nicio eroare
+7.0 : C++ afiseaza 7, Java 7.0</pre>
+</div>
+</div>
+
+        </div>
+      </div><!-- /tab cheat -->
+
+      <!-- TAB: AUTOEVALUARE -->
+      <div class="tab-pane" id="t0-autoevaluare">
+        <div class="prose">
+
+<h2 id="verificare">Întrebări de autoevaluare</h2>
+<details><summary>0. Ce este un subprogram și ce înseamnă <code>void</code>?</summary>
+<p>Un subprogram este o secvență de instrucțiuni cu nume, apelabilă de oricâte ori, care poate primi parametri și poate returna un rezultat. <code>void</code> arată că nu returnează nicio valoare. În Java se numește metodă.</p>
+</details>
+<details><summary>1. Ce produce fiecare dintre comenzile <code>g++ ... -o hello</code>, <code>javac Hello.java</code> și <code>python3 hello.py</code>?</summary>
+<p>Prima produce un fișier executabil, a doua un fișier <code>Hello.class</code> cu bytecode (executat apoi de JVM prin <code>java Hello</code>), iar a treia rulează direct programul, fără ca tu să obții un fișier executabil. În CPython, sursa este totuși compilată intern în bytecode (Python, glosar).</p>
+</details>
+<details><summary>2. De ce nu este corectă afirmația „Python este interpretat, deci nu este compilat”?</summary>
+<p>Documentația Python spune că distincția dintre limbaje interpretate și compilate „poate fi neclară” din cauza compilatorului de bytecode: în CPython, sursa este compilată în bytecode, care apoi este executat de o mașină virtuală. Mai precis, termenii descriu implementări, nu limbaje în sine.</p>
+</details>
+<details><summary>3. Ce sunt vectorii paraleli și care este riscul lor?</summary>
+<p>Sunt doi sau mai mulți vectori în care elementele cu același indice descriu același lucru. Riscul este desincronizarea: dacă o operație (de exemplu, o interschimbare) este aplicată unuia dintre vectori și uitată pe celălalt, datele devin false fără nicio eroare de compilare sau de execuție.</p>
+</details>
+<details><summary>4. Ce este un câmp și cum se accesează?</summary>
+<p>Un câmp este o dată cu nume și tip, aparținând unui tip definit de programator. Se accesează prin operatorul punct pe o instanță: <code>s.nota</code>.</p>
+</details>
+<details><summary>5. Ce este o instanță? Dă un exemplu.</summary>
+<p>O valoare concretă a unui tip definit de programator, cu câte o valoare pentru fiecare câmp. De exemplu, „Ana, 7.0” este o instanță a tipului <code>Student</code>.</p>
+</details>
+<details><summary>6. Ce conține un vector Java de tip <code>Student[]</code> imediat după crearea cu <code>new Student[3]</code>?</summary>
+<p>Trei referințe cu valoarea <code>null</code> (JLS 4.12.5). Obiectele trebuie create separat, cu <code>new Student()</code>.</p>
+</details>
+<details><summary>7. Ce se întâmplă la <code>Student aux = s[j];</code> în C++, Java și Python?</summary>
+<p>În C++ se creează o copie a instanței (câmp cu câmp). În Java se copiază referința, iar în Python numele <code>aux</code> este legat de același obiect, deci în ambele limbaje nu apare un obiect nou.</p>
+</details>
+<details><summary>8. De ce se afișează <code>7</code> în C++ și <code>7.0</code> în Java pentru aceeași valoare?</summary>
+<p>Valoarea din memorie este aceeași. Diferă regulile de afișare ale <code>cout</code>, respectiv ale <code>System.out.println</code>.</p>
+</details>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="rezumat">Rezumat – De reținut</h2>
+<div class="callout ok">
+<span class="callout-icon">✅</span>
+<div class="callout-body">
+<strong>Cele mai importante idei din acest laborator</strong>
+
+</div>
+</div>
+<ol><li>Drumul de la sursă la program diferă: executabil în C++, bytecode (<code>.class</code>) executat de JVM în Java, rulare directă prin interpretor în Python (care compilează totuși intern în bytecode).</li><li>Citește mesajul de eroare: el indică fișierul, linia și, de obicei, ce lipsește. Locul unde se vede eroarea nu este mereu locul unde a apărut.</li><li>Datele care aparțin aceluiași lucru nu se păstrează în vectori paraleli: orice operație uitată pe unul dintre vectori produce date false, fără nicio eroare.</li><li>Un tip definit de programator grupează <strong>câmpuri</strong>; o <strong>instanță</strong> are o valoare pentru fiecare câmp; câmpul se accesează cu <code>.</code>.</li><li>Tiparele din M6 (acumulator, maxim cu poziție, sortare) se aplică neschimbat pe un vector de instanțe; se reține <em>indicele</em>.</li><li>Un subprogram are tip returnat (C++, Java), nume, parametri și corp; se apelează cu <code>nume(argumente)</code>. Pentru un argument numeric, variabila din apelant nu este modificată de subprogram.</li><li>Elementele unui vector C++ de instanțe sunt instanțele însele; în Java și Python sunt referințe la obiecte. În Java, <code>new Student[3]</code> nu creează studenții.</li></ol>
+<h2 id="glosar">Glosar</h2>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Termen</th><th>Definiție</th></tr></thead>
+<tbody>
+<tr><td><strong>Subprogram</strong></td><td>Secvență de instrucțiuni cu nume, apelabilă, cu parametri și, opțional, valoare returnată (funcție în C++ și Python, metodă în Java)</td></tr><tr><td><strong>Fișier sursă</strong></td><td>Fișier text cu codul scris de programator</td></tr><tr><td><strong>Compilator</strong></td><td>Program care traduce un fișier sursă într-o altă formă: executabil (C++) sau bytecode (Java)</td></tr><tr><td><strong>Bytecode</strong></td><td>Reprezentare intermediară a unui program, executată de o mașină virtuală (JVM în Java; mașina virtuală CPython în Python)</td></tr><tr><td><strong>JVM</strong></td><td>Mașina virtuală Java, care execută bytecode-ul din fișierele <code>.class</code></td></tr><tr><td><strong>Tip definit de programator</strong></td><td>Tip care grupează mai multe date (câmpuri) ce aparțin aceluiași lucru</td></tr><tr><td><strong>Câmp</strong></td><td>Dată cu nume și tip, aparținând unui tip definit de programator</td></tr><tr><td><strong>Instanță</strong></td><td>Valoare concretă a unui tip definit de programator, cu câte o valoare pentru fiecare câmp</td></tr><tr><td><strong>Operatorul punct</strong></td><td>Operatorul <code>.</code> care selectează un câmp al unei instanțe: <code>s.nota</code></td></tr><tr><td><strong>Vectori paraleli</strong></td><td>Doi sau mai mulți vectori ale căror elemente cu același indice descriu același lucru</td></tr><tr><td><strong>Referință</strong></td><td>Valoare care indică un obiect (în Java și Python, variabilele de tip clasă conțin referințe)</td></tr><tr><td><strong><code>null</code></strong></td><td>Valoarea unei referințe Java care nu indică niciun obiect</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="ce-urmeaza">Ce urmează?</h2>
+<div class="callout info">
+<span class="callout-icon">💡</span>
+<div class="callout-body">
+<strong>De la date grupate la clase cu comportament</strong>
+<p>În Laboratorul 1 tipul nu va mai conține numai date: va conține și <strong>metode</strong>, adică operațiile care lucrează asupra acestor date. Vei vedea definiția formală a unei clase și a unui obiect, ce înseamnă <em>instanțierea</em> și de ce <code>b = a</code> are efecte diferite în C++, Java și Python.</p><p>Aspecte pe care le-am lăsat intenționat deoparte aici, precum constructorii și controlul accesului la câmpuri, apar în sesiunile ulterioare (vezi sesiunea X).</p>
+</div>
+</div>
+<h2 id="surse">Surse</h2>
+<ul><li><a href="https://docs.oracle.com/javase/tutorial/getStarted/intro/definition.html" target="_blank" rel="noopener">The Java Tutorials – About the Java Technology</a> – <code>javac</code> produce bytecode, executat de JVM</li><li><a href="https://openjdk.org/jeps/330" target="_blank" rel="noopener">JEP 330 – Launch Single-File Source-Code Programs</a> – <code>java Fisier.java</code>, livrat în JDK 11</li><li><a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-7.html" target="_blank" rel="noopener">JLS SE 21, cap. 7 (secțiunea 7.6)</a> – regula numelui de fișier pentru tipuri publice este opțională pentru sistemul gazdă</li><li><a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html" target="_blank" rel="noopener">JLS SE 21, cap. 4 (4.3.1 și 4.12.5)</a> – obiecte și referințe; valori implicite, inclusiv <code>null</code></li><li><a href="https://docs.python.org/3/glossary.html" target="_blank" rel="noopener">Python – Glossary (bytecode, interpreted)</a> – compilarea în bytecode și nuanța „interpretat”</li><li><a href="https://docs.python.org/3/tutorial/classes.html" target="_blank" rel="noopener">Python Tutorial – Classes</a> – atribuirea nu copiază obiecte, ci leagă nume de obiecte</li><li><a href="https://en.cppreference.com/cpp/language/default_initialization" target="_blank" rel="noopener">cppreference – Default-initialization</a> – câmpuri scalare neinițializate; valori nedeterminate</li><li><a href="https://en.cppreference.com/cpp/language/copy_assignment" target="_blank" rel="noopener">cppreference – Copy assignment operator</a> – copierea membru cu membru</li></ul>
+
+        </div>
+      </div><!-- /tab autoevaluare -->
+
+    </div><!-- /tab-wrap -->
+
+    <footer class="page-footer">
+      <span>M9 · Lab 0 – Mediul de lucru și de la date la obiecte</span>
+      <div class="footer-nav">
+        
+        <a href="lab-1.html" class="footer-link fwd">Lab 1 – Clase și obiecte →</a>
+      </div>
+    </footer>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
