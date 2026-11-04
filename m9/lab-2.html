@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laborator 2 – Structura: modelarea datelor | M9 OCW</title>
+<meta name="description" content="Laborator 2 de POO (M9): structura: definiție, componente, șase întrebări de modelare, alegerea tipului câmpurilor, structuri din structuri și aplicații fără cod." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  /* pattern cards */
+  .pattern-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin: 1.25rem 0; }
+  .pattern-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); }
+  .pattern-card .pattern-header { background: var(--surface-2); padding: .6rem 1rem; font-weight: 700; font-size: .85rem; color: var(--text); border-bottom: 1px solid var(--border); }
+  .pattern-card pre { margin: 0; padding: .9rem 1.1rem; font-family: var(--mono); font-size: .82rem; overflow-x: auto; }
+
+  /* quiz-style exercises */
+  .quiz-item { margin: 1.35rem 0; padding-bottom: 1.1rem; border-bottom: 1px solid var(--surface-2); }
+  .quiz-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .quiz-item .qnum { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 .3rem; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark); font-size: .78rem; font-weight: 800; margin-right: .5rem; }
+  .choices { list-style: none; padding: 0; margin: .6rem 0 .8rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .4rem .6rem; }
+  .choices li { font-family: var(--mono); font-size: .84rem; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); padding: .4rem .65rem; border-radius: 6px; }
+  .quiz-item details { margin-top: .5rem; }
+  .quiz-item summary { background: var(--accent-light); color: var(--accent-dark); font-size: .82rem; }
+
+  /* problem-solving blocks */
+  .method-block { margin: .9rem 0; }
+  .method-label { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-dark); margin-bottom: .4rem; display: flex; align-items: center; gap: .4rem; }
+  .method-label i { color: var(--accent); }
+  .algo-steps { counter-reset: algo; list-style: none; padding: 0; margin: .3rem 0; }
+  .algo-steps li { counter-increment: algo; position: relative; padding: .32rem 0 .32rem 2.1rem; font-size: .87rem; border-bottom: 1px solid var(--surface-2); }
+  .algo-steps li:last-child { border-bottom: none; }
+  .algo-steps li::before { content: counter(algo); position: absolute; left: 0; top: .28rem; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark); font-size: .7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .diff-badge { display: inline-flex; align-items: center; font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: .15rem .55rem; border-radius: 20px; margin-left: .5rem; }
+  .diff-badge.usoara { background: var(--green-light); color: var(--green); }
+  .diff-badge.medie  { background: var(--amber-light); color: #b45309; }
+  .diff-badge.grea   { background: #f3e8ff; color: #7c3aed; }
+  .restrictii-list { margin: .2rem 0 0; padding-left: 1.2rem; }
+  .restrictii-list li { font-size: .85rem; margin-bottom: .2rem; }
+  .judge-example { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; margin: .4rem 0 .6rem; }
+  .judge-ex-col { background: #1e2235; border-radius: 8px; overflow: hidden; border: 1px solid #2d3250; }
+  .judge-ex-title { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #7c85b0; padding: .4rem .7rem; background: #252942; border-bottom: 1px solid #2d3250; }
+  .judge-ex-col pre { margin: 0; padding: .6rem .8rem; font-family: var(--mono); font-size: .82rem; color: #e0e4f5; white-space: pre-wrap; }
+  .judge-explicatie { font-size: .87rem; color: var(--text-2); margin: 0; }
+
+  /* vector and matrix diagrams */
+  .vec-wrap { margin: 1.1rem 0; overflow-x: auto; }
+  .vec-wrap .vname { font-family: var(--mono); font-size: .78rem; font-weight: 700; color: var(--text-2); margin-bottom: .4rem; }
+  .vec { display: inline-flex; }
+  .vc { display: flex; flex-direction: column; }
+  .vc .cell { min-width: 48px; height: 42px; padding: 0 .55rem; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1.5px solid var(--border); margin-left: -1.5px; font-family: var(--mono); font-weight: 700; font-size: .95rem; color: var(--text); }
+  .vc:first-child .cell { margin-left: 0; border-radius: 8px 0 0 8px; }
+  .vc:last-child .cell { border-radius: 0 8px 8px 0; }
+  .vc .cell.a, .mat .cell.a { background: var(--accent-light); border-color: var(--accent); }
+  .vc .cell.g, .mat .cell.g { background: var(--green-light);  border-color: var(--green); }
+  .vc .cell.r, .mat .cell.r { background: var(--red-light);    border-color: var(--red); }
+  .vc .cell.y, .mat .cell.y { background: var(--amber-light);  border-color: var(--amber); }
+  .vc .ix { text-align: center; font-family: var(--mono); font-size: .72rem; color: var(--text-3); margin-top: .3rem; }
+  .vec-wrap .vcap { font-size: .85rem; color: var(--text-2); margin-top: .6rem; }
+  .mat { display: inline-grid; gap: 0; }
+  .mat .mc { display: flex; align-items: center; justify-content: center; min-height: 40px; font-family: var(--mono); font-size: .95rem; }
+  .mat .mc.cell { background: var(--surface); border: 1.5px solid var(--border); margin: 0 -1.5px -1.5px 0; font-weight: 700; color: var(--text); }
+  .mat .mc.ix { font-size: .72rem; color: var(--text-3); }
+
+  /* concept map (SVG) */
+  .map-wrap { margin: 1.2rem 0 .4rem; overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: .8rem; }
+  .rel-svg { display: block; width: 100%; min-width: 560px; height: auto; font-family: var(--sans); }
+  .rel-svg .box rect { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  .rel-svg .b-tip rect { fill: var(--accent-light); stroke: var(--accent); stroke-width: 2; }
+  .rel-svg .b-val rect { fill: var(--amber-light); stroke: var(--amber); }
+  .rel-svg .b-var rect { fill: var(--green-light); stroke: var(--green); }
+  .rel-svg .b-simple rect { fill: var(--surface); stroke: var(--accent); }
+  .rel-svg .b-comp rect { fill: var(--surface); stroke: var(--accent-dark); stroke-width: 2; }
+  .rel-svg text { text-anchor: middle; fill: var(--text); }
+  .rel-svg .t1 { font-size: 17px; font-weight: 800; }
+  .rel-svg .t2 { font-size: 13px; font-family: var(--mono); fill: var(--text-2); }
+  .rel-svg .t3 { font-size: 12px; fill: var(--text-3); }
+  .rel-svg .lab { font-size: 12.5px; font-weight: 700; fill: var(--accent-dark); }
+  .rel-svg .arr { fill: none; stroke: var(--accent-dark); stroke-width: 2; }
+  .rel-svg .arr.dash { stroke-dasharray: 6 5; }
+  .rel-svg .ahead { fill: var(--accent-dark); }
+  .map-cap { font-size: .88rem; color: var(--text-2); margin: .5rem 0 1.2rem; }
+
+  /* bara de sus pe ecrane înguste: fără breadcrumb, ca să nu depășească lățimea */
+  @media (max-width: 500px) {
+    .topnav-breadcrumb { display: none; }
+    .topnav { gap: .5rem; }
+    .topnav-logo { font-size: .85rem; }
+    .topnav-actions { display: none; }
+  }
+
+  /* anatomie: părți colorate */
+  .an-box { margin: 1.25rem 0; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+  .an-title { padding: .55rem 1rem; font-size: .8rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-dark); background: var(--accent-light); }
+  .an-code { margin: 0; padding: 1rem 1.1rem; font-family: var(--mono); font-size: .95rem; line-height: 2.6; white-space: pre-wrap; overflow-x: auto; background: transparent; color: var(--text); }
+  .an-p { position: relative; padding: .12rem .3rem; border-radius: 6px; border-bottom: 3px solid; }
+  .an-p i { font-style: normal; font-family: var(--sans, sans-serif); font-size: .62rem; font-weight: 800; position: absolute; top: -.95rem; left: 50%; transform: translateX(-50%); color: #fff; border-radius: 999px; min-width: 1.05rem; height: 1.05rem; line-height: 1.05rem; text-align: center; padding: 0 .2rem; }
+  .an-1 { border-color: #3d5af1; background: color-mix(in srgb, #3d5af1 16%, var(--surface)); } .an-1 i { background: #3d5af1; }
+  .an-2 { border-color: #10b981; background: color-mix(in srgb, #10b981 18%, var(--surface)); } .an-2 i { background: #10b981; }
+  .an-3 { border-color: #f59e0b; background: color-mix(in srgb, #f59e0b 22%, var(--surface)); } .an-3 i { background: #d97706; }
+  .an-4 { border-color: #ef4444; background: color-mix(in srgb, #ef4444 16%, var(--surface)); } .an-4 i { background: #ef4444; }
+  .an-5 { border-color: #8b5cf6; background: color-mix(in srgb, #8b5cf6 16%, var(--surface)); } .an-5 i { background: #8b5cf6; }
+  .an-6 { border-color: #0d9488; background: color-mix(in srgb, #0d9488 16%, var(--surface)); } .an-6 i { background: #0d9488; }
+  .an-leg { list-style: none; margin: 0; padding: .75rem 1rem 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .5rem .9rem; border-top: 1px dashed var(--border); }
+  .an-leg li { display: flex; gap: .55rem; align-items: flex-start; font-size: .9rem; line-height: 1.4; }
+  .an-leg b.an-n { flex: none; width: 1.35rem; height: 1.35rem; border-radius: 999px; color: #fff; font-size: .72rem; display: inline-flex; align-items: center; justify-content: center; }
+  .an-leg .an-1b { background: #3d5af1; } .an-leg .an-2b { background: #10b981; } .an-leg .an-3b { background: #d97706; }
+  .an-leg .an-4b { background: #ef4444; } .an-leg .an-5b { background: #8b5cf6; } .an-leg .an-6b { background: #0d9488; }
+  .an-leg code { font-size: .85em; }
+  .an-key { padding: .7rem 1rem; border-top: 1px dashed var(--border); font-size: .9rem; background: color-mix(in srgb, #f59e0b 10%, var(--surface)); }
+  /* cutii de memorie */
+  .mem-row { display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem; align-items: stretch; }
+  .mem-panel { flex: 1 1 240px; border: 1px solid var(--border); border-radius: 10px; padding: .7rem .8rem .9rem; background: var(--surface); }
+  .mem-panel h5 { margin: 0 0 .5rem; font-size: .85rem; color: var(--accent-dark); }
+  .mem-cells { display: flex; flex-wrap: wrap; gap: .35rem; }
+  .mem-cell { min-width: 3.2rem; border: 2px solid var(--border); border-radius: 8px; text-align: center; font-family: var(--mono); background: var(--surface); }
+  .mem-cell small { display: block; font-family: var(--sans, sans-serif); font-size: .68rem; padding: .1rem .3rem; background: var(--accent-light); color: var(--accent-dark); border-radius: 6px 6px 0 0; }
+  .mem-cell span { display: block; padding: .3rem .45rem; font-size: .95rem; }
+  .mem-cell.hot { border-color: #ef4444; } .mem-cell.hot span { background: color-mix(in srgb, #ef4444 16%, var(--surface)); font-weight: 700; }
+  .mem-cell.ok { border-color: #10b981; } .mem-cell.ok span { background: color-mix(in srgb, #10b981 18%, var(--surface)); font-weight: 700; }
+  .mem-cell.end { border-style: dashed; }
+  .mem-note { margin: .5rem 0 0; font-size: .85rem; color: var(--text-muted, #6b7280); }
+  .mem-link { align-self: center; font-size: 1.4rem; color: var(--accent); }
+  /* flux */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: .35rem; padding: 1rem; }
+  .flow-step { flex: 1 1 130px; border: 2px solid var(--border); border-radius: 10px; padding: .55rem .7rem; text-align: center; background: var(--surface); }
+  .flow-step b { display: block; font-size: .9rem; } .flow-step span { font-size: .8rem; opacity: .8; }
+  .flow-step.f1 { border-color: #3d5af1; } .flow-step.f2 { border-color: #f59e0b; } .flow-step.f3 { border-color: #10b981; } .flow-step.f4 { border-color: #8b5cf6; }
+  .flow-arrow { align-self: center; font-size: 1.3rem; color: var(--accent); }
+  @media (max-width: 560px) { .an-code { font-size: .8rem; } .flow-arrow { transform: rotate(90deg); flex: 1 1 100%; text-align: center; } }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">M9</span>Programare orientată pe obiecte</a>
+  <div class="topnav-breadcrumb">
+    <a href="index.html">M9</a><span class="sep">›</span> <span>Lab 2 – Structura: modelarea datelor</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="https://www.onlinegdb.com/" target="_blank" class="btn-sm">Compilator online</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <span class="sidebar-label">Curs</span>
+    <a class="sidebar-link" href="#prereq"><i class="fa-solid fa-circle-check fa-fw"></i> Prerequisite</a>
+    <a class="sidebar-link" href="#intro"><i class="fa-solid fa-book-open fa-fw"></i> Introducere</a>
+    <a class="sidebar-link" href="#obiective"><i class="fa-solid fa-bullseye fa-fw"></i> Obiective</a>
+    <a class="sidebar-link" href="#motivatie"><i class="fa-solid fa-link-slash fa-fw"></i> 1. Vectori paraleli → fișă</a>
+    <a class="sidebar-link" href="#structura"><i class="fa-solid fa-id-card fa-fw"></i> 2. Structura</a>
+    <a class="sidebar-link" href="#definitie"><i class="fa-solid fa-book fa-fw"></i> &nbsp;&nbsp;Definiția</a>
+    <a class="sidebar-link" href="#cardinal"><i class="fa-solid fa-shapes fa-fw"></i> &nbsp;&nbsp;Tip și domeniu</a>
+    <a class="sidebar-link" href="#sase"><i class="fa-solid fa-circle-question fa-fw"></i> 3. Șase întrebări</a>
+    <a class="sidebar-link" href="#tipuri"><i class="fa-solid fa-shapes fa-fw"></i> 4. Tipul unui câmp</a>
+    <a class="sidebar-link" href="#imbricate"><i class="fa-solid fa-layer-group fa-fw"></i> 5. Structuri din structuri</a>
+    <a class="sidebar-link" href="#limite"><i class="fa-solid fa-triangle-exclamation fa-fw"></i> 6. Ce nu poate structura</a>
+    <a class="sidebar-link" href="#erori-model"><i class="fa-solid fa-bug fa-fw"></i> 7. Greșeli de modelare</a>
+    <a class="sidebar-link" href="#ce-urmeaza"><i class="fa-solid fa-forward fa-fw"></i> 8. Ce urmează?</a>
+    <span class="sidebar-label">Laborator</span>
+    <a class="sidebar-link" href="#exemple"><i class="fa-solid fa-lightbulb fa-fw"></i> Exemple rezolvate</a>
+    <a class="sidebar-link" href="#introductive"><i class="fa-solid fa-pencil fa-fw"></i> Exerciții introductive</a>
+    <a class="sidebar-link" href="#tracing"><i class="fa-solid fa-chart-line fa-fw"></i> Citește modelul</a>
+    <a class="sidebar-link" href="#greseli"><i class="fa-solid fa-magnifying-glass fa-fw"></i> Găsește greșelile</a>
+    <a class="sidebar-link" href="#aplicatii"><i class="fa-solid fa-diagram-project fa-fw"></i> Aplicații de modelare</a>
+    <a class="sidebar-link" href="#forma"><i class="fa-solid fa-table-cells fa-fw"></i> Alege forma</a>
+    <a class="sidebar-link" href="#mcq"><i class="fa-solid fa-list-check fa-fw"></i> Alegere multiplă</a>
+    <span class="sidebar-label">Referință</span>
+    <a class="sidebar-link" href="#verificare"><i class="fa-solid fa-circle-check fa-fw"></i> Autoevaluare</a>
+    <a class="sidebar-link" href="#rezumat"><i class="fa-solid fa-thumbtack fa-fw"></i> Rezumat</a>
+    <a class="sidebar-link" href="#glosar"><i class="fa-solid fa-book fa-fw"></i> Glosar</a>
+    <a class="sidebar-link" href="#cheat"><i class="fa-solid fa-bolt fa-fw"></i> Cheat sheet</a>
+    <a class="sidebar-link" href="#surse"><i class="fa-solid fa-quote-right fa-fw"></i> Surse</a>
+    <span class="sidebar-label">Laboratoare M9</span>
+    <a class="sidebar-link" href="lab-0a.html">Lab 0a – Mediul de lucru</a>
+    <a class="sidebar-link" href="lab-0b.html">Lab 0b – Recapitulare: subprograme</a>
+    <a class="sidebar-link" href="lab-1.html">Lab 1 – Datele și reprezentarea lor</a>
+    <a class="sidebar-link active" href="lab-2.html">Lab 2 – Structura: modelarea datelor</a>
+    <a class="sidebar-link" href="lab-3.html">Lab 3 – Structuri în programe</a>
+    <a class="sidebar-link" href="lab-4.html">Lab 4 – Clase și obiecte</a>
+    <a class="sidebar-link" href="index.html">← Înapoi la modul</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-hero">
+      <span class="session-tag">Laborator 2 · POO · Date</span>
+      <h1>Structura: modelarea datelor</h1>
+      <div class="hero-meta">
+        <span class="chip">Definiții și componente</span>
+        <span class="chip">Câmpuri și tipuri</span>
+        <span class="chip">Domeniu</span>
+        <span class="chip">Informații derivate</span>
+        <span class="chip">Fără cod: modelare</span>
+      </div>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="t2-curs">Curs</button>
+      <button class="tab-btn" data-tab="t2-exemple">Exemple</button>
+      <button class="tab-btn" data-tab="t2-lab">Laborator</button>
+      <button class="tab-btn" data-tab="t2-cheat">Cheat Sheet</button>
+      <button class="tab-btn" data-tab="t2-autoevaluare">Autoevaluare</button>
+    </div>
+
+    <div class="tab-wrap">
+      <div class="tab-pane active" id="t2-curs">
+        <div class="prose">
+<div class="prereq-box" id="prereq">
+<h4>Prerequisite – ce trebuie să știi înainte de acest laborator</h4>
+<ul>
+<li>Știi ce sunt tipul, valoarea și variabila, și ai văzut harta tipurilor simple și compuse (Laboratorul 1)</li>
+<li>Cunoști cei cinci pași de la un lucru din realitate la o reprezentare și ai întâlnit problema vectorilor paraleli (Laboratorul 1)</li>
+<li>Ai lucrat cu vectori și cu text ca vector de <code>char</code> (M6)</li>
+</ul>
+</div>
+
+<h2 id="intro">Introducere</h2>
+<p>Până acum, fiecare informație despre un lucru a fost o variabilă separată, iar mai multe informații de același fel au fost grupate într-un vector. Un elev, însă, nu este un șir de valori identice: are un nume, un an de studiu și o medie, de tipuri diferite, care aparțin aceluiași lucru. Acest laborator introduce <strong>structura</strong>, tipul definit de programator care grupează astfel de informații într-o singură „fișă”.</p>
+<p>Accentul este pe <strong>modelare</strong>, nu pe sintaxă. Lucrul important nu este cum se scrie o structură, ci cum o alegi: ce câmpuri are, de ce tip este fiecare, ce domeniu au valorile lor, ce nu merită memorat. De aceea toate exercițiile se rezolvă pe hârtie, fără cod; codul vine abia în Laboratorul 3, după ce modelele sunt clare.</p>
+<div class="objectives" id="obiective">
+<h3>La finalul acestui laborator vei putea să:</h3>
+<ol>
+<li><strong>Explici</strong> de ce vectorii paraleli sunt fragili și ce problemă rezolvă o structură</li>
+<li><strong>Definești</strong> structura, <strong>numești</strong> componentele ei (numele, câmpurile, tipurile, obiectele) și <strong>enumeri</strong> ce poți face cu ea</li>
+<li><strong>Modelezi</strong> o structură răspunzând la șase întrebări: lucrul, câmpurile, ce nu se memorează, tipul și domeniul, trei obiecte, ce nu apără structura</li>
+<li><strong>Alegi</strong> tipul potrivit pentru un câmp (text, întreg, real, logic) și <strong>justifici</strong> alegerea</li>
+<li><strong>Distingi</strong> tipul unui câmp de domeniul lui și <strong>recunoști</strong> informațiile derivate, care nu se memorează ca câmpuri</li>
+<li><strong>Construiești</strong> structuri cu câmpuri-structură și cu câmpuri-vector</li>
+<li><strong>Alegi</strong> între variabilă, vector, matrice, structură, vector de structuri și structură cu vector</li>
+<li><strong>Depistezi</strong> greșeli într-un model dat</li>
+</ol>
+</div>
+<h2 id="motivatie">1. De la vectori paraleli la o fișă</h2>
+<p>În Laboratorul 1 am păstrat numele și vârstele a trei elevi în doi vectori, cu convenția că aceeași poziție înseamnă același elev. Convenția funcționează până când un vector se modifică și celălalt nu. Să ordonăm <em>doar</em> vârstele, crescător:</p>
+<div class="tbl-wrap"><table><thead><tr><th>Poziția</th><th>nume (înainte)</th><th>varsta (înainte)</th><th>nume (după)</th><th>varsta (după)</th></tr></thead><tbody><tr><td>0</td><td>Ana</td><td>19</td><td>Ana</td><td><strong>17</strong></td></tr><tr><td>1</td><td>Dan</td><td>17</td><td>Dan</td><td><strong>18</strong></td></tr><tr><td>2</td><td>Eva</td><td>18</td><td>Eva</td><td><strong>19</strong></td></tr></tbody></table></div>
+<p>La început, Ana avea 19 ani, iar Dan avea 17. După ordonare, „Ana” stă pe poziția 0, unde acum este 17: datele spun că Ana are 17 ani. Legătura dintre cele două informații s-a rupt, pentru că numele nu s-au mutat odată cu vârstele. Comportamentul a fost verificat prin rularea unui program C++ care ordonează doar vectorul de vârste. Nimic din program nu spune că <code>nume[i]</code> și <code>varsta[i]</code> aparțin aceluiași elev, iar compilatorul nu are cum să observe greșeala. Avem nevoie de un mod de a spune: „aceste informații merg împreună, ca o singură fișă”.</p>
+<h2 id="structura">2. Structura</h2>
+<h3 id="intuitie">2.1. Ideea: o fișă cu rubrici</h3>
+<p>Gândește-te la fișa unui elev dintr-un catalog: are mai multe rubrici (nume, an de studiu, medie), iar fiecare rubrică se completează cu alt fel de informație. Fișa arată la fel pentru toți elevii; diferă doar ce este scris în rubrici. Fișa goală, cu rubricile ei, descrie <em>cum arată</em> un elev; fișa completată este <em>un elev anume</em>. O structură este exact așa ceva în program: descrie o fișă cu rubrici, apoi poți completa câte fișe vrei.</p>
+<div class="an-box"><div class="an-title">Vector sau structură?</div><div class="mem-row"><div class="mem-panel"><h5>Vector: același tip, după poziție</h5><div class="mem-cells"><div class="mem-cell "><small>v[0]</small><span>7</span></div><div class="mem-cell "><small>v[1]</small><span>4</span></div><div class="mem-cell "><small>v[2]</small><span>9</span></div></div><p class="mem-note">toate elementele au același tip; le alegi după număr</p></div><div class="mem-panel"><h5>Structură: tipuri diferite, după nume</h5><div class="mem-cells"><div class="mem-cell "><small>nume</small><span>„Ana”</span></div><div class="mem-cell "><small>an</small><span>1</span></div><div class="mem-cell "><small>media</small><span>9.5</span></div></div><p class="mem-note">fiecare câmp are tipul lui; îl alegi după nume</p></div></div><div class="an-key"><strong>Diferența într-o frază:</strong> vector = „același fel, după poziție”; structură = „feluri diferite, după nume”.</div></div>
+<p>Rubricile unei fișe se citesc și se schimbă separat (poți corecta media fără să atingi numele), dar rămân mereu în aceeași fișă. Tocmai asta rezolvă problema vectorilor paraleli: informațiile care aparțin aceluiași lucru nu se mai pot despărți.</p>
+<h3 id="definitie">2.2. Definiție</h3>
+<div class="an-box"><div class="an-title">Anatomia unei structuri (notație de modelare, fără cod)</div><pre class="an-code"><span class="an-p an-1"><i>1</i>Elev</span> = ( <span class="an-p an-2"><i>2</i>nume</span> : <span class="an-p an-3"><i>3</i>text</span>,
+         <span class="an-p an-2"><i>2</i>an</span> : <span class="an-p an-3"><i>3</i>întreg</span>   (<span class="an-p an-4"><i>4</i>1 sau 2</span>),
+         <span class="an-p an-2"><i>2</i>media</span> : <span class="an-p an-3"><i>3</i>real</span>  (<span class="an-p an-4"><i>4</i>1 … 10</span>) )</pre><ul class="an-leg"><li><b class="an-n an-1b">1</b><span><strong>Numele structurii</strong> – numele tipului nou: substantiv, singular, majusculă</span></li><li><b class="an-n an-2b">2</b><span><strong>Câmpurile</strong> – informațiile păstrate, fiecare cu un nume</span></li><li><b class="an-n an-3b">3</b><span><strong>Tipul câmpului</strong> – felul valorilor (poate diferi de la un câmp la altul)</span></li><li><b class="an-n an-4b">4</b><span><strong>Domeniul</strong> – valorile care au sens; nu îl verifică structura</span></li></ul><div class="an-key"><strong>Patru elemente de identificat în orice structură:</strong> numele, câmpurile, tipul fiecărui câmp, obiectele.</div></div>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Definiție</strong><p>O <strong>structură</strong> este un tip de date definit de programator, format dintr-un număr fix de componente numite <strong>câmpuri</strong>. Fiecare câmp are un <strong>nume</strong> și un <strong>tip</strong>, iar tipurile câmpurilor pot fi diferite. O variabilă de tipul structurii se numește <strong>obiect</strong> (sau „fișă”) și are o valoare pentru fiecare câmp.</p></div></div>
+<p>Definiția este formulată pentru acest modul, în spiritul manualelor de programare. Din ea reții patru elemente, pe care le vei identifica în orice structură:</p>
+<div class="tbl-wrap"><table><thead><tr><th>Componenta</th><th>Ce este</th><th>Exemplu (Elev)</th></tr></thead><tbody><tr><td><strong>Numele structurii</strong></td><td>numele tipului nou; un substantiv la singular</td><td><em>Elev</em></td></tr><tr><td><strong>Câmpurile</strong></td><td>informațiile păstrate, fiecare cu nume</td><td><em>nume</em>, <em>an</em>, <em>media</em></td></tr><tr><td><strong>Tipul fiecărui câmp</strong></td><td>felul de valori pe care le poate avea câmpul</td><td>text, întreg, real</td></tr><tr><td><strong>Obiectele</strong></td><td>fișele completate, adică valorile concrete</td><td>(„Ana”, 1, 9.5)</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Nu confunda definiția cu obiectul</strong><p><strong>Definiția</strong> unei structuri descrie fișa (câmpurile și tipurile lor) și <strong>nu conține nicio valoare</strong>, ca antetul unui tabel. <strong>Obiectele</strong> sunt rândurile tabelului: fiecare are propriile valori, iar schimbarea unui obiect nu le schimbă pe celelalte.</p></div></div>
+<h3 id="terminologie">2.3. Terminologie</h3>
+<div class="tbl-wrap"><table><thead><tr><th>Termen în acest modul</th><th>Alte denumiri</th><th>Sensul</th></tr></thead><tbody><tr><td><strong>structură</strong></td><td>înregistrare (<em>record</em>); în C++, cuvântul <code>struct</code></td><td>tipul definit de programator, cu câmpuri</td></tr><tr><td><strong>câmp</strong></td><td><em>field</em>; în C++ se spune și „dată membru” (<em>data member</em>)</td><td>o componentă a structurii, cu nume și tip</td></tr><tr><td><strong>obiect</strong> (fișă)</td><td>instanță, variabilă de tipul structurii</td><td>o fișă completată, cu valori pentru câmpuri</td></tr><tr><td><strong>selectarea unui câmp</strong></td><td>acces la câmp, notația cu punct</td><td>alegerea unui câmp după nume</td></tr></tbody></table></div>
+<p>Termenul „dată membru” este cel folosit în documentația C++; nu pot confirma aici redactarea exactă din standard, deci îl dau ca denumire cunoscută.</p>
+<h3 id="operatii">2.4. Ce poți face cu o structură</h3>
+<ul>
+<li><strong>Să completezi un obiect:</strong> dai o valoare pentru fiecare câmp.</li>
+<li><strong>Să selectezi un câmp:</strong> alegi rubrica după nume, cu un punct între obiect și câmp. <code>e.an</code> înseamnă „câmpul <em>an</em> al obiectului <em>e</em>”.</li>
+<li><strong>Să modifici un câmp:</strong> schimbi valoarea unei rubrici; celelalte rubrici ale fișei rămân neschimbate.</li>
+<li><strong>Să copiezi un obiect:</strong> obții o fișă nouă, cu aceleași valori. În C++, copierea unei structuri se face câmp cu câmp, inclusiv pentru textele din interior (verificat prin rulare; regula este descrisă pe cppreference). După copiere, cele două fișe sunt independente: dacă schimbi copia, originalul rămâne cum era.</li>
+</ul>
+<h3 id="cardinal">2.5. Tipul și domeniul unui câmp</h3>
+<p>Fiecare câmp are un <strong>tip</strong>: spune ce fel de valori acceptă limbajul (întreg, real, text, logic). Dar nu orice valoare acceptată de tip are sens pentru informația respectivă. Un câmp <em>luna</em> de tip întreg acceptă și 150, deși luna poate fi doar 1, 2, …, 12. Mulțimea valorilor care au sens pentru o informație se numește aici <strong>domeniul</strong> ei: pentru <em>luna</em> este 1 … 12, pentru <em>umiditate</em> este 0 … 100, pentru o notă este 1 … 10.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Câmp</th><th>Tipul (ce acceptă limbajul)</th><th>Domeniul (ce are sens)</th></tr></thead><tbody><tr><td>luna</td><td>întreg</td><td>1 … 12</td></tr><tr><td>nota</td><td>întreg</td><td>1 … 10</td></tr><tr><td>umiditate</td><td>întreg</td><td>0 … 100</td></tr><tr><td>nume</td><td>text</td><td>orice nume de persoană, nevid</td></tr></tbody></table></div>
+<p>Uneori domeniul depinde de mai multe câmpuri la un loc: la o dată calendaristică, ziua 31 are sens pentru luna ianuarie, dar nu pentru luna februarie. Formularea „domeniu” este una didactică; ea spune ce trebuie să respecte datele, nu ce acceptă limbajul. O structură <strong>nu verifică</strong> singură domeniul (vezi secțiunea 6).</p>
+<h3 id="vector-struct">2.6. Structura și vectorul</h3>
+<p>Atât vectorul, cât și structura grupează mai multe valori într-un singur lucru, dar în moduri diferite. Vectorul grupează valori <strong>de același tip</strong>, pe care le alegi după <strong>poziție</strong>. Structura grupează valori <strong>care pot avea tipuri diferite</strong>, pe care le alegi după <strong>nume</strong>.</p>
+<div class="tbl-wrap"><table><thead><tr><th></th><th>Vector</th><th>Structură</th></tr></thead><tbody><tr><td>Tipurile componentelor</td><td>același pentru toate (omogen)</td><td>pot diferi (eterogen)</td></tr><tr><td>Cum alegi o componentă</td><td>după poziție: <code>v[2]</code></td><td>după nume: <code>e.an</code></td></tr><tr><td>Numărul de componente</td><td>fixat la declarare</td><td>fixat de definiția structurii</td></tr><tr><td>De unde vine sensul unei componente</td><td>din convenția pozițiilor (note[i] = testul i + 1)</td><td>din numele câmpului</td></tr><tr><td>Exemplu</td><td>cele 5 note ale unui elev</td><td>un elev: nume, an, medie</td></tr></tbody></table></div>
+<h3 id="compunere-s">2.7. Câmpuri care sunt, la rândul lor, tipuri compuse</h3>
+<p>Tipul unui câmp poate fi oricare tip, inclusiv un text, un vector sau o altă structură; compunerea este recursivă, ca în Laboratorul 1. Un segment are două câmpuri de tip <em>Punct</em>, iar un punct are două câmpuri întregi. Pentru a ajunge la o coordonată selectezi în două trepte: întâi capătul, apoi coordonata (<code>s.B.x</code>). Un student poate avea un câmp <em>note</em> care este un vector de 5 întregi.</p>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Structura pe harta din Laboratorul 1</strong><p>Structura este un <strong>tip compus</strong>, construit din alte tipuri, ca vectorul, matricea și textul. Ce aduce nou este că poate grupa componente de <strong>tipuri diferite</strong> (eterogenitate) și că le alegi <strong>după nume</strong>. Omogen / eterogen este o <em>proprietate</em>, nu o categorie: vectorul este omogen, structura poate fi eterogenă.</p></div></div>
+<h2 id="sase">3. Șase întrebări pentru a modela o structură</h2>
+<p>Cei cinci pași din Laboratorul 1 rămân valabili; pentru structuri îi precizăm în șase întrebări. Le pui în ordine, pe hârtie. Fiecare corespunde unui element al definiției: întrebarea 1 alege numele structurii, întrebarea 2 alege câmpurile, întrebarea 4 alege tipul și domeniul fiecărui câmp, întrebarea 5 verifică că poți scrie obiecte.</p>
+<div class="an-box"><div class="an-title">Cele șase întrebări, în ordine</div><div class="flow"><div class="flow-step f1"><b>1. Lucrul</b><span>ce modelez, ce vreau să știu</span></div><div class="flow-arrow">→</div><div class="flow-step f2"><b>2. Câmpurile</b><span>ce informații păstrez</span></div><div class="flow-arrow">→</div><div class="flow-step f3"><b>3. Derivate</b><span>ce NU păstrez (se calculează)</span></div><div class="flow-arrow">→</div><div class="flow-step f4"><b>4. Tip + domeniu</b><span>pentru fiecare câmp</span></div><div class="flow-arrow">→</div><div class="flow-step f1"><b>5. Trei obiecte</b><span>verific modelul</span></div><div class="flow-arrow">→</div><div class="flow-step f2"><b>6. Limite</b><span>ce nu apără structura</span></div></div><div class="an-key"><strong>Scurt:</strong> lucru → câmpuri → ce nu păstrez → tip și domeniu → obiecte → limite.</div></div>
+<ol class="algo-steps"><li><strong>Ce lucru modelez și ce vreau să știu despre el?</strong> Numele structurii este un substantiv la singular, cu majusculă: <em>Elev</em>, nu „Ion” (un obiect concret) și nu „elevi” (mai multe lucruri).</li><li><strong>Ce informații îi păstrez?</strong> Numai pe cele de care are nevoie problema: acestea sunt câmpurile.</li><li><strong>Ce nu păstrez, pentru că se poate calcula?</strong> De exemplu vârsta, dacă ai data nașterii. O informație păstrată de două ori poate ajunge în dezacord cu ea însăși.</li><li><strong>Ce tip și ce domeniu are fiecare câmp?</strong> Tipul este alegerea limbajului (întreg, real, text, logic), iar domeniul este mulțimea valorilor cu sens (o notă: 1 … 10); notezi și restricțiile dintre câmpuri.</li><li><strong>Cum arată trei obiecte concrete?</strong> Dacă nu poți inventa trei fișe credibile, modelul nu este clar.</li><li><strong>Ce nu poate apăra structura?</strong> O structură păstrează datele; regulile (numitor diferit de 0, notă între 1 și 10) nu se verifică de la sine.</li></ol><div class="callout ok"><span class="callout-icon">✅</span><div class="callout-body"><strong>Exemplu: elevul</strong><p><strong>(1)</strong> Elev; vrem să știm cine este promovat. <strong>(2)</strong> nume, an, media. <strong>(3)</strong> „promovat” se calculează din medie. <strong>(4)</strong> nume: text; an: întreg, 1 sau 2; media: real, 1 … 10. <strong>(5)</strong> („Ana”, 1, 9.5), („Dan”, 2, 4.75), („Eva”, 1, 7.25). <strong>(6)</strong> nimic nu împiedică un elev cu media 150.</p></div></div>
+<h2 id="tipuri">4. Alegerea tipului unui câmp</h2>
+<p>Alegerea tipului pornește de la ce faci cu informația, nu de la cum arată. Reia ideea din Laboratorul 1: tipul este o mulțime de valori împreună cu operațiile permise, deci alegi tipul ale cărui operații ai nevoie să le folosești.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Informația</th><th>Tip potrivit</th><th>De ce</th></tr></thead><tbody><tr><td>numele unei persoane, denumirea unui produs</td><td>text</td><td>se afișează și se compară, nu se calculează cu ele</td></tr><tr><td>număr de telefon, cod de produs (<code>007421</code>), număr de înmatriculare</td><td>text</td><td>zerourile de la început trebuie păstrate; nu faci operații aritmetice</td></tr><tr><td>numărul de bucăți, anul, numărul paginii</td><td>întreg</td><td>se numără; valorile sunt exacte</td></tr><tr><td>preț cu cel mult două zecimale</td><td>întreg (numărul de bani), sau real</td><td>numerele reale sunt aproximate; întregul este exact, cu convenția „în bani”</td></tr><tr><td>temperatură, medie, lungime</td><td>real</td><td>valori măsurate sau calculate, cu zecimale</td></tr><tr><td>da / nu (disponibil, bursier)</td><td>logic</td><td>două stări</td></tr><tr><td>dată calendaristică</td><td>trei întregi (zi, lună, an), eventual într-o structură <em>Data</em></td><td>se compară și se prelucrează pe componente</td></tr><tr><td>ora</td><td>secunde sau minute de la miezul nopții (un întreg), sau trei întregi</td><td>alegi după operația cerută, ca în Laboratorul 1</td></tr></tbody></table></div>
+<p>Pentru fiecare câmp scrie și <strong>domeniul</strong>: luna este 1 … 12, umiditatea este 0 … 100. Un tip întreg acceptă și valoarea 150; domeniul spune că 150 nu are sens.</p>
+<h2 id="imbricate">5. Structuri din structuri și câmpuri-vector</h2>
+<p>Aplicând definiția recursivă din 2.6, un <strong>segment</strong> are două capete, fiecare un punct, iar un punct are două coordonate. Un <strong>student</strong> are un nume (text) și cinci note (un vector de 5 întregi), deci un câmp-vector. Modelele se scriu astfel:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">Notație de modelare (pseudocod, nu cod)</span></div><pre><code>Punct   = ( x : întreg,  y : întreg )
+Segment = ( A : Punct,  B : Punct )
+Student = ( nume : text,
+            note : vector de 5 întregi   [note[i] = testul i+1] )</code></pre></div><p>Când ai <em>mai multe</em> lucruri de același fel, structura nu se repetă prin câmpuri numerotate (<em>elev1</em>, <em>elev2</em>, …), ci prin <strong>vector de structuri</strong>: un vector de 30 de elemente de tip <em>Elev</em> are 30 de fișe, iar <code>e[i].media</code> este rubrica „media” a fișei cu numărul <em>i</em>. Spre deosebire de vectorii paraleli, rubricile unui elev se mută împreună, pentru că sunt în aceeași fișă.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Situația</th><th>Forma</th><th>Exemplu</th></tr></thead><tbody><tr><td>o informație</td><td>variabilă</td><td>media unui elev</td></tr><tr><td>mai multe valori de același fel, pe un rând</td><td>vector</td><td>cele 5 note ale unui elev</td></tr><tr><td>tabel de valori de același fel</td><td>matrice</td><td>temperaturile a 3 stații în 12 luni</td></tr><tr><td>informații de tipuri diferite despre un singur lucru</td><td>structură</td><td>un elev: nume, an, medie</td></tr><tr><td>mai multe lucruri de același fel, fiecare cu mai multe informații</td><td>vector de structuri</td><td>toți elevii unei clase</td></tr><tr><td>un lucru care are, printre informații, o colecție</td><td>structură cu câmp vector</td><td>un student cu numele și cele 5 note</td></tr><tr><td>un lucru care are ca parte un alt lucru</td><td>structură cu câmp-structură</td><td>un segment cu două puncte</td></tr></tbody></table></div>
+<h2 id="limite">6. Ce nu poate structura singură</h2>
+<p>O structură descrie ce informații se păstrează și de ce tip sunt, dar nu verifică domeniul valorilor. Ea păstrează datele, dar nu le păzește. Pentru o fracție cu câmpurile <em>numărător</em> și <em>numitor</em>, nimic din structură nu împiedică un obiect cu numitorul 0, iar o notă de 150 sau o medie negativă sunt la fel de ușor de reprezentat ca valorile corecte. Regula „numai valori din domeniu” se numește aici <strong>regulă de domeniu</strong>; ea trebuie respectată în fiecare loc în care datele sunt create sau modificate.</p>
+<p>Această limită este motivul pentru care, mai târziu în modul, datele vor fi grupate împreună cu operațiile care le apără. Deocamdată reține ideea: <strong>modelul scrie domeniul, iar respectarea lui este o regulă care trebuie urmărită separat</strong>.</p>
+<h2 id="erori-model">7. Greșeli frecvente de modelare</h2>
+<div class="tbl-wrap"><table><thead><tr><th>Greșeală</th><th>De ce este o problemă</th><th>Cum repari</th></tr></thead><tbody><tr><td>Un obiect concret ca nume de tip (<em>Ion</em>, <em>MasinaMea</em>)</td><td>un obiect concret este o fișă, nu tipul fișei</td><td>tipul general (<em>Elev</em>, <em>Autoturism</em>); „Ion” devine un obiect</td></tr><tr><td>O informație memorată de două ori (<em>an_nastere</em> și <em>varsta</em>)</td><td>cele două pot ajunge în dezacord</td><td>păstrezi una și calculezi cealaltă</td></tr><tr><td>O acțiune ca și câmp (<em>afiseaza</em>, <em>calculeaza_total</em>)</td><td>este o operație, nu o informație</td><td>o scoți din câmpuri; o vei scrie ca subprogram</td></tr><tr><td>Tip nepotrivit (telefon ca întreg)</td><td>se pierde zeroul de la început</td><td>text</td></tr><tr><td>Câmp fără domeniu (notă: întreg)</td><td>nimic nu spune că 150 nu are sens</td><td>scrii domeniul în model</td></tr><tr><td>Câmpuri numerotate pentru mai multe lucruri (<em>nume1</em>, <em>nume2</em>, …)</td><td>o structură descrie un singur lucru</td><td>vector de structuri</td></tr><tr><td>Câmpuri inutile problemei</td><td>modelul devine greu de verificat</td><td>păstrezi numai ce folosește</td></tr></tbody></table></div>
+<h2 id="ce-urmeaza">8. Ce urmează?</h2>
+<p>Ai definit structura, ai modelat-o pe hârtie și ai văzut ce poate și ce nu poate apăra. Laboratorul 3 scrie aceste modele în cod: declarare și inițializare, citire și afișare, copiere, vectori de structuri, ordonarea unui vector de structuri și structuri transmise subprogramelor.</p>
+<div class="callout ok"><span class="callout-icon">✅</span><div class="callout-body"><strong>Înainte de Laboratorul 3</strong><p>Dacă poți formula definiția unei structuri, poți răspunde, fără să te uiți, la cele șase întrebări pentru un lucru nou (de exemplu un abonament sau o cameră de hotel) și poți spune ce domeniu are, ești pregătit. Verifică-te cu aplicațiile din tabul Laborator.</p></div></div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="t2-exemple">
+        <div class="prose">
+<h2 id="exemple">Exemple rezolvate</h2>
+<p>Fiecare exemplu pornește de la cele șase întrebări de modelare, apoi verifică modelul pe hârtie, cu valori concrete. Modelele sunt propunerile autorului; pot exista și alte modele valide. Nu scriem cod: modelele vor fi scrise în program în Laboratorul 3.</p>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Elevul<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează un elev (nume, an, medie) și stabilește care dintre doi elevi este promovat (media cel puțin 5).</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Modelul (cele șase întrebări)</div><ol class="algo-steps"><li><strong>Lucrul:</strong> un elev; vrem să știm dacă este promovat.</li><li><strong>Câmpuri:</strong> <code>nume</code>, <code>an</code>, <code>media</code>.</li><li><strong>Nu păstrez:</strong> dacă este promovat (se deduce din medie).</li><li><strong>Tip și domeniu:</strong> nume: text; an: întreg, 1 sau 2; media: real, 1 … 10.</li><li><strong>Trei obiecte:</strong> („Ana”, 1, 9.5), („Dan”, 2, 4.75), („Eva”, 1, 7.25).</li><li><strong>Ce nu apără structura:</strong> o medie de 150 sau un an 7 ar fi acceptate de structură.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-id-card"></i> Modelul</div><div class="code-block"><div class="code-header"><span class="code-lang">Notație de modelare</span></div><pre><code>Elev = ( nume : text,
+         an : întreg   (1 sau 2),
+         media : real  (1 … 10) )</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>nume</th><th>an</th><th>media</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>Ana</td><td>1</td><td>9.5</td></tr><tr><td><code>o[1]</code></td><td>Dan</td><td>2</td><td>4.75</td></tr><tr><td><code>o[2]</code></td><td>Eva</td><td>1</td><td>7.25</td></tr></tbody></table></div>
+</div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-pen"></i> Verificare pe hârtie</div><p>Fișa lui Dan are <code>media</code> = 4.75 &lt; 5, deci Dan nu este promovat; fișele Anei (9.5) și Evei (7.25) cer „promovat”. Răspunsul se deduce din câmpul <code>media</code>; nu a fost nevoie de un câmp „promovat”. Cele trei informații ale unui elev stau în aceeași fișă, deci nu se pot desincroniza.</p></div>
+</div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">2</div><div class="exercise-title">Produsul<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Un produs are cod (<code>007421</code>), denumire, preț (cel mult două zecimale) și stoc. Stabilește prețul în lei și bani și valoarea stocului.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Modelul (cele șase întrebări)</div><ol class="algo-steps"><li><strong>Lucrul:</strong> un produs; vrem prețul afișat și valoarea stocului.</li><li><strong>Câmpuri:</strong> <code>cod</code>, <code>denumire</code>, <code>pret_bani</code>, <code>stoc</code>.</li><li><strong>Nu păstrez:</strong> valoarea stocului (preț × stoc) și prețul în lei (se obține din bani).</li><li><strong>Tip și domeniu:</strong> cod: text (păstrează zerourile); denumire: text; pret_bani: întreg, cel puțin 0, cu convenția „în bani”; stoc: întreg, cel puțin 0.</li><li><strong>Un obiect:</strong> („007421”, „Caiet”, 850, 120).</li><li><strong>Ce nu apără structura:</strong> un stoc negativ.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-id-card"></i> Modelul</div><div class="code-block"><div class="code-header"><span class="code-lang">Notație de modelare</span></div><pre><code>Produs = ( cod : text,
+           denumire : text,
+           pret_bani : întreg  (cel puțin 0),
+           stoc : întreg       (cel puțin 0) )</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>cod</th><th>denumire</th><th>pret_bani</th><th>stoc</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>007421</td><td>Caiet</td><td>850</td><td>120</td></tr><tr><td><code>o[1]</code></td><td>100233</td><td>Pix</td><td>275</td><td>0</td></tr><tr><td><code>o[2]</code></td><td>050001</td><td>Rigla</td><td>1200</td><td>15</td></tr></tbody></table></div>
+</div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-pen"></i> Verificare pe hârtie</div><p>Pentru primul obiect: 850 de bani înseamnă 850 : 100 = 8 lei și rest 50 de bani, deci „8 lei 50 bani”. Valoarea stocului este 850 · 120 = 102000 de bani, adică 1020 de lei. Niciuna dintre cele două valori nu este câmp; ambele se calculează din <code>pret_bani</code> și <code>stoc</code>. Codul rămâne <code>007421</code> pentru că este text; ca întreg, zerourile s-ar pierde.</p></div>
+</div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">3</div><div class="exercise-title">Data calendaristică<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează o dată calendaristică și stabilește care dintre două date este mai devreme.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Modelul (cele șase întrebări)</div><ol class="algo-steps"><li><strong>Lucrul:</strong> o dată; vrem să comparăm două.</li><li><strong>Câmpuri:</strong> <code>zi</code>, <code>luna</code>, <code>an</code>.</li><li><strong>Nu păstrez:</strong> ziua săptămânii (se calculează).</li><li><strong>Tip și domeniu:</strong> trei întregi: zi 1 … 31, lună 1 … 12, an oarecare; (31, 2, ·) nu există.</li><li><strong>Trei obiecte:</strong> (21, 10, 2026), (5, 11, 2025), (1, 1, 2027).</li><li><strong>Ce nu apără structura:</strong> data (31, 2, 2026) ar fi acceptată de structură, deși nu există.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-id-card"></i> Modelul</div><div class="code-block"><div class="code-header"><span class="code-lang">Notație de modelare</span></div><pre><code>Data = ( zi : întreg   (1 … 31),
+         luna : întreg (1 … 12),
+         an : întreg )</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>zi</th><th>luna</th><th>an</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>21</td><td>10</td><td>2026</td></tr><tr><td><code>o[1]</code></td><td>5</td><td>11</td><td>2025</td></tr><tr><td><code>o[2]</code></td><td>1</td><td>1</td><td>2027</td></tr></tbody></table></div>
+</div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-pen"></i> Verificare pe hârtie</div><p>Comparăm a = (21, 10, 2026) cu b = (5, 11, 2025). Se compară mai întâi anul (componenta cea mai semnificativă): 2026 &gt; 2025, deci b este mai devreme; luna și ziua nu mai contează. Dacă anii ar fi egali, am compara lunile, apoi zilele. Cu data păstrată ca un singur text, compararea textelor ar începe cu ziua și ar da răspunsul greșit.</p></div>
+</div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">4</div><div class="exercise-title">Segmentul<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează un segment din plan, determinat de două puncte, și calculează lungimea lui pentru un segment dat.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Modelul (cele șase întrebări)</div><ol class="algo-steps"><li><strong>Lucrul:</strong> un segment; vrem lungimea lui.</li><li><strong>Câmpuri:</strong> capetele <code>A</code> și <code>B</code>, fiecare de tip <code>Punct</code>.</li><li><strong>Nu păstrez:</strong> lungimea (se calculează din coordonate).</li><li><strong>Tip și domeniu:</strong> <code>Punct</code> are două întregi, <code>x</code> și <code>y</code>; fără restricții de domeniu.</li><li><strong>Un obiect:</strong> A = (0, 0), B = (3, 4).</li><li><strong>Ce nu apără structura:</strong> nu împiedică un segment cu capetele identice.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-id-card"></i> Modelul</div><div class="code-block"><div class="code-header"><span class="code-lang">Notație de modelare</span></div><pre><code>Punct   = ( x : întreg, y : întreg )
+Segment = ( A : Punct, B : Punct )</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>A</th><th>B</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>(0, 0)</td><td>(3, 4)</td></tr><tr><td><code>o[1]</code></td><td>(1, 1)</td><td>(1, 5)</td></tr><tr><td><code>o[2]</code></td><td>(-2, 0)</td><td>(2, 0)</td></tr></tbody></table></div>
+</div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-pen"></i> Verificare pe hârtie</div><p>Pentru primul segment, diferența abscisele este <code>B.x − A.x</code> = 3 − 0 = 3, iar diferența ordonatelor este <code>B.y − A.y</code> = 4 − 0 = 4. Lungimea este √(3² + 4²) = √25 = 5. Coordonata <code>x</code> a capătului <code>B</code> se notează <code>s.B.x</code>: se alege mai întâi câmpul <code>B</code>, apoi câmpul <code>x</code> al acestuia (în două trepte).</p></div>
+</div></div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="t2-lab">
+        <div class="prose">
+<h2 id="introductive">Exerciții introductive (fără scriere de cod)</h2>
+<p>Rezolvă pe hârtie, apoi verifică cu răspunsul. Exercițiile sunt propuse de autorul materialului; nu provin dintr-o sursă externă.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>Structura <code>Elev</code> are câmpurile <code>nume</code>, <code>an</code> și <code>media</code>. Câte câmpuri are? Câte dintre ele sunt de același tip? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Are 3 câmpuri, toate de tipuri diferite (text, întreg, real). Un vector nu ar fi putut păstra aceste trei informații într-un singur element.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Ce deosebește definiția unei structuri de o variabilă de acel tip? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Definiția descrie fișa (câmpurile și tipurile lor) și nu creează nicio valoare. Variabila este o fișă concretă, cu valori pentru fiecare câmp.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Cum alegi o componentă dintr-un vector și cum alegi una dintr-o structură? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Din vector, după poziție (<code>v[2]</code>); din structură, după nume (<code>e.an</code>).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Un elev are <code>nume</code>, <code>data_nasterii</code> și <code>varsta</code>. Care câmp nu ar trebui păstrat și de ce? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><code>varsta</code>: se poate calcula din data nașterii. Dacă o păstrezi, ea poate ajunge în dezacord cu data nașterii și, în plus, trebuie actualizată în fiecare an.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">5</span>Ce tip alegi pentru numărul de telefon al unui contact? Dar pentru anul apariției unei cărți? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Telefonul: text (se păstrează zeroul de la început, nu faci operații aritmetice). Anul: întreg (este un număr cu care poți calcula, de exemplu vechimea).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">6</span>Cum modelezi un segment, determinat de două puncte din plan? Câte numere întregi conține în total? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Structura <code>Segment</code> are două câmpuri de tip <code>Punct</code>; fiecare <code>Punct</code> are două numere. În total, 4 numere întregi.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">7</span>De ce nu este bine să modelezi doi elevi ca o structură cu câmpurile <code>nume1</code>, <code>nume2</code>, <code>media1</code>, <code>media2</code>? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>O structură descrie <em>un singur</em> lucru. Pentru mai mulți elevi se folosește un vector de structuri (<code>Elev e[2]</code>), pentru că un al treilea elev nu ar mai încăpea și tot codul ar trebui rescris.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">8</span>Ce se întâmplă cu vectorii paraleli <code>nume[]</code> și <code>media[]</code> dacă ordonezi doar mediile? Cum se comportă un vector de structuri <code>Elev e[]</code> dacă ordonezi fișele după medie? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Cu vectorii paraleli, numele rămân pe loc și nu mai corespund mediilor. Cu un vector de structuri, se mută fișe întregi, deci numele rămâne mereu împreună cu media lui.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">9</span>Pentru câmpul <code>luna</code> al unei date, care este tipul și care este domeniul? Cine verifică domeniul? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Tipul este întreg; domeniul este 1 … 12. Structura nu verifică domeniul; el rămâne o regulă a modelului.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">10</span>Cum modelezi un student cu numele și cele cinci note ale lui? Ce convenție scrii? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Structura <code>Student</code> cu câmpurile <code>nume</code> (text) și <code>note</code> (vector de 5 întregi). Convenția: <code>note[i]</code> este nota la testul cu numărul <code>i + 1</code>.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">11</span>Un coleg modelează un meci cu câmpurile <code>gazda</code>, <code>oaspete</code>, <code>goluri_gazda</code>, <code>goluri_oaspete</code> și <code>castigator</code>. Ce observație îi faci? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Câmpul <code>castigator</code> se calculează din cele două scoruri, deci este informație derivată și nu ar trebui memorat: ar putea contrazice scorul.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">12</span>Poate o structură să aibă un câmp de tip structură? Dă un exemplu. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Da: un <code>Segment</code> are câmpuri de tip <code>Punct</code>; un elev poate avea o <code>Data</code> a nașterii. Compunerea este recursivă, ca la vectori.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">13</span>Ai structura <code>Produs</code> cu câmpul <code>stoc</code> (întreg). Ce valoare nu are sens pentru <code>stoc</code> și cine împiedică să fie scrisă? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>O valoare negativă nu are sens. Structura nu o împiedică: este o regulă care trebuie verificată de programator.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">14</span>Un câmp numit <code>calculeaza_total</code>, într-un model de comandă, este o informație sau o operație? Unde îl treci? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Este o operație (o acțiune), nu o informație. Nu intră între câmpuri; ea se va scrie ca subprogram.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="tracing">Citește modelul</h2>
+<p>Fiecare exercițiu pornește de la un tabel de obiecte. Răspunde fără cod, folosind notația cu punct pentru a alege câmpuri.</p>
+<div class="quiz-item"><p><span class="qnum">1</span><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>nume</th><th>an</th><th>media</th></tr></thead><tbody><tr><td><code>e[0]</code></td><td>Ana</td><td>2</td><td>9.5</td></tr><tr><td><code>e[1]</code></td><td>Dan</td><td>1</td><td>8.25</td></tr><tr><td><code>e[2]</code></td><td>Eva</td><td>2</td><td>9.75</td></tr></tbody></table></div>
+Tabelul păstrează trei obiecte de tip <em>Elev</em>, numerotate <code>e[0]</code>, <code>e[1]</code>, <code>e[2]</code>. Ce valoare au <code>e[1].media</code> și <code>e[2].nume</code>? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><code>e[1].media</code> este 8.25 (fișa cu numărul 1 este a lui Dan), iar <code>e[2].nume</code> este „Eva”. Se alege mai întâi fișa (după poziție în vector), apoi rubrica (după nume).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>nume</th><th>an</th><th>media</th></tr></thead><tbody><tr><td><code>e[0]</code></td><td>Ana</td><td>2</td><td>9.5</td></tr><tr><td><code>e[1]</code></td><td>Dan</td><td>1</td><td>8.25</td></tr><tr><td><code>e[2]</code></td><td>Eva</td><td>2</td><td>9.75</td></tr></tbody></table></div>
+Ordonezi cele trei fișe descrescător după medie. Cum arată tabelul? Ce se întâmplă cu numele? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Ordinea devine: Eva (9.75), Ana (9.5), Dan (8.25). Fișele se mută întregi, deci numele merge odată cu media lui; spre deosebire de vectorii paraleli, legătura nu se poate rupe.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Un segment <em>s</em> are A = (0, 0) și B = (3, 4). Ce valoare are <code>s.B.x</code> și în câte trepte se face selecția? Cum se schimbă <em>s</em> dacă <code>s.B.x</code> primește valoarea <code>s.A.x</code> + 1? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><code>s.B.x</code> = 3; selecția se face în două trepte (întâi <code>B</code>, apoi <code>x</code>). După modificare, <code>s.B.x</code> devine 0 + 1 = 1, deci B = (1, 4); celelalte câmpuri nu se schimbă.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Obiectul <em>b</em> este o copie a obiectului <em>a</em> = („Ana”, 1, 9.5). Modifici <code>b.an</code> la 2. Ce valoare are <code>a.an</code>? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><code>a.an</code> rămâne 1: după copiere, cele două obiecte sunt independente. Regula este valabilă pentru copierea implicită a unei structuri în C++ (câmp cu câmp, inclusiv pentru tablourile din interior); a fost verificată prin rulare și este descrisă pe cppreference.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="greseli">Găsește greșelile din model</h2>
+<p>Fiecare model de mai jos conține cel puțin o greșeală de modelare. Găsește-o și propune corectura; apoi compară cu răspunsul.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>Ce nu este în regulă în modelul de mai jos? <span class="text-sm text-muted">(propus de autor)</span></p><pre style="background:var(--bg-2,#f4f4f8);padding:.7rem 1rem;border-radius:8px;margin:.5rem 0"><code>Elev =<br>nume : text<br>data_nasterii : Data<br>varsta : întreg</code></pre><details><summary>Vezi răspunsul</summary><p>Câmpul <code>varsta</code> este informație derivată din <code>data_nasterii</code>: poate ajunge în dezacord cu ea și trebuie actualizat în fiecare an. Se șterge din model; vârsta se calculează când este nevoie.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Ce nu este în regulă în modelul de mai jos? <span class="text-sm text-muted">(propus de autor)</span></p><pre style="background:var(--bg-2,#f4f4f8);padding:.7rem 1rem;border-radius:8px;margin:.5rem 0"><code>Contact =<br>nume : text<br>telefon : întreg</code></pre><details><summary>Vezi răspunsul</summary><p><code>telefon</code> trebuie să fie text: un întreg pierde zeroul de la început, iar cu telefonul nu faci operații aritmetice.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Ce nu este în regulă în modelul de mai jos? <span class="text-sm text-muted">(propus de autor)</span></p><pre style="background:var(--bg-2,#f4f4f8);padding:.7rem 1rem;border-radius:8px;margin:.5rem 0"><code>Ion =<br>nume : text<br>media : real</code></pre><details><summary>Vezi răspunsul</summary><p>„Ion” este un obiect concret, nu un tip. Tipul general este <code>Elev</code> (sau altul, după situație), iar Ion este una dintre variabilele de acest tip.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Ce nu este în regulă în modelul de mai jos? <span class="text-sm text-muted">(propus de autor)</span></p><pre style="background:var(--bg-2,#f4f4f8);padding:.7rem 1rem;border-radius:8px;margin:.5rem 0"><code>Comanda =<br>client : text<br>produs : text<br>cantitate : întreg<br>calculeaza_total : întreg</code></pre><details><summary>Vezi răspunsul</summary><p><code>calculeaza_total</code> este o acțiune, nu o informație; nu este câmp. Totalul se calculează din cantitate și din prețul produsului.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">5</span>Ce nu este în regulă în modelul de mai jos? <span class="text-sm text-muted">(propus de autor)</span></p><pre style="background:var(--bg-2,#f4f4f8);padding:.7rem 1rem;border-radius:8px;margin:.5rem 0"><code>Nota =<br>valoare : întreg<br>materie : text</code></pre><details><summary>Vezi răspunsul</summary><p>Lipsește domeniul pentru <code>valoare</code>: o notă este un număr de la 1 la 10, dar tipul <code>int</code> acceptă și 150. Domeniul trebuie scris în model.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">6</span>Ce nu este în regulă în modelul de mai jos? <span class="text-sm text-muted">(propus de autor)</span></p><pre style="background:var(--bg-2,#f4f4f8);padding:.7rem 1rem;border-radius:8px;margin:.5rem 0"><code>Clasa =<br>nume1 : text<br>media1 : real<br>nume2 : text<br>media2 : real<br>nume3 : text<br>media3 : real</code></pre><details><summary>Vezi răspunsul</summary><p>O structură descrie un singur lucru; aici sunt trei elevi puși într-o fișă. Corect: structura <code>Elev</code> (nume, media) și un vector de structuri.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">7</span>Ce nu este în regulă în modelul de mai jos? <span class="text-sm text-muted">(propus de autor)</span></p><pre style="background:var(--bg-2,#f4f4f8);padding:.7rem 1rem;border-radius:8px;margin:.5rem 0"><code>Meci =<br>gazda : text<br>oaspete : text<br>goluri_gazda : întreg<br>goluri_oaspete : întreg<br>castigator : text</code></pre><details><summary>Vezi răspunsul</summary><p><code>castigator</code> se calculează din cele două scoruri: informație derivată, care ar putea contrazice scorul. Se elimină.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="aplicatii">Aplicații de modelare cu struct</h2>
+<p>Pentru fiecare aplicație modelezi o structură: alegi câmpurile și tipurile lor, descrii trei obiecte, identifici ce se calculează și răspunzi la o întrebare de gândire. <strong>Nu scrii cod.</strong> Modelul propus se deschide separat; compară-l cu al tău după <em>criteriile de verificare</em>, nu cerând identitate. Modelele sunt propunerile autorului materialului; Aplicațiile S1–S5 sunt ușoare, S6–S14 medii, S15 este mai dificilă.</p>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">S1</div><div class="exercise-title">Punctul în plan<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>Un punct din planul cu axe de coordonate este determinat de abscisa și de ordonata lui, ambele numere întregi.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>Ce s-ar întâmpla dacă am păstra abscisele într-un vector <code>x[]</code> și ordonatele într-un alt vector <code>y[]</code>?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Punct</span></div><pre><code>Punct
+--------------------------------------------
+x : întreg
+y : întreg</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>x</th><th>y</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>0</td><td>0</td></tr><tr><td><code>o[1]</code></td><td>3</td><td>4</td></tr><tr><td><code>o[2]</code></td><td>-2</td><td>5</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> distanța până la origine (se calculează din <code>x</code> și <code>y</code>)</p><p><strong>Răspuns la întrebare:</strong> Ar fi doi vectori paraleli: la ordonarea sau la mutarea punctelor, abscisa și ordonata unui punct ar putea ajunge desincronizate. Într-o structură, <code>x</code> și <code>y</code> se mișcă mereu împreună.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">S2</div><div class="exercise-title">Fracția<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>O fracție are un numărător și un numitor, ambele numere întregi. Numitorul nu poate fi 0.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>Cine împiedică, în acest model, să existe o fracție cu numitorul 0?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li><li>domeniul „diferit de 0” al numitorului este scris în model</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Fractie</span></div><pre><code>Fractie
+--------------------------------------------
+numarator : întreg
+numitor   : întreg (diferit de 0)</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>numarator</th><th>numitor</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>1</td><td>2</td></tr><tr><td><code>o[1]</code></td><td>3</td><td>4</td></tr><tr><td><code>o[2]</code></td><td>5</td><td>8</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> valoarea fracției ca număr real (se calculează din cele două câmpuri)</p><p><strong>Răspuns la întrebare:</strong> Nimeni: structura păstrează datele, dar nu poate apăra regula. O verificare se poate scrie în programul care o folosește, dar nimic nu obligă la ea. Aceasta este una dintre limitele structurii, pe care o vei regăsi la clase.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">S3</div><div class="exercise-title">Data calendaristică<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>O dată este formată din zi, lună și an. Vrei să poți compara două date și să afli care este mai devreme.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>De ce nu păstrăm data ca un singur text, de forma „21.10.2026”?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Data</span></div><pre><code>Data
+--------------------------------------------
+zi   : întreg (1 … 31)
+luna : întreg (1 … 12)
+an   : întreg</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>zi</th><th>luna</th><th>an</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>21</td><td>10</td><td>2026</td></tr><tr><td><code>o[1]</code></td><td>5</td><td>11</td><td>2025</td></tr><tr><td><code>o[2]</code></td><td>1</td><td>1</td><td>2027</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> ziua săptămânii (se calculează din dată); numărul de zile dintre două date</p><p><strong>Răspuns la întrebare:</strong> Pentru că textul nu se compară direct după sens: compararea lexicografică a lui „21.10.2026” cu „05.11.2025” ar începe cu ziua, deci ar da răspunsul greșit despre care dată este mai devreme. Cu trei numere, compari mai întâi anul, apoi luna, apoi ziua.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">S4</div><div class="exercise-title">Dreptunghiul<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>Un dreptunghi are lungime și lățime, numere reale pozitive. Interesează atât perimetrul, cât și aria.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>De ce nu este bine să păstrăm aria ca al treilea câmp?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Dreptunghi</span></div><pre><code>Dreptunghi
+--------------------------------------------
+lungime : real (pozitiv)
+latime  : real (pozitiv)</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>lungime</th><th>latime</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>4.5</td><td>2</td></tr><tr><td><code>o[1]</code></td><td>3.25</td><td>3.25</td></tr><tr><td><code>o[2]</code></td><td>10.5</td><td>0.5</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> aria și perimetrul (se calculează din lungime și lățime)</p><p><strong>Răspuns la întrebare:</strong> Pentru că ar fi o informație derivată: dacă lungimea se schimbă și aria nu este actualizată, fișa devine contradictorie, fără ca vreun compilator să protesteze.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">S5</div><div class="exercise-title">Elevul<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>Despre un elev ții evidența numelui, a anului de studiu (1 sau 2) și a mediei generale (un număr real între 1 și 10). Vrei să știi care elevi sunt promovați (media cel puțin 5).</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>De ce nu adăugăm un câmp logic <code>promovat</code>?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Elev</span></div><pre><code>Elev
+--------------------------------------------
+nume  : text
+an    : întreg (1 sau 2)
+media : real (1 … 10)</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>nume</th><th>an</th><th>media</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>Ana</td><td>1</td><td>9.5</td></tr><tr><td><code>o[1]</code></td><td>Dan</td><td>2</td><td>4.75</td></tr><tr><td><code>o[2]</code></td><td>Eva</td><td>1</td><td>7.25</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> dacă elevul este promovat (se deduce din medie)</p><p><strong>Răspuns la întrebare:</strong> Pentru că se poate calcula din <code>media</code>. Dacă ar fi câmp, cele două ar putea ajunge în dezacord (de exemplu media 4.75 și promovat = da).</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">S6</div><div class="exercise-title">Produsul dintr-un magazin<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>Un magazin ține pentru fiecare produs un cod (de exemplu 007421), o denumire, prețul unitar și numărul de bucăți din stoc. Prețurile au cel mult două zecimale.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>De ce este prețul memorat ca număr întreg de bani, nu ca număr real de lei?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li><li>codul este text (zerourile de la început trebuie păstrate)</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Produs</span></div><pre><code>Produs
+--------------------------------------------
+cod       : text
+denumire  : text
+pret_bani : întreg (cel puțin 0)
+stoc      : întreg (cel puțin 0)</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>cod</th><th>denumire</th><th>pret_bani</th><th>stoc</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>007421</td><td>Caiet</td><td>850</td><td>120</td></tr><tr><td><code>o[1]</code></td><td>100233</td><td>Pix</td><td>275</td><td>0</td></tr><tr><td><code>o[2]</code></td><td>050001</td><td>Rigla</td><td>1200</td><td>15</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> valoarea stocului (preț × stoc)</p><p><strong>Răspuns la întrebare:</strong> Numerele reale sunt aproximate și, la sume repetate, pot apărea mici diferențe; numărul întreg de bani este exact. Convenția „prețul este în bani” trebuie respectată peste tot în program.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">S7</div><div class="exercise-title">Contactul din agendă<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>O agendă păstrează pentru fiecare persoană numele, numărul de telefon (de exemplu 0722 123 456) și adresa de e-mail.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>De ce este telefonul text și nu întreg?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Contact</span></div><pre><code>Contact
+--------------------------------------------
+nume    : text
+telefon : text
+email   : text</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>nume</th><th>telefon</th><th>email</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>Ana Pop</td><td>0722123456</td><td>ana@exemplu.ro</td></tr><tr><td><code>o[1]</code></td><td>Dan Ilie</td><td>0733555111</td><td>dan@exemplu.ro</td></tr><tr><td><code>o[2]</code></td><td>Eva Rus</td><td>0744000999</td><td>eva@exemplu.ro</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> nu există informații derivate în acest model</p><p><strong>Răspuns la întrebare:</strong> Un întreg ar pierde zeroul de la început, iar cu un număr de telefon nu faci operații aritmetice.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">S8</div><div class="exercise-title">Cartea dintr-o bibliotecă<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>O bibliotecă ține evidența cărților: titlu, autor, anul apariției, numărul de pagini și dacă sunt disponibile pentru împrumut.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>Un autor are două cărți în bibliotecă. Ce neajuns apare dacă numele lui este scris în ambele fișe?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Carte</span></div><pre><code>Carte
+--------------------------------------------
+titlu       : text
+autor       : text
+an          : întreg
+pagini      : întreg (cel puțin 1)
+disponibila : logic (da / nu)</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>titlu</th><th>autor</th><th>an</th><th>pagini</th><th>disponibila</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>Povesti</td><td>A. Popescu</td><td>2001</td><td>120</td><td>da</td></tr><tr><td><code>o[1]</code></td><td>Versuri</td><td>B. Ionescu</td><td>1998</td><td>210</td><td>nu</td></tr><tr><td><code>o[2]</code></td><td>Romanul</td><td>A. Popescu</td><td>2015</td><td>380</td><td>da</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> vechimea cărții (se calculează din anul apariției și din anul curent)</p><p><strong>Răspuns la întrebare:</strong> Informația este repetată: o greșeală de scriere trebuie corectată în fiecare fișă, iar fișele pot ajunge să scrie numele diferit. Repetarea este un neajuns al modelului, nu o greșeală de calcul.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">S9</div><div class="exercise-title">Meciul<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>Pentru un meci de fotbal se păstrează echipa gazdă, echipa oaspete și golurile marcate de fiecare. Se cere să se poată spune cine a câștigat.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>Cum aflăm câștigătorul, dacă nu avem un câmp pentru el?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Meci</span></div><pre><code>Meci
+--------------------------------------------
+gazda          : text
+oaspete        : text
+goluri_gazda   : întreg (cel puțin 0)
+goluri_oaspete : întreg (cel puțin 0)</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>gazda</th><th>oaspete</th><th>goluri_gazda</th><th>goluri_oaspete</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>Albastrii</td><td>Rosii</td><td>2</td><td>1</td></tr><tr><td><code>o[1]</code></td><td>Verzii</td><td>Galbenii</td><td>0</td><td>0</td></tr><tr><td><code>o[2]</code></td><td>Rosii</td><td>Verzii</td><td>1</td><td>3</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> câștigătorul și diferența de goluri (se calculează din cele două scoruri)</p><p><strong>Răspuns la întrebare:</strong> Comparând <code>goluri_gazda</code> cu <code>goluri_oaspete</code>. Câmpul „câștigător” ar fi informație derivată.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">S10</div><div class="exercise-title">Autoturismul<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>Un service ține evidența autoturismelor: marca, anul fabricației, numărul de kilometri și numărul de înmatriculare. Uneori interesează câți ani are mașina.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>De ce nu păstrăm câmpul „vechime”?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Autoturism</span></div><pre><code>Autoturism
+--------------------------------------------
+marca : text
+an    : întreg
+km    : întreg (cel puțin 0)
+numar : text</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>marca</th><th>an</th><th>km</th><th>numar</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>Dacia</td><td>2015</td><td>120000</td><td>AG01ABC</td></tr><tr><td><code>o[1]</code></td><td>Skoda</td><td>2020</td><td>45000</td><td>B123XYZ</td></tr><tr><td><code>o[2]</code></td><td>Ford</td><td>2008</td><td>210500</td><td>AG77QWE</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> vechimea în ani (se calculează din <code>an</code> și anul curent)</p><p><strong>Răspuns la întrebare:</strong> Pentru că se schimbă în fiecare an, pe când anul fabricației rămâne același; un câmp „vechime” ar trebui actualizat la fiecare început de an, pentru toate fișele.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">S11</div><div class="exercise-title">Măsurătoarea unei stații meteo<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>O stație meteo înregistrează locul, temperatura (în grade, cu zecimale) și umiditatea aerului (în procente, număr întreg).</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>Tipul <code>int</code> acceptă și valoarea 150. Ce spune modelul despre ea?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Masuratoare</span></div><pre><code>Masuratoare
+--------------------------------------------
+loc         : text
+temperatura : real
+umiditate   : întreg (0 … 100)</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>loc</th><th>temperatura</th><th>umiditate</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>Statia A</td><td>12.5</td><td>71</td></tr><tr><td><code>o[1]</code></td><td>Statia B</td><td>9.75</td><td>88</td></tr><tr><td><code>o[2]</code></td><td>Statia C</td><td>14.25</td><td>60</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> nu există informații derivate în acest model</p><p><strong>Răspuns la întrebare:</strong> Domeniul umidității este 0 … 100, deci 150 nu este o valoare cu sens, deși tipul o acceptă. Structura nu verifică acest lucru; domeniul rămâne o regulă pe care trebuie să o respecte programatorul.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">S12</div><div class="exercise-title">Biletul de tren<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>Un bilet are stația de plecare, stația de sosire, ora plecării (de la 00:00 la 23:59) și numărul locului. Se vor compara orele de plecare ale mai multor bilete.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>Ce convenție trebuie scrisă pentru <code>plecare_min</code>?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Bilet</span></div><pre><code>Bilet
+--------------------------------------------
+de_la       : text
+pana_la     : text
+plecare_min : întreg (0 … 1439)
+loc         : întreg (cel puțin 1)</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>de_la</th><th>pana_la</th><th>plecare_min</th><th>loc</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>Pitesti</td><td>Bucuresti</td><td>435</td><td>12</td></tr><tr><td><code>o[1]</code></td><td>Bucuresti</td><td>Brasov</td><td>600</td><td>31</td></tr><tr><td><code>o[2]</code></td><td>Brasov</td><td>Cluj</td><td>1130</td><td>7</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> ora afișată ca <code>h:m</code> (se calculează din numărul de minute)</p><p><strong>Răspuns la întrebare:</strong> Numărul de minute este numărat de la miezul nopții (00:00 înseamnă 0, 23:59 înseamnă 1439). Fără această convenție, valoarea 435 nu poate fi înțeleasă; ea este o parte a modelului, nu a codului.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">S13</div><div class="exercise-title">Segmentul (o structură în alta)<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>Un segment este determinat de două puncte din plan, capetele lui. Fiecare punct are două coordonate întregi.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>Câte numere întregi conține în total un segment?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li><li>structura <code>Punct</code> este reutilizată, nu se repetă <code>x</code> și <code>y</code> de patru ori</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Segment</span></div><pre><code>Segment
+--------------------------------------------
+A : Punct
+B : Punct</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>A</th><th>B</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>(0, 0)</td><td>(3, 4)</td></tr><tr><td><code>o[1]</code></td><td>(1, 1)</td><td>(1, 5)</td></tr><tr><td><code>o[2]</code></td><td>(-2, 0)</td><td>(2, 0)</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> lungimea segmentului (se calculează din coordonatele capetelor)</p><p><strong>Răspuns la întrebare:</strong> Patru: câmpurile <code>A</code> și <code>B</code> sunt fiecare un <code>Punct</code>, iar un punct are două numere. Un câmp poate avea ca tip o altă structură; este aceeași idee de compunere recursivă din Laboratorul 1.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">S14</div><div class="exercise-title">Elevul cu data nașterii<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>Pentru fiecare elev se păstrează numele și data nașterii (zi, lună, an). Uneori interesează vârsta.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>Care este avantajul unui câmp <code>nastere</code> de tip <code>Data</code>, față de trei câmpuri <code>zi</code>, <code>luna</code>, <code>an</code> puse direct în elev?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – ElevCuData</span></div><pre><code>ElevCuData
+--------------------------------------------
+nume    : text
+nastere : Data</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>nume</th><th>nastere</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>Ana</td><td>(3, 5, 2008)</td></tr><tr><td><code>o[1]</code></td><td>Dan</td><td>(17, 11, 2007)</td></tr><tr><td><code>o[2]</code></td><td>Eva</td><td>(29, 2, 2008)</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> vârsta (se calculează din data nașterii și din data de azi)</p><p><strong>Răspuns la întrebare:</strong> Cele trei valori formează un tot cu sens propriu (o dată); grupate, pot fi folosite și în alte structuri și tratate împreună (de exemplu comparate), iar fișa elevului rămâne ușor de citit.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">S15</div><div class="exercise-title">Studentul cu cinci note<span class="diff-badge grea">Grea</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modelează ca structură situația de mai jos și răspunde la întrebarea de la sfârșit. Nu scrii cod.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Situația</div><p>Pentru fiecare student se păstrează numele și notele la cele cinci teste ale unui modul. Interesează media notelor.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-check"></i> Ce trebuie să produci</div><ol class="restrictii-list"><li>numele structurii</li><li>câmpurile, fiecare cu tip</li><li>domeniul fiecărui câmp, unde este mai restrâns decât tipul</li><li>trei obiecte cu valori concrete (un tabel)</li><li>lista a ceea ce <em>nu</em> este câmp, pentru că se poate calcula</li><li>răspunsul la întrebarea: <strong>Ce convenție trebuie scrisă pentru vectorul <code>note</code>?</strong></li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-clipboard-check"></i> Criterii de verificare</div><ul class="restrictii-list"><li>numele structurii este un substantiv la singular, cu majusculă</li><li>fiecare câmp are un tip potrivit (vezi tabelul din secțiunea 4 a cursului) și, unde este cazul, un domeniu</li><li>nicio informație nu este memorată de două ori și nu este memorat ce se poate calcula</li><li>sunt păstrate numai informațiile de care are nevoie situația dată</li><li>cele trei obiecte au valori concrete, care respectă domeniile</li><li>convenția indicilor vectorului este scrisă</li></ul></div>
+<details><summary>Vezi modelul propus (propunerea autorului; pot exista și alte modele valide)</summary><div class="code-block"><div class="code-header"><span class="code-lang">Model – Student</span></div><pre><code>Student
+--------------------------------------------
+nume : text
+note : vector de 5 întregi (1 … 10)</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Obiect</th><th>nume</th><th>note</th></tr></thead><tbody><tr><td><code>o[0]</code></td><td>Ana</td><td>[9, 10, 8, 7, 9]</td></tr><tr><td><code>o[1]</code></td><td>Dan</td><td>[6, 5, 7, 8, 6]</td></tr><tr><td><code>o[2]</code></td><td>Eva</td><td>[10, 10, 9, 10, 9]</td></tr></tbody></table></div>
+<p><strong>Nu sunt câmpuri (se calculează):</strong> media notelor (se calculează din vectorul <code>note</code>)</p><p><strong>Răspuns la întrebare:</strong> Elementul <code>note[i]</code> este nota la testul cu numărul <code>i + 1</code>. Un câmp poate fi un vector; aici toate notele au același tip, deci vectorul este potrivit, iar numele (alt tip) rămâne un câmp separat.</p></details></div></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="forma">Alege forma potrivită</h2>
+<p>Pentru fiecare situație alege între variabilă, vector, matrice, structură, vector de structuri, structură cu câmp vector sau structură cu câmp-structură. Justifică alegerea în câteva cuvinte.</p>
+<div class="quiz-item"><p><span class="qnum">D1</span>Notele unui elev la cinci teste, toate întregi. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Vector de 5 întregi: valori de același tip, pe un rând, cu convenția „indicele i este testul i + 1”.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">D2</span>Numele, anul și media unui elev. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Structură: informații de tipuri diferite despre un singur lucru.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">D3</span>Numele și media tuturor elevilor unei clase de 25. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Vector de 25 de structuri <code>Elev</code>: mai multe lucruri de același fel, fiecare cu mai multe informații.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">D4</span>Temperatura la nouă stații meteo în fiecare dintre cele 12 luni ale unui an. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Matrice 9 × 12 de numere reale (sau întregi): tabel de valori de același fel; convenția: linia este stația, coloana este luna.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">D5</span>O stație meteo cu numele ei și cele 12 temperaturi medii lunare. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Structură cu câmpurile <code>nume</code> (text) și <code>temperaturi</code> (vector de 12 reale), cu convenția „temperaturi[i] este luna i + 1”.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">D6</span>Un punct din plan, cu două coordonate întregi. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Structură <code>Punct</code>. Un vector de 2 întregi ar putea păstra aceleași valori, dar structura spune prin nume ce este fiecare număr (<code>x</code>, <code>y</code>), în timp ce vectorul face cititorul să rețină că poziția 0 este abscisa. Ambele sunt posibile; alegerea structurii este mai clară.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h3 id="mcq">Întrebări cu alegere multiplă</h3>
+<p>O singură variantă este corectă la fiecare întrebare.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>În modelul de mai jos, ce este <em>Elev</em>?</p><div class="code-block"><div class="code-header"><span class="code-lang">Model</span></div><pre><code>Elev = ( nume : text,
+         an : întreg,
+         media : real )</code></pre></div><ul class="choices"><li>a) un obiect</li><li>b) un tip structură</li><li>c) o valoare</li><li>d) un câmp</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – <em>Elev</em> este un tip nou; <code>nume</code>, <code>an</code> și <code>media</code> sunt câmpurile lui.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Câte câmpuri are structura de mai sus?</p><div class="code-block"><div class="code-header"><span class="code-lang">Model</span></div><pre><code>Elev = ( nume : text,
+         an : întreg,
+         media : real )</code></pre></div><ul class="choices"><li>a) 1</li><li>b) 2</li><li>c) 3</li><li>d) 30</li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – trei: <code>nume</code>, <code>an</code>, <code>media</code>.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Cum se alege câmpul <code>an</code> al obiectului <code>e</code>?</p><ul class="choices"><li>a) <code>e[an]</code></li><li>b) <code>e.an</code></li><li>c) <code>an.e</code></li><li>d) <code>e(an)</code></li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – câmpul se alege după nume, cu notația cu punct.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Care enunț este definiția corectă a unei structuri?</p><ul class="choices"><li>a) un grup de valori de același tip, alese după poziție</li><li>b) un tip definit de programator, format din câmpuri cu nume și tip, care pot avea tipuri diferite</li><li>c) o variabilă care ține o singură valoare</li><li>d) un text terminat cu un caracter special</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – a) descrie vectorul, c) o variabilă simplă, d) un text.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">5</span>Câmpul <em>luna</em> are tipul întreg și domeniul 1 … 12. Ce înseamnă domeniul?</p><ul class="choices"><li>a) valorile acceptate de limbaj</li><li>b) valorile care au sens pentru informație</li><li>c) numărul de câmpuri ale structurii</li><li>d) numele câmpului</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – tipul spune ce acceptă limbajul (și 150), domeniul spune ce are sens (1 … 12).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">6</span>Pentru un elev se păstrează numele, data nașterii, vârsta și media. Care informație nu ar trebui să fie câmp?</p><ul class="choices"><li>a) numele</li><li>b) data nașterii</li><li>c) vârsta</li><li>d) media</li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – vârsta se calculează din data nașterii; media (în acest model) este o informație de intrare.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">7</span>Ce tip este potrivit pentru un număr de telefon?</p><ul class="choices"><li>a) întreg</li><li>b) real</li><li>c) text</li><li>d) logic</li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – textul păstrează zeroul de la început și telefonul nu se folosește în calcule.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">8</span>Care este avantajul principal al unui vector de structuri față de doi vectori paraleli?</p><ul class="choices"><li>a) ocupă mai puțină memorie</li><li>b) informațiile aceluiași lucru se mută împreună</li><li>c) nu mai este nevoie de indici</li><li>d) se ordonează automat</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – într-o fișă, câmpurile merg împreună; cu vectori paraleli, legătura este doar o convenție. Celelalte variante nu sunt avantaje ale structurii.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">9</span>Câte numere conține un <em>Segment</em> format din două puncte cu coordonate întregi?</p><ul class="choices"><li>a) 2</li><li>b) 3</li><li>c) 4</li><li>d) 6</li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – două puncte, fiecare cu două coordonate.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">10</span>Ce nu poate face singură o structură?</p><ul class="choices"><li>a) să grupeze tipuri diferite</li><li>b) să conțină un vector</li><li>c) să împiedice valori în afara domeniului</li><li>d) să fie element al unui vector</li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – structura descrie câmpurile și tipurile lor, dar nu verifică domeniul valorilor.</p></details></div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="t2-cheat">
+        <div class="prose">
+<h2 id="cheat">Fișă rapidă – Laborator 2</h2>
+<p>Referință compactă pentru folosit în laborator.</p>
+<div class="cheat-grid">
+<div class="cheat-card"><div class="cheat-card-header">Șase întrebări</div><pre>1. lucrul + ce vreau sa stiu despre el
+2. ce informatii pastrez (campurile)
+3. ce NU pastrez (se calculeaza)
+4. tip + domeniu pentru fiecare camp
+5. trei obiecte concrete
+6. ce nu poate apara structura
+
+Numele tipului: substantiv, singular,
+majuscula (Elev, nu Ion, nu elevi).</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Definiția structurii</div><pre>Structura = tip definit de programator,
+format din campuri (nume + tip);
+tipurile campurilor pot fi diferite.
+
+Componente: numele structurii, campurile,
+tipul fiecarui camp, obiectele (fisele).
+Selectare camp:  e.an
+Copie = fisa noua, independenta.
+
+Tip = ce accepta limbajul
+Domeniu = ce are sens (luna: 1..12)</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Tipul unui câmp</div><pre>nume, denumire          -&gt; text
+telefon, cod "007421"   -&gt; text
+numaratori, an, stoc    -&gt; intreg
+pret cu 2 zecimale      -&gt; intreg (bani)
+                           sau real
+temperatura, medie      -&gt; real
+da / nu                 -&gt; bool
+data                    -&gt; zi, luna, an
+ora                     -&gt; secunde (int)
+                           sau h, m, s
+
+Scrie si DOMENIUL: luna 1..12.</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Ce formă aleg?</div><pre>o informatie            -&gt; variabila
+valori de acelasi fel   -&gt; vector
+tabel de acelasi fel    -&gt; matrice
+tipuri diferite, un
+  singur lucru          -&gt; struct
+mai multe lucruri       -&gt; vector de struct
+lucru cu colectie       -&gt; struct cu camp vector
+lucru cu parte-lucru    -&gt; struct cu camp struct</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Greșeli de modelare</div><pre>Ion (obiect) in loc de Elev (tip)
+varsta SI data_nasterii
+actiune ca camp (calculeaza_total)
+telefon ca intreg
+camp fara domeniu
+nume1, nume2, ... (mai multe lucruri
+   intr-o structura)
+camp inutil problemei</pre></div>
+</div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="t2-autoevaluare">
+        <div class="prose">
+<h2 id="verificare">Întrebări de autoevaluare</h2>
+<details><summary>1. De ce sunt fragili vectorii paraleli?</summary><p>Pentru că legătura dintre ei (același indice înseamnă același lucru) este doar o convenție, nescrisă în program. Dacă un vector este modificat sau ordonat fără ceilalți, datele devin false, fără nicio eroare.</p></details>
+<details><summary>2. Definește structura și spune prin ce diferă de un vector.</summary><p>O structură este un tip de date definit de programator, format dintr-un număr fix de câmpuri; fiecare câmp are nume și tip, iar tipurile pot fi diferite. Componentele se aleg după nume. Un vector are componente de același tip, alese după poziție. (Definiție didactică.)</p></details>
+<details><summary>3. Ce deosebește definiția unei structuri de o variabilă de acel tip?</summary><p>Definiția descrie tipul (câmpurile și tipurile lor) și nu creează valori; variabila este o fișă concretă, cu valori pentru câmpuri.</p></details>
+<details><summary>4. Care sunt cele șase întrebări pentru modelarea unei structuri?</summary><p>1) lucrul și ce vrem să știm; 2) informațiile păstrate (câmpurile); 3) ce nu se păstrează, pentru că se calculează; 4) tipul și domeniul fiecărui câmp; 5) trei obiecte concrete; 6) ce nu poate apăra structura.</p></details>
+<details><summary>5. Ce este o informație derivată? Dă un exemplu și spune de ce nu o memorezi.</summary><p>Este o informație care se poate calcula din altele (vârsta din data nașterii, aria din lungime și lățime). Dacă o memorezi, poate ajunge în dezacord cu informațiile din care provine.</p></details>
+<details><summary>6. Prin ce diferă tipul unui câmp de domeniul lui?</summary><p>Tipul este mulțimea valorilor acceptate de limbaj; domeniul este mulțimea valorilor cu sens pentru informația respectivă. Luna are tipul întreg și domeniul 1 … 12.</p></details>
+<details><summary>7. De ce se păstrează un număr de telefon ca text?</summary><p>Pentru că un întreg ar pierde zeroul de la început, iar cu telefonul nu se fac operații aritmetice.</p></details>
+<details><summary>8. Cum modelezi o colecție de elevi? De ce nu cu câmpuri numerotate?</summary><p>Cu un vector de structuri <code>Elev</code>. Câmpurile numerotate (<code>nume1</code>, <code>nume2</code>, …) fac ca o structură să descrie mai multe lucruri, nu pot crește și obligă la rescrierea codului pentru fiecare elev nou.</p></details>
+<details><summary>9. Poate un câmp să fie o altă structură sau un vector? Dă exemple.</summary><p>Da: <code>Segment</code> are câmpuri de tip <code>Punct</code>; <code>Student</code> are un câmp <code>note</code>, vector de 5 întregi. Compunerea este recursivă.</p></details>
+<details><summary>10. Ce înseamnă copierea unei structuri?</summary><p>Obiectul copie are aceleași valori ale câmpurilor, dar este independent: modificarea unui câmp al copiei nu schimbă originalul. În C++, copierea implicită se face câmp cu câmp, inclusiv pentru tablourile din interior (verificat prin rulare; descrisă pe cppreference).</p></details>
+<details><summary>11. Care sunt componentele unei structuri? Dă un exemplu.</summary><p>Numele structurii, câmpurile (fiecare cu nume și tip) și obiectele (fișele completate). Exemplu: structura <em>Elev</em> are câmpurile <em>nume</em>, <em>an</em>, <em>media</em>; („Ana”, 1, 9.5) este un obiect.</p></details>
+<details><summary>12. Ce nu poate apăra o structură? Dă un exemplu.</summary><p>Domeniul valorilor: o notă de 150, un numitor 0 sau un stoc negativ sunt acceptate de limbaj. Regulile trebuie verificate de programator.</p></details>
+<details><summary>13. Când alegi o structură și când un vector, pentru două numere (<code>x</code>, <code>y</code>)?</summary><p>Ambele sunt posibile. Structura spune prin nume ce înseamnă fiecare număr; vectorul păstrează sensul în convenția pozițiilor. Alegerea structurii este mai clară.</p></details>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="rezumat">Rezumat – De reținut</h2>
+<div class="callout ok"><span class="callout-icon">✅</span><div class="callout-body"><strong>Cele mai importante idei din acest laborator</strong><p>Citește lista de mai jos după ce ai rezolvat exercițiile; fiecare punct trimite la o secțiune din tabul Curs.</p></div></div>
+<ol>
+<li>Vectorii paraleli sunt fragili: legătura dintre ei este doar o convenție, iar o modificare făcută numai într-unul dintre ei strică datele fără nicio eroare.</li>
+<li>O <strong>structură</strong> este un tip definit de programator, care grupează <strong>câmpuri</strong> de tipuri posibil diferite; componentele se aleg după nume, nu după poziție.</li>
+<li>Definiția unei structuri descrie tipul și nu creează valori; valorile apar când declari variabile de acel tip.</li>
+<li>Șase întrebări modelează o structură: lucrul, câmpurile, ce nu se păstrează, tipul și domeniul, trei obiecte, ce nu apără structura.</li>
+<li>Informațiile derivate (vârsta, aria, câștigătorul) nu se memorează ca și câmpuri.</li>
+<li>Tipul unui câmp se alege după operațiile necesare; telefonul și codurile sunt text, prețul poate fi un întreg de bani.</li>
+<li>Domeniul unei informații poate fi mai mic decât tipul ei; structura nu îl verifică.</li>
+<li>Un câmp poate fi un vector sau o altă structură; compunerea este recursivă.</li>
+<li>Mai multe lucruri de același fel se modelează printr-un vector de structuri, nu prin câmpuri numerotate.</li>
+<li>Copierea unei structuri produce un obiect independent de original (în C++, câmp cu câmp, inclusiv tablourile din interior).</li>
+<li>Tipul unui câmp spune ce acceptă limbajul; domeniul spune ce are sens. Cele patru componente ale unei structuri: numele, câmpurile, tipurile câmpurilor, obiectele.</li>
+</ol>
+<h2 id="glosar">Glosar</h2>
+<div class="tbl-wrap"><table><thead><tr><th>Termen</th><th>Definiție</th></tr></thead><tbody><tr><td><strong>Structură</strong></td><td>Tip definit de programator care grupează câmpuri de tipuri posibil diferite (formulare didactică)</td></tr><tr><td><strong>Câmp</strong></td><td>Componentă a unei structuri, cu nume și tip</td></tr><tr><td><strong>Obiect (fișă)</strong></td><td>O variabilă de tipul structurii, cu valori concrete pentru câmpuri</td></tr><tr><td><strong>Operatorul punct</strong></td><td>Alege un câmp al unei variabile după nume: <code>e.an</code></td></tr><tr><td><strong>Informație derivată</strong></td><td>Informație care se poate calcula din altele și nu se memorează separat</td></tr><tr><td><strong>Domeniu</strong></td><td>Mulțimea valorilor cu sens pentru un câmp; poate fi mai mică decât tipul</td></tr><tr><td><strong>Vector de structuri</strong></td><td>Vector ale cărui elemente sunt structuri; fiecare element este o fișă</td></tr><tr><td><strong>Câmp-structură</strong></td><td>Câmp al cărui tip este tot o structură (ex.: capetele unui segment)</td></tr><tr><td><strong>Câmp-vector</strong></td><td>Câmp al cărui tip este un vector (ex.: notele unui student)</td></tr><tr><td><strong>Selectarea unui câmp</strong></td><td>Alegerea unui câmp al unui obiect după nume (notația cu punct)</td></tr><tr><td><strong>Eterogen</strong></td><td>Cu componente care pot avea tipuri diferite</td></tr><tr><td><strong>Convenție</strong></td><td>Regula care spune ce înseamnă o poziție sau o valoare într-un model (ex.: note[i] = testul i + 1)</td></tr></tbody></table></div>
+<h2 id="surse">Surse</h2>
+<p>Teoria din acest laborator continuă harta din Laboratorul 1. Sursele de mai jos sprijină afirmațiile despre structuri; pentru Wirth au fost consultate doar rezumatul și cuprinsul, nu textul integral.</p>
+<ul>
+<li>Wirth, N. <em>Algorithms and Data Structures</em> (structuri fundamentale: înregistrare, tablou, mulțime): <a href="https://informatika-21.ru/ADen/AD2012.pdf">PDF</a> (rezumat și cuprins)</li>
+<li>cppreference, <a href="https://cppreference.net/cpp/language/as_operator.html">Copy assignment operator</a> (atribuirea implicită copiază membrii unul câte unul, inclusiv tablourile din interior; verificat și prin rulare cu <code>g++</code> 13.3)</li>
+<li>Laboratorul 1 al acestui modul, secțiunile despre tip compus, compunere recursivă și vectori paraleli</li>
+</ul>
+<p class="text-sm text-muted">Formularea definiției structurii și a componentelor ei, noțiunea de „domeniu” al unui câmp, cele șase întrebări de modelare, informațiile despre alegerea tipului unui câmp și toate modelele propuse sunt formulări și propuneri ale autorului; pot exista și alte modele valide. Afirmația că Java și Python nu au un <code>struct</code> cu același nume, ci folosesc o clasă cu câmpuri, este prezentată ca regulă cunoscută a limbajelor; nu pot confirma asta printr-un citat din documentațiile lor în această redactare. Programele au fost compilate și rulate cu <code>g++</code> 13.3, JDK 21 și Python 3.13.</p>
+
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="page-footer">
+      <span>M9 · Lab 2 – Structura: modelarea datelor</span>
+      <div class="footer-nav">
+        <a href="lab-1.html" class="footer-link">← Lab 1 – Datele și reprezentarea lor</a>
+        <a href="lab-3.html" class="footer-link">Lab 3 – Structuri în programe →</a>
+
+      </div>
+    </footer>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+/* Linkurile din sidebar către secțiuni aflate în alt tab: se deschide întâi tab-ul potrivit. */
+(function () {
+  document.querySelectorAll('.sidebar-link[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      var pane = el.closest('.tab-pane');
+      if (pane && !pane.classList.contains('active')) {
+        var btn = document.querySelector('.tab-btn[data-tab="' + pane.id + '"]');
+        if (btn) btn.click();
+      }
+      ev.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laborator 0a – Mediul de lucru (C++, Java, Python) | M9 OCW</title>
+<meta name="description" content="Laborator 0a de POO (M9): de la fișierul sursă la program în C++, Java și Python, tipurile de erori și cum se citesc mesajele de eroare." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  /* pattern cards */
+  .pattern-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin: 1.25rem 0; }
+  .pattern-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); }
+  .pattern-card .pattern-header { background: var(--surface-2); padding: .6rem 1rem; font-weight: 700; font-size: .85rem; color: var(--text); border-bottom: 1px solid var(--border); }
+  .pattern-card pre { margin: 0; padding: .9rem 1.1rem; font-family: var(--mono); font-size: .82rem; overflow-x: auto; }
+
+  /* quiz-style exercises */
+  .quiz-item { margin: 1.35rem 0; padding-bottom: 1.1rem; border-bottom: 1px solid var(--surface-2); }
+  .quiz-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .quiz-item .qnum { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 .3rem; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark); font-size: .78rem; font-weight: 800; margin-right: .5rem; }
+  .choices { list-style: none; padding: 0; margin: .6rem 0 .8rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .4rem .6rem; }
+  .choices li { font-family: var(--mono); font-size: .84rem; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); padding: .4rem .65rem; border-radius: 6px; }
+  .quiz-item details { margin-top: .5rem; }
+  .quiz-item summary { background: var(--accent-light); color: var(--accent-dark); font-size: .82rem; }
+
+  /* problem-solving blocks */
+  .method-block { margin: .9rem 0; }
+  .method-label { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-dark); margin-bottom: .4rem; display: flex; align-items: center; gap: .4rem; }
+  .method-label i { color: var(--accent); }
+  .algo-steps { counter-reset: algo; list-style: none; padding: 0; margin: .3rem 0; }
+  .algo-steps li { counter-increment: algo; position: relative; padding: .32rem 0 .32rem 2.1rem; font-size: .87rem; border-bottom: 1px solid var(--surface-2); }
+  .algo-steps li:last-child { border-bottom: none; }
+  .algo-steps li::before { content: counter(algo); position: absolute; left: 0; top: .28rem; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark); font-size: .7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .diff-badge { display: inline-flex; align-items: center; font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: .15rem .55rem; border-radius: 20px; margin-left: .5rem; }
+  .diff-badge.usoara { background: var(--green-light); color: var(--green); }
+  .diff-badge.medie  { background: var(--amber-light); color: #b45309; }
+  .diff-badge.grea   { background: #f3e8ff; color: #7c3aed; }
+  .restrictii-list { margin: .2rem 0 0; padding-left: 1.2rem; }
+  .restrictii-list li { font-size: .85rem; margin-bottom: .2rem; }
+  .judge-example { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; margin: .4rem 0 .6rem; }
+  .judge-ex-col { background: #1e2235; border-radius: 8px; overflow: hidden; border: 1px solid #2d3250; }
+  .judge-ex-title { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #7c85b0; padding: .4rem .7rem; background: #252942; border-bottom: 1px solid #2d3250; }
+  .judge-ex-col pre { margin: 0; padding: .6rem .8rem; font-family: var(--mono); font-size: .82rem; color: #e0e4f5; white-space: pre-wrap; }
+  .judge-explicatie { font-size: .87rem; color: var(--text-2); margin: 0; }
+
+  /* vector and matrix diagrams */
+  .vec-wrap { margin: 1.1rem 0; overflow-x: auto; }
+  .vec-wrap .vname { font-family: var(--mono); font-size: .78rem; font-weight: 700; color: var(--text-2); margin-bottom: .4rem; }
+  .vec { display: inline-flex; }
+  .vc { display: flex; flex-direction: column; }
+  .vc .cell { min-width: 48px; height: 42px; padding: 0 .55rem; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1.5px solid var(--border); margin-left: -1.5px; font-family: var(--mono); font-weight: 700; font-size: .95rem; color: var(--text); }
+  .vc:first-child .cell { margin-left: 0; border-radius: 8px 0 0 8px; }
+  .vc:last-child .cell { border-radius: 0 8px 8px 0; }
+  .vc .cell.a, .mat .cell.a { background: var(--accent-light); border-color: var(--accent); }
+  .vc .cell.g, .mat .cell.g { background: var(--green-light);  border-color: var(--green); }
+  .vc .cell.r, .mat .cell.r { background: var(--red-light);    border-color: var(--red); }
+  .vc .cell.y, .mat .cell.y { background: var(--amber-light);  border-color: var(--amber); }
+  .vc .ix { text-align: center; font-family: var(--mono); font-size: .72rem; color: var(--text-3); margin-top: .3rem; }
+  .vec-wrap .vcap { font-size: .85rem; color: var(--text-2); margin-top: .6rem; }
+  .mat { display: inline-grid; gap: 0; }
+  .mat .mc { display: flex; align-items: center; justify-content: center; min-height: 40px; font-family: var(--mono); font-size: .95rem; }
+  .mat .mc.cell { background: var(--surface); border: 1.5px solid var(--border); margin: 0 -1.5px -1.5px 0; font-weight: 700; color: var(--text); }
+  .mat .mc.ix { font-size: .72rem; color: var(--text-3); }
+
+  /* concept map (SVG) */
+  .map-wrap { margin: 1.2rem 0 .4rem; overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: .8rem; }
+  .rel-svg { display: block; width: 100%; min-width: 560px; height: auto; font-family: var(--sans); }
+  .rel-svg .box rect { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  .rel-svg .b-tip rect { fill: var(--accent-light); stroke: var(--accent); stroke-width: 2; }
+  .rel-svg .b-val rect { fill: var(--amber-light); stroke: var(--amber); }
+  .rel-svg .b-var rect { fill: var(--green-light); stroke: var(--green); }
+  .rel-svg .b-simple rect { fill: var(--surface); stroke: var(--accent); }
+  .rel-svg .b-comp rect { fill: var(--surface); stroke: var(--accent-dark); stroke-width: 2; }
+  .rel-svg text { text-anchor: middle; fill: var(--text); }
+  .rel-svg .t1 { font-size: 17px; font-weight: 800; }
+  .rel-svg .t2 { font-size: 13px; font-family: var(--mono); fill: var(--text-2); }
+  .rel-svg .t3 { font-size: 12px; fill: var(--text-3); }
+  .rel-svg .lab { font-size: 12.5px; font-weight: 700; fill: var(--accent-dark); }
+  .rel-svg .arr { fill: none; stroke: var(--accent-dark); stroke-width: 2; }
+  .rel-svg .arr.dash { stroke-dasharray: 6 5; }
+  .rel-svg .ahead { fill: var(--accent-dark); }
+  .map-cap { font-size: .88rem; color: var(--text-2); margin: .5rem 0 1.2rem; }
+
+  /* bara de sus pe ecrane înguste: fără breadcrumb, ca să nu depășească lățimea */
+  @media (max-width: 500px) {
+    .topnav-breadcrumb { display: none; }
+    .topnav { gap: .5rem; }
+    .topnav-logo { font-size: .85rem; }
+    .topnav-actions { display: none; }
+  }
+
+  /* anatomie: părți colorate */
+  .an-box { margin: 1.25rem 0; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+  .an-title { padding: .55rem 1rem; font-size: .8rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-dark); background: var(--accent-light); }
+  .an-code { margin: 0; padding: 1rem 1.1rem; font-family: var(--mono); font-size: .95rem; line-height: 2.6; white-space: pre-wrap; overflow-x: auto; background: transparent; color: var(--text); }
+  .an-p { position: relative; padding: .12rem .3rem; border-radius: 6px; border-bottom: 3px solid; }
+  .an-p i { font-style: normal; font-family: var(--sans, sans-serif); font-size: .62rem; font-weight: 800; position: absolute; top: -.95rem; left: 50%; transform: translateX(-50%); color: #fff; border-radius: 999px; min-width: 1.05rem; height: 1.05rem; line-height: 1.05rem; text-align: center; padding: 0 .2rem; }
+  .an-1 { border-color: #3d5af1; background: color-mix(in srgb, #3d5af1 16%, var(--surface)); } .an-1 i { background: #3d5af1; }
+  .an-2 { border-color: #10b981; background: color-mix(in srgb, #10b981 18%, var(--surface)); } .an-2 i { background: #10b981; }
+  .an-3 { border-color: #f59e0b; background: color-mix(in srgb, #f59e0b 22%, var(--surface)); } .an-3 i { background: #d97706; }
+  .an-4 { border-color: #ef4444; background: color-mix(in srgb, #ef4444 16%, var(--surface)); } .an-4 i { background: #ef4444; }
+  .an-5 { border-color: #8b5cf6; background: color-mix(in srgb, #8b5cf6 16%, var(--surface)); } .an-5 i { background: #8b5cf6; }
+  .an-6 { border-color: #0d9488; background: color-mix(in srgb, #0d9488 16%, var(--surface)); } .an-6 i { background: #0d9488; }
+  .an-leg { list-style: none; margin: 0; padding: .75rem 1rem 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .5rem .9rem; border-top: 1px dashed var(--border); }
+  .an-leg li { display: flex; gap: .55rem; align-items: flex-start; font-size: .9rem; line-height: 1.4; }
+  .an-leg b.an-n { flex: none; width: 1.35rem; height: 1.35rem; border-radius: 999px; color: #fff; font-size: .72rem; display: inline-flex; align-items: center; justify-content: center; }
+  .an-leg .an-1b { background: #3d5af1; } .an-leg .an-2b { background: #10b981; } .an-leg .an-3b { background: #d97706; }
+  .an-leg .an-4b { background: #ef4444; } .an-leg .an-5b { background: #8b5cf6; } .an-leg .an-6b { background: #0d9488; }
+  .an-leg code { font-size: .85em; }
+  .an-key { padding: .7rem 1rem; border-top: 1px dashed var(--border); font-size: .9rem; background: color-mix(in srgb, #f59e0b 10%, var(--surface)); }
+  /* cutii de memorie */
+  .mem-row { display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem; align-items: stretch; }
+  .mem-panel { flex: 1 1 240px; border: 1px solid var(--border); border-radius: 10px; padding: .7rem .8rem .9rem; background: var(--surface); }
+  .mem-panel h5 { margin: 0 0 .5rem; font-size: .85rem; color: var(--accent-dark); }
+  .mem-cells { display: flex; flex-wrap: wrap; gap: .35rem; }
+  .mem-cell { min-width: 3.2rem; border: 2px solid var(--border); border-radius: 8px; text-align: center; font-family: var(--mono); background: var(--surface); }
+  .mem-cell small { display: block; font-family: var(--sans, sans-serif); font-size: .68rem; padding: .1rem .3rem; background: var(--accent-light); color: var(--accent-dark); border-radius: 6px 6px 0 0; }
+  .mem-cell span { display: block; padding: .3rem .45rem; font-size: .95rem; }
+  .mem-cell.hot { border-color: #ef4444; } .mem-cell.hot span { background: color-mix(in srgb, #ef4444 16%, var(--surface)); font-weight: 700; }
+  .mem-cell.ok { border-color: #10b981; } .mem-cell.ok span { background: color-mix(in srgb, #10b981 18%, var(--surface)); font-weight: 700; }
+  .mem-cell.end { border-style: dashed; }
+  .mem-note { margin: .5rem 0 0; font-size: .85rem; color: var(--text-muted, #6b7280); }
+  .mem-link { align-self: center; font-size: 1.4rem; color: var(--accent); }
+  /* flux */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: .35rem; padding: 1rem; }
+  .flow-step { flex: 1 1 130px; border: 2px solid var(--border); border-radius: 10px; padding: .55rem .7rem; text-align: center; background: var(--surface); }
+  .flow-step b { display: block; font-size: .9rem; } .flow-step span { font-size: .8rem; opacity: .8; }
+  .flow-step.f1 { border-color: #3d5af1; } .flow-step.f2 { border-color: #f59e0b; } .flow-step.f3 { border-color: #10b981; } .flow-step.f4 { border-color: #8b5cf6; }
+  .flow-arrow { align-self: center; font-size: 1.3rem; color: var(--accent); }
+  @media (max-width: 560px) { .an-code { font-size: .8rem; } .flow-arrow { transform: rotate(90deg); flex: 1 1 100%; text-align: center; } }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">M9</span>Programare orientată pe obiecte</a>
+  <div class="topnav-breadcrumb">
+    <a href="index.html">M9</a><span class="sep">›</span> <span>Lab 0a – Mediul de lucru</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="https://www.onlinegdb.com/" target="_blank" class="btn-sm">Compilator online</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <span class="sidebar-label">Curs</span>
+    <a class="sidebar-link" href="#prereq"><i class="fa-solid fa-circle-check fa-fw"></i> Prerequisite</a>
+    <a class="sidebar-link" href="#intro"><i class="fa-solid fa-book-open fa-fw"></i> Introducere</a>
+    <a class="sidebar-link" href="#obiective"><i class="fa-solid fa-bullseye fa-fw"></i> Obiective</a>
+    <a class="sidebar-link" href="#mediu"><i class="fa-solid fa-terminal fa-fw"></i> 1. Mediul de lucru</a>
+    <a class="sidebar-link" href="#tipuri-erori"><i class="fa-solid fa-bug fa-fw"></i> 2. Tipuri de erori</a>
+    <a class="sidebar-link" href="#erori"><i class="fa-solid fa-triangle-exclamation fa-fw"></i> 3. Erori frecvente</a>
+    <a class="sidebar-link" href="#tratare"><i class="fa-solid fa-screwdriver-wrench fa-fw"></i> 4. Cum tratezi o eroare</a>
+    <span class="sidebar-label">Laborator</span>
+    <a class="sidebar-link" href="#introductive"><i class="fa-solid fa-pencil fa-fw"></i> Exerciții introductive</a>
+    <a class="sidebar-link" href="#tipuri-ex"><i class="fa-solid fa-clipboard-question fa-fw"></i> Ce fel de eroare este?</a>
+    <a class="sidebar-link" href="#tratare-ex"><i class="fa-solid fa-list-ol fa-fw"></i> Ce faci mai întâi?</a>
+    <a class="sidebar-link" href="#lab-erori"><i class="fa-solid fa-magnifying-glass fa-fw"></i> Citește mesajul de eroare</a>
+    <a class="sidebar-link" href="#lab"><i class="fa-solid fa-flask fa-fw"></i> Aplicații de rezolvat</a>
+    <a class="sidebar-link" href="#mcq"><i class="fa-solid fa-list-check fa-fw"></i> Alegere multiplă</a>
+    <span class="sidebar-label">Referință</span>
+    <a class="sidebar-link" href="#verificare"><i class="fa-solid fa-circle-check fa-fw"></i> Autoevaluare</a>
+    <a class="sidebar-link" href="#rezumat"><i class="fa-solid fa-thumbtack fa-fw"></i> Rezumat</a>
+    <a class="sidebar-link" href="#glosar"><i class="fa-solid fa-book fa-fw"></i> Glosar</a>
+    <a class="sidebar-link" href="#cheat"><i class="fa-solid fa-bolt fa-fw"></i> Cheat sheet</a>
+    <a class="sidebar-link" href="#surse"><i class="fa-solid fa-quote-right fa-fw"></i> Surse</a>
+    <span class="sidebar-label">Laboratoare M9</span>
+    <a class="sidebar-link active" href="lab-0a.html">Lab 0a – Mediul de lucru</a>
+    <a class="sidebar-link" href="lab-0b.html">Lab 0b – Recapitulare: subprograme</a>
+    <a class="sidebar-link" href="lab-1.html">Lab 1 – Datele și reprezentarea lor</a>
+    <a class="sidebar-link" href="lab-2.html">Lab 2 – Structura: modelarea datelor</a>
+    <a class="sidebar-link" href="lab-3.html">Lab 3 – Structuri în programe</a>
+    <a class="sidebar-link" href="lab-4.html">Lab 4 – Clase și obiecte</a>
+    <a class="sidebar-link" href="index.html">← Înapoi la modul</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-hero">
+      <span class="session-tag">Laborator 0a · POO · Pregătire</span>
+      <h1>Mediul de lucru: de la fișierul sursă la program</h1>
+      <div class="hero-meta">
+        <span class="chip">Compilare și rulare</span>
+        <span class="chip">C++ · Java · Python</span>
+        <span class="chip">Tipuri de erori</span>
+        <span class="chip">Mesaje de eroare</span>
+        <span class="chip">Depanare</span>
+      </div>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="ta-curs">Curs</button>
+      <button class="tab-btn" data-tab="ta-lab">Laborator</button>
+      <button class="tab-btn" data-tab="ta-cheat">Cheat Sheet</button>
+      <button class="tab-btn" data-tab="ta-autoevaluare">Autoevaluare</button>
+    </div>
+
+    <div class="tab-wrap">
+      <div class="tab-pane active" id="ta-curs">
+        <div class="prose">
+<div class="prereq-box" id="prereq">
+<h4>Prerequisite – ce trebuie să știi înainte de acest laborator</h4>
+<ul>
+<li>Ai folosit un compilator sau un mediu de dezvoltare pentru C++ și ai rulat programe simple (M6)</li>
+<li>Știi să deschizi un terminal și să te muți într-un folder, sau ai la îndemână un compilator online (butonul „Compilator online” din bara de sus)</li>
+<li>Ai văzut în M6 comparații scurte între C++, Java și Python; <strong>nu</strong> se presupune că știi să programezi în Java sau în Python</li>
+</ul>
+</div>
+
+<h2 id="intro">Introducere</h2>
+<p>Modulul M9 folosește trei limbaje: C++ pentru programele pe care le scrii tu, iar Java și Python pentru comparație. Înainte de orice noțiune nouă, trebuie să fie clar un lucru foarte practic: cum ajunge un fișier de text să fie un program care rulează, și ce faci când nu rulează. Acest laborator răspunde exact la aceste două întrebări, pentru fiecare dintre cele trei limbaje.</p>
+<p>Programul folosit peste tot este cel mai mic posibil: afișează un mesaj. El este suficient pentru a vedea toți pașii: fișierul sursă, traducerea (acolo unde există), rularea și, mai ales, mesajele de eroare. Ele vor reveni în fiecare laborator următor, deci merită să înveți de acum să le citești.</p>
+<div class="objectives" id="obiective">
+<h3>La finalul acestui laborator vei putea să:</h3>
+<ol>
+<li><strong>Compilezi</strong> și <strong>rulezi</strong> un program minim în C++, Java și Python</li>
+<li><strong>Numești</strong> ce produce fiecare pas (executabil, bytecode) și ce execută rezultatul</li>
+<li><strong>Explici</strong> de ce o eroare de sintaxă apare în momente diferite în cele trei limbaje</li>
+<li><strong>Citești</strong> un mesaj de eroare: fișierul, linia și ce lipsește sau ce nu este cunoscut</li>
+<li><strong>Distingi</strong> erorile de compilare, de execuție și de logică, după momentul în care apar</li>
+<li><strong>Corectezi</strong> trei erori frecvente: caracter lipsă, nume necunoscut, nume de fișier nepotrivit în Java</li>
+</ol>
+</div>
+<h2 id="mediu">1. Mediul de lucru: de la fișierul sursă la program</h2>
+<p>Un <strong>fișier sursă</strong> este un fișier text care conține codul scris de programator. Calculatorul nu îl poate executa direct, iar drumul de la sursă la un program care rulează diferă de la un limbaj la altul. În C++, compilatorul (de exemplu <code>g++</code>) traduce fișierul sursă într-un <strong>fișier executabil</strong>, pe care sistemul de operare îl poate rula. În Java, compilatorul <code>javac</code> produce un fișier <code>.class</code> care conține <strong>bytecode</strong>, iar comanda <code>java</code> pornește mașina virtuală Java (JVM), care execută acel bytecode. În Python, programul se dă direct interpretorului (<code>python3</code>), care îl rulează fără ca tu să creezi un executabil.</p>
+<div class="an-box"><div class="an-title">Drumul de la fișier la rezultat (C++)</div><div class="flow"><div class="flow-step f1"><b>1. Scrii</b><span>fișierul sursă .cpp</span></div><div class="flow-arrow">→</div><div class="flow-step f2"><b>2. Compilezi</b><span>g++ verifică și traduce</span></div><div class="flow-arrow">→</div><div class="flow-step f3"><b>3. Rezultă</b><span>programul executabil</span></div><div class="flow-arrow">→</div><div class="flow-step f4"><b>4. Rulezi</b><span>vezi ce afișează</span></div></div><div class="an-key"><strong>De reținut:</strong> eroarea de la pasul 2 apare <em>înainte</em> ca programul să existe; eroarea de la pasul 4 apare când programul deja rulează.</div></div>
+<div class="tbl-wrap"><table><thead><tr><th>Pas</th><th>C++</th><th>Java</th><th>Python</th></tr></thead><tbody><tr><td>Fișier sursă</td><td><code>hello.cpp</code></td><td><code>Hello.java</code></td><td><code>hello.py</code></td></tr><tr><td>Pas de traducere explicit</td><td><code>g++ ... hello.cpp -o hello</code> → executabil</td><td><code>javac Hello.java</code> → <code>Hello.class</code> (bytecode)</td><td>niciunul pe care să-l scrii tu</td></tr><tr><td>Rulare</td><td><code>./hello</code></td><td><code>java Hello</code></td><td><code>python3 hello.py</code></td></tr><tr><td>Eroare de sintaxă apare</td><td>la compilare</td><td>la compilare</td><td>la pornirea programului, înainte să se execute vreo instrucțiune din fișier</td></tr></tbody></table></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Linie de comandă – într-un terminal Linux</span></div><pre><code># C++
+g++ -std=c++17 -Wall -Wextra hello.cpp -o hello
+./hello
+
+# Java
+javac Hello.java
+java Hello
+
+# Python
+python3 hello.py</code></pre></div><p>Comenzile de mai sus au fost rulate în acest material cu <code>g++</code> 13.3, JDK 21 și Python 3.13; pe alt sistem de operare sau cu alte versiuni, numele exact al executabilului și comanda de pornire pot diferi. Opțiunile <code>-Wall -Wextra</code> cer compilatorului să avertizeze asupra construcțiilor suspecte; nu sunt obligatorii, dar sunt o bună obișnuință. Java permite și pornirea directă dintr-un singur fișier sursă, <code>java Hello.java</code>, începând cu JDK 11 (JEP 330); aici folosim forma în doi pași, pentru că arată clar fiecare etapă.</p>
+<h3 id="hello">Programul minim în cele trei limbaje</h3>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · hello.cpp</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Salut, POO!"</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java · Hello.java</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Hello {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        System.out.println(<span class="st">"Salut, POO!"</span>);
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python · hello.py</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">print</span>(<span class="st">"Salut, POO!"</span>)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – identic în cele trei limbaje</span></div><pre><code>Salut, POO!</code></pre></div><p>Toate cele trei programe afișează același mesaj, dar structura lor diferă. În C++, execuția pornește din funcția <code>main</code>, iar <code>cout</code> vine din biblioteca inclusă cu <code>#include &lt;iostream&gt;</code>. În Java, orice instrucțiune trebuie să se afle într-o <strong>clasă</strong>, iar execuția pornește din metoda <code>main</code> a clasei indicate la comanda <code>java</code>. În Python nu există o structură obligatorie: instrucțiunile fișierului se execută una după alta, de sus în jos.</p>
+<div class="an-box"><div class="an-title">Anatomia programului minim C++</div><pre class="an-code"><span class="an-p an-1"><i>1</i>#include &lt;iostream&gt;</span>
+<span class="an-p an-2"><i>2</i>using namespace std;</span>
+
+<span class="an-p an-3"><i>3</i>int main()</span> <span class="an-p an-4"><i>4</i>{</span>
+    <span class="an-p an-5"><i>5</i>cout &lt;&lt; "Salut, POO!" &lt;&lt; endl;</span>
+    <span class="an-p an-6"><i>6</i>return 0;</span>
+<span class="an-p an-4"><i>4</i>}</span></pre><ul class="an-leg"><li><b class="an-n an-1b">1</b><span><strong>Includere</strong> – aduce în program ce trebuie pentru citire și afișare</span></li><li><b class="an-n an-2b">2</b><span><strong>Spațiu de nume</strong> – permite scrierea <code>cout</code> în loc de <code>std::cout</code></span></li><li><b class="an-n an-3b">3</b><span><strong>Antetul funcției</strong> – aici începe execuția programului</span></li><li><b class="an-n an-4b">4</b><span><strong>Acolade</strong> – încadrează corpul funcției; fiecare <code>{</code> își are <code>}</code></span></li><li><b class="an-n an-5b">5</b><span><strong>Instrucțiune</strong> – se termină obligatoriu cu <code>;</code></span></li><li><b class="an-n an-6b">6</b><span><strong>Terminarea</strong> – valoarea 0 spune că programul s-a terminat fără probleme</span></li></ul><div class="an-key"><strong>Memorează:</strong> includere → antet <code>main</code> → acolade → instrucțiuni cu <code>;</code>.</div></div>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Clasic: „C++ e compilat, Java e interpretat, Python e interpretat”</strong><p>Formularea este prea simplă. Java este mai întâi <strong>compilat</strong> (în bytecode) și abia apoi bytecode-ul este executat de JVM. Documentația Python spune că Python este un limbaj interpretat, dar adaugă că distincția „poate fi neclară din cauza compilatorului de bytecode”: în implementarea CPython, codul sursă este compilat intern în bytecode, executat apoi de o mașină virtuală. Corect este să descrii <strong>ce pași apar și ce produce fiecare</strong>, nu să aplici o etichetă unică limbajului. Mai mult, un limbaj nu este în sine „compilat” sau „interpretat”: modul de execuție ține de implementare. Aici vorbim despre <code>g++</code>, <code>javac</code> + JVM și CPython.</p></div></div>
+<h2 id="tipuri-erori">2. Tipuri de erori</h2>
+<p>Un program poate fi greșit în feluri foarte diferite. Pentru a-l repara, primul lucru de aflat este <strong>când</strong> se vede greșeala și <strong>cine</strong> o observă: compilatorul, programul care rulează sau tu. După aceste două întrebări, erorile se împart în trei categorii, pe care le vei recunoaște în toate laboratoarele următoare.</p>
+<div class="an-box"><div class="an-title">Cele trei momente în care poate apărea o eroare</div><div class="flow"><div class="flow-step f1"><b>1. Compilare</b><span>verificarea textului; dacă nu respectă regulile, nu se produce niciun program</span></div><div class="flow-arrow">→</div><div class="flow-step f2"><b>2. Execuție</b><span>programul pornește, dar întâlnește o operație imposibilă și se oprește</span></div><div class="flow-arrow">→</div><div class="flow-step f3"><b>3. Rezultat</b><span>programul se termină normal, dar rezultatul este greșit; îl descoperi tu</span></div></div><div class="an-key"><strong>Memorează:</strong> compilare → mesaj de la compilator; execuție → mesaj de la program, în timp ce rulează; logică → niciun mesaj.</div></div>
+<h3 id="eroare-compilare">2.1. Erori de compilare (de sintaxă)</h3>
+<p>Un limbaj de programare are reguli: ce cuvinte există, cum se scriu instrucțiunile, ce nume trebuie declarate înainte de folosire. Dacă textul le încalcă, compilatorul nu poate traduce programul și te anunță înainte ca ceva să ruleze. Este categoria cea mai ușoară: mesajul îți spune fișierul, linia și ce nu înțelege. Mai jos, programul folosește o variabilă care nu a fost declarată; mesajul este cel real, produs de <code>g++</code>.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · nume.cpp</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a <span class="op">=</span> <span class="nm">8</span>;
+    cout <span class="op">&lt;&lt;</span> a <span class="op">+</span> b <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">g++ – mesajul real</span></div><pre><code>nume.cpp:6:17: error: ‘b’ was not declared in this scope</code></pre></div><div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Definiție: eroare de compilare</strong><p>O <strong>eroare de compilare</strong> (eroare de sintaxă, în sens larg) este o încălcare a regulilor limbajului, descoperită <strong>înainte de execuție</strong>. Programul nu se poate crea (în C++ și Java) sau nu începe să ruleze (în Python, unde interpretorul verifică textul înainte să execute prima instrucțiune). Exemple: lipsește <code>;</code>, un nume nu este declarat, o paranteză nu este închisă.</p></div></div>
+<h3 id="eroare-executie">2.2. Erori la execuție</h3>
+<p>Uneori textul este corect: compilatorul îl acceptă și programul pornește. Dar în timpul rulării apare o operație care nu se poate face, de exemplu o împărțire la zero. Programul se oprește chiar în acel loc. Observă că ce a fost afișat înainte de oprire rămâne pe ecran, iar ce urma după nu se mai execută. Cele trei programe de mai jos fac același lucru; rezultatele sunt cele reale.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · impartire.cpp</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a <span class="op">=</span> <span class="nm">5</span>;
+    <span class="tp">int</span> b <span class="op">=</span> <span class="nm">0</span>;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Inainte de impartire"</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> a <span class="op">/</span> b <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Dupa impartire"</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>Inainte de impartire</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Mesajul sistemului (Linux)</span></div><pre><code>Floating point exception</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java · Impartire.java</span></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Impartire {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">int</span> a <span class="op">=</span> <span class="nm">5</span>;
+        <span class="tp">int</span> b <span class="op">=</span> <span class="nm">0</span>;
+        System.out.println(<span class="st">"Inainte de impartire"</span>);
+        System.out.println(a <span class="op">/</span> b);
+        System.out.println(<span class="st">"Dupa impartire"</span>);
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>Inainte de impartire</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Mesajul produs de Java</span></div><pre><code>Exception in thread "main" java.lang.ArithmeticException: / by zero
+	at Impartire.main(Impartire.java:6)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python · impartire.py</span></div><pre><code>a <span class="op">=</span> <span class="nm">5</span>
+b <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">print</span>(<span class="st">"Inainte de impartire"</span>)
+<span class="kw">print</span>(a <span class="op">/</span> b)
+<span class="kw">print</span>(<span class="st">"Dupa impartire"</span>)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>Inainte de impartire</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Mesajul produs de Python</span></div><pre><code>Traceback (most recent call last):
+  File "impartire.py", line 4, in &lt;module&gt;
+    print(a / b)
+          ~~^~~
+ZeroDivisionError: division by zero</code></pre></div><p>În niciunul dintre cazuri nu s-a afișat „Dupa impartire”. În Java și în Python mesajul spune și <strong>tipul</strong> erorii (<code>ArithmeticException</code>, <code>ZeroDivisionError</code>) și linia; în C++ sistemul de operare oprește programul, iar mesajul este mai puțin explicit. Textul exact al mesajului din C++ depinde de sistemul de operare și de shell.</p>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Definiție: eroare la execuție</strong><p>O <strong>eroare la execuție</strong> este o situație în care un program corect din punct de vedere al sintaxei întâlnește, în timp ce rulează, o operație imposibilă (împărțire la zero, deschiderea unui fișier care nu există, un indice în afara unui vector în Java sau Python). Programul se oprește în acel punct. În Java și Python astfel de situații se numesc <em>excepții</em>.</p></div></div>
+<h3 id="eroare-logica">2.3. Erori de logică</h3>
+<p>Cea mai înșelătoare categorie este cea în care <strong>nimeni nu te anunță</strong>. Programul compilează, rulează până la capăt, nu afișează nicio eroare, dar răspunsul nu este cel cerut. Exemplu: media a două note trebuie să fie <code>(a + b) / 2</code>. Dacă uiți parantezele, regula priorității operațiilor împarte doar pe <code>b</code>, iar rezultatul este altul.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · media.cpp</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a <span class="op">=</span> <span class="nm">8</span>;
+    <span class="tp">int</span> b <span class="op">=</span> <span class="nm">4</span>;
+    cout <span class="op">&lt;&lt;</span> a <span class="op">+</span> b <span class="op">/</span> <span class="nm">2</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>10</code></pre></div><p>Media lui 8 și 4 este 6, dar programul afișează 10, fără niciun mesaj. Eroarea se găsește numai prin <strong>verificare</strong>: calculezi pe hârtie pentru valori mici și compari cu ce afișează programul.</p>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Definiție: eroare de logică</strong><p>O <strong>eroare de logică</strong> este o greșeală în algoritm sau în felul în care este scris, care nu încalcă regulile limbajului. Programul compilează și rulează complet, dar produce un rezultat diferit de cel cerut. Se descoperă prin <strong>testare</strong> (valori la care știi răspunsul) și prin urmărirea programului pe hârtie.</p></div></div>
+<h3 id="avertismente">2.4. Avertismente</h3>
+<p>Între eroare și program corect există un nivel intermediar: <strong>avertismentul</strong>. Compilatorul traduce programul, dar te anunță că a găsit ceva suspect. Cu opțiunea <code>-Wall</code>, <code>g++</code> avertizează, de exemplu, asupra unei variabile declarate și nefolosite.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · avert.cpp</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n <span class="op">=</span> <span class="nm">5</span>;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Salut"</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Comanda</span></div><pre><code>g++ -std=c++17 -Wall avert.cpp -o avert</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">g++ – avertismentul real</span></div><pre><code>avert.cpp:5:9: warning: unused variable ‘n’ [-Wunused-variable]</code></pre></div><p>Programul s-a compilat și se poate rula, dar avertismentul merită citit: variabila <code>n</code> a fost declarată degeaba, iar uneori un avertisment arată o greșeală de logică.</p>
+<h3 id="fara-mesaj">2.5. Când nu te anunță nimeni</h3>
+<p>În C++ există și greșeli pe care nici compilatorul, nici programul nu le semnalează, de exemplu citirea unui element în afara vectorului: la <code>int v[3]</code>, instrucțiunea <code>v[5]</code> este greșită, dar programul poate continua să ruleze și să afișeze o valoare oarecare. Standardul limbajului spune că într-un astfel de caz <strong>nu există nicio cerință</strong> asupra comportamentului programului; el se numește <em>comportament nedefinit</em>, iar compilatorul nu este obligat să îl semnaleze. Din acest motiv, la vectori respectăm mereu regula „indici valizi: 0 … n − 1”.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Categorie</th><th>Când apare</th><th>Cine o observă</th><th>Programul pornește?</th><th>Exemplu</th><th>Cum o cauți</th></tr></thead><tbody><tr><td><strong>Compilare</strong></td><td>înainte de rulare</td><td>compilatorul / interpretorul</td><td>nu</td><td>variabilă nedeclarată</td><td>citești mesajul: fișier, linie, descriere</td></tr><tr><td><strong>Execuție</strong></td><td>în timpul rulării</td><td>programul însuși</td><td>da, apoi se oprește</td><td>împărțire la zero</td><td>citești tipul erorii și linia</td></tr><tr><td><strong>Logică</strong></td><td>după rulare, la rezultat</td><td>tu</td><td>da, până la capăt</td><td>paranteze lipsă la media a două note</td><td>testezi cu valori cunoscute</td></tr><tr><td><strong>Avertisment</strong></td><td>la compilare</td><td>compilatorul</td><td>da</td><td>variabilă nefolosită</td><td>compilezi cu <code>-Wall</code> și citești</td></tr></tbody></table></div>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>De reținut</strong><p>Dacă primești un <strong>mesaj</strong>, citește-l: spune în care categorie ești. Dacă programul „merge”, dar rezultatul este greșit, nu mai există mesaj; testează pe hârtie, cu valori mici.</p></div></div>
+<h2 id="erori">3. Erori frecvente</h2>
+<h3>Eroarea 1 – Ai uitat un caracter obligatoriu (<code>;</code> sau o paranteză)</h3>
+<p>Cu o instrucțiune neterminată, programul nici nu pornește. Mesajele cele mai utile sunt primele: ele spun fișierul, linia și ce lipsește. Cele de mai jos sunt cele reale produse de <code>g++</code> 13.3, <code>javac</code> 21 și Python 3.13 pentru programul „Salut, POO!” din care s-a șters <code>;</code> (în C++ și Java), respectiv paranteza de închidere (în Python).</p>
+<div class="an-box"><div class="an-title">Anatomia unui mesaj de eroare g++</div><pre class="an-code"><span class="an-p an-1"><i>1</i>salut.cpp</span>:<span class="an-p an-2"><i>2</i>6</span>:<span class="an-p an-3"><i>3</i>5</span>: <span class="an-p an-4"><i>4</i>error</span>: <span class="an-p an-5"><i>5</i>expected ‘;’ before ‘return’</span></pre><ul class="an-leg"><li><b class="an-n an-1b">1</b><span><strong>Fișierul</strong> – în ce fișier a apărut problema</span></li><li><b class="an-n an-2b">2</b><span><strong>Linia</strong> – numărul liniei raportate (uneori cea următoare locului real al greșelii)</span></li><li><b class="an-n an-3b">3</b><span><strong>Coloana</strong> – poziția în linie</span></li><li><b class="an-n an-4b">4</b><span><strong>Gravitatea</strong> – <code>error</code> oprește compilarea; <code>warning</code> doar avertizează</span></li><li><b class="an-n an-5b">5</b><span><strong>Descrierea</strong> – ce a așteptat compilatorul și nu a găsit</span></li></ul><div class="an-key"><strong>Citește în ordinea:</strong> fișier → linie → descriere. Începe întotdeauna cu <em>prima</em> eroare.</div></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">g++ – primele linii ale mesajului</span></div><pre><code>e1.cpp: In function ‘int main()’:
+e1.cpp:5:34: error: expected ‘;’ before ‘return’
+    5 |     cout &lt;&lt; "Salut, POO!" &lt;&lt; endl
+      |                                  ^
+      |                                  ;</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">javac</span></div><pre><code>E1.java:3: error: ';' expected
+        System.out.println("Salut, POO!")
+                                         ^
+1 error</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">python3</span></div><pre><code>File "e1.py", line 1
+    print("Salut, POO!"
+         ^
+SyntaxError: '(' was never closed</code></pre></div><p>Observă linia indicată de <code>g++</code>: compilatorul își dă seama de lipsă abia când întâlnește <code>return</code>, pe linia următoare. Locul unde <em>se vede</em> eroarea nu coincide întotdeauna cu locul unde <em>a apărut</em>. În Python, mesajul se referă la paranteza deschisă, nu la finalul fișierului.</p>
+<h3>Eroarea 5 – Numele clasei publice nu coincide cu numele fișierului (Java)</h3>
+<p>Fișierul <code>E5.java</code> conține clasa publică <code>Altceva</code>. Compilarea cu <code>javac</code> eșuează:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">javac E5.java</span></div><pre><code>E5.java:1: error: class Altceva is public, should be declared in a file named Altceva.java
+public class Altceva {
+       ^</code></pre></div><p>Regula este impusă de <code>javac</code>, nu de limbajul Java în sine: specificația limbajului (JLS 7.6) spune că sistemul gazdă <em>poate</em> impune ca un tip public să se afle într-un fișier cu același nume. În practică, cu <code>javac</code>, clasa publică <code>Hello</code> se află în <code>Hello.java</code>.</p>
+<h2 id="tratare">4. Cum tratezi o eroare</h2>
+<p>Oricine programează întâlnește erori, și începătorii, și cei cu experiență. Diferența nu este că unii nu greșesc, ci că au o <strong>metodă</strong>: nu schimbă la întâmplare bucăți din program, ci îl cercetează pas cu pas. Procesul de căutare și reparare a erorilor se numește <strong>depanare</strong> (în engleză, <em>debugging</em>). Metoda de mai jos este o prezentare didactică a autorului materialului, adunată din practica obișnuită; ea nu provine dintr-o sursă anume.</p>
+<div class="an-box"><div class="an-title">Șase pași pentru orice eroare</div><div class="flow"><div class="flow-step f1"><b>1. Citește</b><span>mesajul, dacă există: fișier, linie, descriere</span></div><div class="flow-arrow">→</div><div class="flow-step f2"><b>2. Localizează</b><span>unde apare: care linie, care valoare</span></div><div class="flow-arrow">→</div><div class="flow-step f3"><b>3. Ghicește cauza</b><span>formulează o singură ipoteză</span></div><div class="flow-arrow">→</div><div class="flow-step f4"><b>4. Schimbă un lucru</b><span>doar unul, ca să știi ce a ajutat</span></div><div class="flow-arrow">→</div><div class="flow-step f1"><b>5. Rulează din nou</b><span>și citește iar mesajul</span></div><div class="flow-arrow">→</div><div class="flow-step f2"><b>6. Verifică</b><span>cu valori la care știi răspunsul</span></div></div><div class="an-key"><strong>Memorează:</strong> citești → localizezi → ipoteză → o schimbare → rulezi → verifici.</div></div>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Trei reguli care economisesc timp</strong><p><strong>1. Prima eroare întâi.</strong> Una singură poate produce mai multe mesaje; după ce o repari, recompilează înainte să treci mai departe. <strong>2. O schimbare, o rulare.</strong> Dacă schimbi cinci lucruri deodată, nu mai știi care a rezolvat problema (sau a stricat altceva). <strong>3. Nu rescrie tot.</strong> Dacă programul avea o singură greșeală, rescrierea lui produce, de obicei, altele noi.</p></div></div>
+<h3 id="tratare-compilare">4.1. Eroare de compilare: o cauză, mai multe mesaje</h3>
+<p>Programului de mai jos îi lipsește prima linie, <code>#include &lt;iostream&gt;</code>. Compilatorul nu cunoaște nici <code>cout</code>, nici <code>endl</code> și raportează <strong>două mesaje</strong> pentru <strong>o singură cauză</strong>. Observă și linia <code>note</code>: uneori <code>g++</code> sugerează chiar remedierea.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · fara.cpp</span></div><pre><code><span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a <span class="op">=</span> <span class="nm">8</span>;
+    cout <span class="op">&lt;&lt;</span> a <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> a <span class="op">+</span> <span class="nm">1</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">g++ – mesajele reale (selecție)</span></div><pre><code>fara.cpp:5:5: error: ‘cout’ was not declared in this scope
+fara.cpp:1:1: note: ‘std::cout’ is defined in header ‘&lt;iostream&gt;’; did you forget to ‘#include &lt;iostream&gt;’?
+fara.cpp:5:18: error: ‘endl’ was not declared in this scope
+fara.cpp:1:1: note: ‘std::endl’ is defined in header ‘&lt;ostream&gt;’; did you forget to ‘#include &lt;ostream&gt;’?</code></pre></div><p>Aplicăm pașii: <em>citim</em> primul mesaj (<code>cout</code> nu este cunoscut) și nota de sub el, <em>localizăm</em> locul, <em>ipoteza</em> este că lipsește includerea, <em>schimbăm un singur lucru</em> (adăugăm linia) și <em>rulăm din nou</em>. Ambele mesaje dispar, pentru că aveau aceeași cauză.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · fara.cpp (după corectare)</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a <span class="op">=</span> <span class="nm">8</span>;
+    cout <span class="op">&lt;&lt;</span> a <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> a <span class="op">+</span> <span class="nm">1</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>8
+9</code></pre></div><h3 id="tratare-logica">4.2. Eroare de logică: afișări de control</h3>
+<p>Când nu există niciun mesaj, programul trebuie făcut să „vorbească”. O <strong>afișare de control</strong> este o instrucțiune pusă temporar în program, care arată valoarea unei variabile sau a unei expresii într-un anumit loc. Revenim la media lui 8 și 4, care ieșea 10. Afișăm pe rând părțile expresiei și o comparăm cu rezultatul scris pe hârtie.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · control.cpp</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a <span class="op">=</span> <span class="nm">8</span>;
+    <span class="tp">int</span> b <span class="op">=</span> <span class="nm">4</span>;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"b / 2 = "</span> <span class="op">&lt;&lt;</span> b <span class="op">/</span> <span class="nm">2</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"a + b / 2 = "</span> <span class="op">&lt;&lt;</span> a <span class="op">+</span> b <span class="op">/</span> <span class="nm">2</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"(a + b) / 2 = "</span> <span class="op">&lt;&lt;</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="nm">2</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>b / 2 = 2
+a + b / 2 = 10
+(a + b) / 2 = 6</code></pre></div><p>Pe hârtie, media lui 8 și 4 este 6. Afișarea arată că <code>b / 2</code> se calculează <em>primul</em> (rezultat 2), apoi se adună 8: ipoteza „împărțirea se face înaintea adunării” este confirmată, iar a treia linie arată forma corectă. După reparare, afișările de control se șterg.</p>
+<h3 id="tratare-prevenire">4.3. Programul își tratează singur situația</h3>
+<p>Unele erori la execuție pot fi evitate dacă programul <strong>verifică înainte</strong> de a face operația riscantă. Împărțirea la zero din secțiunea 2.2 poate fi prevenită cu o condiție: dacă împărțitorul este 0, programul afișează un mesaj și nu mai încearcă împărțirea.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · impartire_sigura.cpp</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a <span class="op">=</span> <span class="nm">5</span>;
+    <span class="tp">int</span> b <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">if</span> (b <span class="op">==</span> <span class="nm">0</span>) {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"Nu se poate imparti la zero"</span> <span class="op">&lt;&lt;</span> endl;
+    } <span class="kw">else</span> {
+        cout <span class="op">&lt;&lt;</span> a <span class="op">/</span> b <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>Nu se poate imparti la zero</code></pre></div><div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>De reținut</strong><p>Să <strong>tratezi</strong> o eroare înseamnă două lucruri diferite: (1) o <strong>repari</strong> în program, când este o greșeală de-a ta (compilare, logică), și (2) <strong>previi</strong> situația cu o verificare, când ea poate apărea din datele de intrare (împărțitor zero, fișier lipsă).</p></div></div>
+<div class="tbl-wrap"><table><thead><tr><th>Categorie</th><th>Primul pas</th><th>Instrumentul cel mai bun</th></tr></thead><tbody><tr><td><strong>Compilare</strong></td><td>citești <em>prima</em> eroare și linia indicată (și pe cea de dinainte)</td><td>mesajul compilatorului; recompilezi după fiecare reparație</td></tr><tr><td><strong>Execuție</strong></td><td>citești tipul erorii și linia; te întrebi ce valoare a făcut operația imposibilă</td><td>afișare de control chiar înaintea liniei indicate; verificare înainte de operație</td></tr><tr><td><strong>Logică</strong></td><td>calculezi pe hârtie pentru valori mici și compari</td><td>afișări de control și testare cu valori cunoscute</td></tr></tbody></table></div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="ta-lab">
+        <div class="prose">
+<h2 id="introductive">Exerciții introductive (fără scriere de cod)</h2>
+<p>Rezolvă pe hârtie, apoi verifică cu răspunsul. Exercițiile sunt propuse de autorul materialului; nu provin dintr-o sursă externă.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>Ce primești după ce rulezi <code>g++ -std=c++17 hello.cpp -o hello</code>: un fișier text, un fișier executabil sau un fișier cu bytecode? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Un <strong>fișier executabil</strong> numit <code>hello</code>. Un fișier cu bytecode apare în Java, după <code>javac</code>.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Ce conține fișierul <code>Hello.class</code> și cine îl execută? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Conține <strong>bytecode</strong>, produs de compilatorul <code>javac</code>. Este executat de mașina virtuală Java (JVM), pornită prin comanda <code>java Hello</code>.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Un fișier Python conține, pe linia 1, <code>print("a")</code> și, pe linia 2, <code>print("b"</code> (fără paranteza de închidere). Se va afișa „a”? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Nu. Fișierul este compilat în întregime înainte de execuție, deci eroarea de sintaxă din linia 2 este raportată înainte să se execute linia 1. Verificat prin rulare cu Python 3.13: se afișează numai mesajul <code>SyntaxError</code>.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="tipuri-ex">Ce fel de eroare este?</h2>
+<p>Pentru fiecare situație spune dacă este o eroare de compilare, de execuție, de logică, un avertisment sau o situație fără mesaj. Răspunsurile au fost verificate prin rulare acolo unde se menționează un mesaj.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>Programul C++ conține <code>cout &lt;&lt; "Salut"</code> fără <code>;</code> la sfârșit. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Eroare de <strong>compilare</strong>: compilatorul nu produce programul.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Un program afișează 7 pentru media lui 8 și 4, fără niciun mesaj. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Eroare de <strong>logică</strong>: programul rulează complet, dar rezultatul este greșit. Media corectă este 6.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Un program Python afișează „Introdu n:” și apoi se oprește cu <code>ZeroDivisionError</code>. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Eroare la <strong>execuție</strong>: programul a pornit și s-a oprit în timpul rulării.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Programul Python <code>print("Salut"</code> (paranteza nu este închisă), urmat de o altă instrucțiune <code>print("b")</code>. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Eroare de <strong>compilare</strong> (de sintaxă). Verificat: Python raportează <code>SyntaxError</code> și nu execută nimic, deci nu se afișează nici măcar un rând.<div class="code-block"><div class="code-header"><span class="code-lang">Python 3.13 – mesajul real</span></div><pre><code>File "sintaxa.py", line 1
+    print("Salut"
+         ^
+SyntaxError: '(' was never closed</code></pre></div></p></details></div>
+<div class="quiz-item"><p><span class="qnum">5</span><code>g++</code> afișează <code>'x' was not declared in this scope</code>. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Eroare de <strong>compilare</strong>: numele <code>x</code> nu a fost declarat.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">6</span>Un program Java afișează <code>ArrayIndexOutOfBoundsException</code> după ce a pornit, la <code>v[5]</code> pentru un vector cu 3 elemente. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Eroare la <strong>execuție</strong> (excepție). Verificat prin rulare:<div class="code-block"><div class="code-header"><span class="code-lang">Java – mesajul real</span></div><pre><code>Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 5 out of bounds for length 3
+	at Index.main(Index.java:4)</code></pre></div></p></details></div>
+<div class="quiz-item"><p><span class="qnum">7</span>Se calculează aria unui dreptunghi cu <code>l + L</code> în loc de <code>l * L</code>; programul rulează fără mesaje. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Eroare de <strong>logică</strong>: nimeni nu semnalează formula greșită.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">8</span><code>g++ -Wall</code> spune <code>unused variable 'n'</code>, dar produce executabilul. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><strong>Avertisment</strong>: programul se poate rula, dar compilatorul semnalează ceva suspect.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">9</span>Un program C++ citește <code>v[5]</code> dintr-un <code>int v[3]</code>, se compilează fără mesaje și afișează un număr oarecare. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Nu este niciuna dintre categoriile sigure: este <strong>comportament nedefinit</strong>. Standardul nu impune niciun comportament, iar compilatorul nu este obligat să îl semnaleze. Nu poți conta nici pe mesaj, nici pe un rezultat anume.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="tratare-ex">Ce faci mai întâi?</h2>
+<p>Pentru fiecare situație alege primul pas potrivit și apoi deschide răspunsul.</p>
+<div class="quiz-item"><p><span class="qnum">1</span><code>g++</code> raportează 5 erori. Cu care începi? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Cu <strong>prima</strong>. Cele următoare pot fi consecințe ale ei; după ce o repari, recompilezi și vezi câte au rămas.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Programul afișează un rezultat greșit și nu apare niciun mesaj. Care este un prim pas bun? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Calculezi pe hârtie rezultatul pentru valori mici și compari cu cel afișat; apoi pui afișări de control în locurile în care valorile încep să difere.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Ai schimbat patru linii deodată și programul tot nu merge. Ce regulă ai încălcat? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>„O schimbare, o rulare”: nu mai poți ști care schimbare a ajutat sau a stricat ceva. Revino la varianta de dinainte și schimbă pe rând.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Un program se oprește cu eroare la linia 12, unde împarte <code>a / b</code>. Ce verifici? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Valoarea lui <code>b</code> chiar înaintea liniei 12 (o afișare de control). Dacă poate fi 0, adaugi o verificare înainte de împărțire.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">5</span>Programul a început să meargă. Ce faci cu afișările de control puse temporar? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Le ștergi: ele au avut rol de investigare, nu fac parte din program. Înainte de asta, verifici încă o dată cu valori la care știi răspunsul.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="lab-erori">Citește mesajul de eroare</h2>
+<p>Pentru fiecare program de mai jos răspunde la întrebare, <strong>fără să rulezi</strong>, apoi compară cu mesajul real. Mesajele sunt cele produse de <code>g++</code> 13.3, <code>javac</code> 21 și Python 3.13 în pregătirea acestui material; la alte versiuni, textul poate diferi.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>Programul de mai jos nu se compilează. Pe ce linie lipsește caracterul obligatoriu și pe ce linie îl raportează compilatorul?</p><div class="code-block"><div class="code-header"><span class="code-lang">C++ · m1.cpp</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Salut"</span> <span class="op">&lt;&lt;</span> endl
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Pa"</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">g++ – mesajul real</span></div><pre><code>m1.cpp:5:28: error: expected ‘;’ before ‘cout’
+    5 |     cout &lt;&lt; "Salut" &lt;&lt; endl
+    6 |     cout &lt;&lt; "Pa" &lt;&lt; endl;</code></pre></div><details><summary>Vezi răspunsul</summary><p>Lipsește <code>;</code> la sfârșitul liniei 5. Compilatorul raportează linia 5 sau o linie apropiată, pentru că își dă seama abia când întâlnește <code>cout</code> pe linia următoare. Citește primul mesaj: celelalte pot fi doar urmări ale lui.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Ce nu știe compilatorul în acest program? Cum corectezi?</p><div class="code-block"><div class="code-header"><span class="code-lang">C++ · m2.cpp</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    cout <span class="op">&lt;&lt;</span> x;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">g++ – mesajul real</span></div><pre><code>m2.cpp:5:13: error: ‘x’ was not declared in this scope</code></pre></div><details><summary>Vezi răspunsul</summary><p>Nu știe ce este <code>x</code>: nicio variabilă cu acest nume nu a fost declarată. Corectezi declarând-o înainte de folosire (de exemplu <code>int x = 5;</code>) sau, dacă voiai să afișezi textul, scrii <code>"x"</code> între ghilimele.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Care este simbolul necunoscut și unde îl localizează <code>javac</code>?</p><div class="code-block"><div class="code-header"><span class="code-lang">Java · Mesaj.java</span></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Mesaj {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        System.out.println(salut);
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">javac – mesajul real</span></div><pre><code>Mesaj.java:3: error: cannot find symbol
+        System.out.println(salut);
+                           ^
+  symbol:   variable salut
+  location: class Mesaj
+1 error</code></pre></div><details><summary>Vezi răspunsul</summary><p>Simbolul este variabila <code>salut</code>, iar <code>javac</code> indică linia 3 și pune un semn <code>^</code> sub locul exact. Dacă voiai textul, scrie <code>"salut"</code> între ghilimele.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Se va afișa „a”? Ce nu este în regulă cu linia 2?</p><div class="code-block"><div class="code-header"><span class="code-lang">Python · m4.py</span></div><pre><code><span class="kw">print</span>(<span class="st">"a"</span>)
+  <span class="kw">print</span>(<span class="st">"b"</span>)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">python3 – mesajul real</span></div><pre><code>File "m4.py", line 2
+    print("b")
+IndentationError: unexpected indent</code></pre></div><details><summary>Vezi răspunsul</summary><p>Nu se afișează nimic: eroarea de sintaxă este detectată înainte de execuție. Linia 2 începe cu spații fără motiv (<code>unexpected indent</code>); în Python, spațiile de la începutul liniei fac parte din sintaxă.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="lab">Laborator – Aplicații de rezolvat</h2>
+<p>Lucrează la calculator, în limbajul indicat de profesor sau în toate trei. Pentru fiecare aplicație, scrie ce observi.</p>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Scrie, compilează, rulează<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Creează fișierul <code>hello.cpp</code> (C++), <code>Hello.java</code> (Java) sau <code>hello.py</code> (Python) cu programul minim din tabul Curs. Compilează-l (acolo unde este cazul) și rulează-l.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Pași</div><ol class="algo-steps"><li>Scrie fișierul, cu exact numele indicat (în Java, numele clasei publice trebuie să fie și numele fișierului).</li><li>C++: <code>g++ -std=c++17 -Wall -Wextra hello.cpp -o hello</code>, apoi <code>./hello</code>. Java: <code>javac Hello.java</code>, apoi <code>java Hello</code>. Python: <code>python3 hello.py</code>.</li><li>Notează ce fișiere noi apar în folder după compilare, în fiecare limbaj.</li></ol></div>
+<details><summary>Ce ar trebui să observi</summary><p>În C++ apare un fișier executabil (<code>hello</code>); în Java apare <code>Hello.class</code>; în Python nu apare niciun fișier nou. Programul afișează <code>Salut, POO!</code> în toate cele trei limbaje.</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">2</div><div class="exercise-title">Modifică programul<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Modifică programul minim astfel încât să afișeze <code>Suma este 7</code>, unde <code>7</code> este calculat de program (<code>3 + 4</code>), nu scris ca text.</p><details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++ · suma.cpp</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Suma este "</span> <span class="op">&lt;&lt;</span> <span class="nm">3</span> <span class="op">+</span> <span class="nm">4</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java · Suma.java</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Suma {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        System.out.println(<span class="st">"Suma este "</span> <span class="op">+</span> (<span class="nm">3</span> <span class="op">+</span> <span class="nm">4</span>));
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python · suma.py</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">print</span>(<span class="st">"Suma este"</span>, <span class="nm">3</span> <span class="op">+</span> <span class="nm">4</span>)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – identic în cele trei limbaje</span></div><pre><code>Suma este 7</code></pre></div><p>În Java, expresia <code>3 + 4</code> se pune între paranteze: fără ele, <code>"Suma este " + 3 + 4</code> ar lipi textele <code>3</code> și <code>4</code> (rezultatul ar fi <code>Suma este 34</code>).</p></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">3</div><div class="exercise-title">Provoacă o eroare și citește mesajul<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Pornind de la programul care funcționează, <strong>șterge un caracter</strong> (un <code>;</code>, o ghilimea sau o paranteză) și compilează din nou. Citește primul mesaj de eroare. Apoi pune caracterul la loc și introdu altă greșeală: scrie un nume greșit (<code>cuot</code> în loc de <code>cout</code>, sau <code>pritn</code> în loc de <code>print</code>).</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-magnifying-glass"></i> De urmărit</div><ul class="restrictii-list"><li>În ce fișier și pe ce linie spune compilatorul că este problema?</li><li>Linia indicată coincide mereu cu linia în care ai făcut modificarea?</li><li>Ce diferență vezi între un limbaj compilat (C++, Java) și Python în momentul în care apare eroarea?</li></ul></div>
+</div></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h3 id="mcq">Întrebări cu alegere multiplă</h3>
+<p>O singură variantă este corectă la fiecare întrebare.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>Ce se obține după comanda <code>g++ -std=c++17 hello.cpp -o hello</code>?</p><ul class="choices"><li>a) un fișier cu bytecode</li><li>b) un fișier executabil numit <code>hello</code></li><li>c) un fișier text cu rezultatul programului</li><li>d) nimic, programul se rulează direct</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – <code>g++</code> traduce sursa într-un executabil, pe care îl pornești cu <code>./hello</code>. Bytecode produce <code>javac</code>.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Cum se pornește un program Java, după ce <code>javac Hello.java</code> a creat <code>Hello.class</code>?</p><ul class="choices"><li>a) <code>javac Hello.class</code></li><li>b) <code>java Hello.class</code></li><li>c) <code>java Hello</code></li><li>d) <code>./Hello</code></li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – comanda <code>java</code> pornește mașina virtuală (JVM), căreia îi dai numele clasei, fără extensie.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Fișierul Python are, pe linia 1, o instrucțiune corectă, iar pe linia 5, o eroare de sintaxă. Ce se întâmplă la rulare?</p><ul class="choices"><li>a) se execută linia 1, apoi apare eroarea</li><li>b) nu se execută nimic, eroarea de sintaxă este raportată mai întâi</li><li>c) se execută tot fișierul și eroarea este ignorată</li><li>d) Python repară singur eroarea</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – fișierul este citit în întregime înainte de execuție, deci eroarea de sintaxă apare înainte să se execute linia 1 (verificat cu Python 3.13).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Ce opțiuni cer <code>g++</code> să avertizeze asupra construcțiilor suspecte?</p><ul class="choices"><li>a) <code>-o</code></li><li>b) <code>-std=c++17</code></li><li>c) <code>-Wall -Wextra</code></li><li>d) <code>-run</code></li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – <code>-Wall -Wextra</code> activează avertismente suplimentare; <code>-o</code> dă numele executabilului, iar <code>-std=c++17</code> alege versiunea limbajului.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">5</span>Clasa publică din fișierul <code>Hello.java</code> se numește <code>Salut</code>. Ce spune <code>javac</code>?</p><ul class="choices"><li>a) compilează normal</li><li>b) refuză: clasa publică trebuie să se afle într-un fișier cu același nume</li><li>c) schimbă singur numele fișierului</li><li>d) compilează, dar nu creează <code>.class</code></li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – verificat cu <code>javac</code> 21, care raportează că „class Salut is public, should be declared in a file named Salut.java”.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">6</span>Care eroare NU produce niciun mesaj?</p><ul class="choices"><li>a) eroarea de compilare</li><li>b) eroarea la execuție</li><li>c) eroarea de logică</li><li>d) avertismentul</li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – la o eroare de logică programul rulează complet; doar tu observi că rezultatul este greșit.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">7</span>Când apare o eroare la execuție?</p><ul class="choices"><li>a) înainte ca programul să fie creat</li><li>b) după ce programul a pornit, în timpul rulării</li><li>c) numai la scrierea codului</li><li>d) niciodată în Python</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – programul a pornit și se oprește în punctul în care întâlnește operația imposibilă (apare și în Python).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">8</span>Un program afișează „Inainte”, apoi se oprește cu <code>ZeroDivisionError</code>. Se afișează și „Dupa” (care urma după împărțire)?</p><ul class="choices"><li>a) da</li><li>b) nu</li><li>c) depinde de limbaj, dar în Python da</li><li>d) doar dacă folosești <code>-Wall</code></li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – programul se oprește în punctul erorii; instrucțiunile următoare nu se mai execută (verificat în C++, Java și Python).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">9</span>Ce este o afișare de control?</p><ul class="choices"><li>a) un mesaj al compilatorului</li><li>b) o instrucțiune temporară care arată valoarea unei expresii într-un loc din program</li><li>c) o eroare de logică</li><li>d) un tip de variabilă</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – ajută la cercetarea programului și se șterge după reparare.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">10</span>Care este cea mai bună regulă la reparare?</p><ul class="choices"><li>a) schimbi toate liniile suspecte deodată</li><li>b) rescrii programul de la zero</li><li>c) schimbi un singur lucru și rulezi din nou</li><li>d) ignori avertismentele</li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – așa știi exact ce a rezolvat (sau a stricat) schimbarea.</p></details></div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="ta-cheat">
+        <div class="prose">
+<h2 id="cheat">Fișă rapidă – Laborator 0a</h2>
+<p>Referință compactă pentru folosit în laborator.</p>
+<div class="cheat-grid">
+<div class="cheat-card"><div class="cheat-card-header">Compilare și rulare</div><pre>C++:    g++ -std=c++17 -Wall -Wextra f.cpp -o f
+        ./f
+Java:   javac Hello.java   (-&gt; Hello.class)
+        java Hello
+Python: python3 hello.py
+
+Clasa publica Java = numele fisierului.
+Eroare de sintaxa: la compilare (C++, Java),
+la pornire (Python).</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Tipuri de erori</div><pre>COMPILARE : inainte de rulare
+   mesaj: fisier, linie, descriere
+   ex: lipseste ; / nume nedeclarat
+EXECUTIE  : programul porneste, apoi se
+   opreste (ex: impartire la 0)
+LOGICA    : ruleaza complet, rezultat
+   gresit, FARA mesaj -&gt; testezi
+AVERTISMENT: se compileaza, dar suspect
+   (g++ -Wall)
+Fara mesaj: v[5] la int v[3] (C++)
+   = comportament nedefinit</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Cum tratezi o eroare</div><pre>1. citesti mesajul (prima eroare!)
+2. localizezi: linia, valoarea
+3. ipoteza: O singura cauza
+4. schimbi UN lucru
+5. rulezi din nou
+6. verifici cu valori cunoscute
+
+fara mesaj -&gt; hartie + afisari de
+control (sterge-le dupa)
+risc din date -&gt; verifica INAINTE
+  if (b == 0) { ... } else { a / b }</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Mesaje frecvente</div><pre>C++ : expected ';' before ... (lipseste ;)
+      -&gt; lipseste ; (uita-te si la linia dinainte)
+C++ : 'x' was not declared in this scope
+      -&gt; nume necunoscut / nedeclarat
+Java: cannot find symbol
+      -&gt; nume necunoscut (vezi "symbol:")
+Java: class X is public, should be declared
+      in a file named X.java
+Python: SyntaxError / IndentationError
+      -&gt; raportate inainte de executie
+Python: NameError
+      -&gt; nume folosit inainte sa existe</pre></div>
+</div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="ta-autoevaluare">
+        <div class="prose">
+<h2 id="verificare">Întrebări de autoevaluare</h2>
+<details><summary>1. Ce produce fiecare pas la compilarea și rularea unui program în C++, Java și Python?</summary><p>C++: <code>g++</code> produce un executabil, care se rulează direct. Java: <code>javac</code> produce un fișier <code>.class</code> cu bytecode, executat de JVM prin <code>java</code>. Python: <code>python3</code> rulează fișierul sursă; nu creezi tu un fișier intermediar. Erorile de sintaxă apar la compilare în C++ și Java, iar în Python, la pornire, înainte să se execute vreo instrucțiune.</p></details>
+<li>Drumul de la sursă la program diferă: <strong>executabil</strong> în C++, <strong>bytecode</strong> + JVM în Java, <strong>interpretor</strong> în Python. Descrie pașii, nu pune etichete.</li>
+<tr><td><strong>Fișier sursă</strong></td><td>Fișier text cu codul scris de programator</td></tr><tr><td><strong>Executabil</strong></td><td>Fișier produs de compilator (C++), pe care sistemul de operare îl poate rula</td></tr><tr><td><strong>Bytecode</strong></td><td>Cod intermediar produs de <code>javac</code> și executat de JVM</td></tr><details><summary>2. De ce o eroare de sintaxă poate fi raportată pe o altă linie decât cea în care a apărut?</summary><p>Pentru că programul își dă seama de lipsă abia când întâlnește ceva ce nu se potrivește. În exemplul cu <code>;</code> lipsă, <code>g++</code> observă problema când ajunge la instrucțiunea următoare. Citește mesajul și verifică și linia dinainte.</p></details>
+<details><summary>3. Ce înseamnă „cannot find symbol” (Java) sau „was not declared in this scope” (C++)?</summary><p>Că programul folosește un nume pe care compilatorul nu îl cunoaște: o variabilă nedeclarată, un nume scris greșit sau un text pus fără ghilimele. Corectura este să declari numele sau să-l scrii corect.</p></details>
+<details><summary>4. Ce rol au opțiunile <code>-Wall -Wextra</code>?</summary><p>Cer lui <code>g++</code> să avertizeze asupra construcțiilor suspecte, chiar dacă programul se poate compila. Avertizările nu opresc compilarea, dar merită citite.</p></details>
+<details><summary>5. Care sunt cele trei categorii de erori și prin ce se deosebesc?</summary><p>Erori de <strong>compilare</strong> (încalcă regulile limbajului, se descoperă înainte de execuție), erori la <strong>execuție</strong> (programul pornește, apoi se oprește la o operație imposibilă) și erori de <strong>logică</strong> (programul rulează complet, dar rezultatul este greșit). Diferența este momentul și cel care o observă.</p></details>
+<details><summary>6. De ce sunt erorile de logică cele mai greu de găsit?</summary><p>Pentru că nu există niciun mesaj: programul se termină normal. Le găsești testând cu valori la care știi răspunsul și urmărind programul pe hârtie.</p></details>
+<details><summary>7. Ce este un avertisment și prin ce diferă de o eroare?</summary><p>Este un mesaj prin care compilatorul semnalează ceva suspect, dar produce totuși programul. O eroare de compilare oprește producerea programului.</p></details>
+<details><summary>8. Care sunt pașii de căutare și reparare a unei erori?</summary><p>Citești mesajul (dacă există), localizezi locul, formulezi o ipoteză, schimbi un singur lucru, rulezi din nou și verifici cu valori cunoscute.</p></details>
+<details><summary>9. Ce înseamnă „o schimbare, o rulare” și de ce contează?</summary><p>După fiecare modificare rulezi programul. Altfel nu poți ști care modificare a rezolvat eroarea sau a produs alta.</p></details>
+<details><summary>10. Cum previi o eroare la execuție, în loc s-o repari?</summary><p>Verifici înainte de operația riscantă (de exemplu, dacă împărțitorul este 0) și tratezi cazul separat, cu un mesaj.</p></details>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="rezumat">Rezumat – De reținut</h2>
+<div class="callout ok"><span class="callout-icon">✅</span><div class="callout-body"><strong>Cele mai importante idei din acest laborator</strong><p>Citește lista de mai jos după ce ai rezolvat exercițiile; fiecare punct trimite la o secțiune din tabul Curs.</p></div></div>
+<ol>
+<li>Drumul de la sursă la program diferă: <strong>executabil</strong> în C++, <strong>bytecode</strong> + JVM în Java, <strong>interpretor</strong> în Python. Descrie pașii, nu pune etichete.</li>
+<li>Erorile sunt de trei feluri: de <strong>compilare</strong> (înainte de rulare), la <strong>execuție</strong> (programul se oprește în timpul rulării) și de <strong>logică</strong> (rezultat greșit, fără mesaj).</li>
+<li>Avertismentul nu oprește compilarea, dar merită citit; la erorile de logică te ajută testarea cu valori cunoscute.</li>
+<li>Depanarea are pași: citești mesajul, localizezi, formulezi o ipoteză, schimbi <strong>un singur lucru</strong>, rulezi din nou, verifici cu valori cunoscute.</li>
+<li>Afișările de control arată valorile din program și se șterg după reparare; unele erori la execuție se previn printr-o verificare înainte de operație.</li>
+<li>Citește <strong>primul</strong> mesaj de eroare: îți spune fișierul, linia și ce nu înțelege compilatorul. Linia indicată poate fi cea de după locul real al greșelii.</li>
+<li>În Java, numele clasei publice trebuie să coincidă cu numele fișierului (regulă impusă de <code>javac</code>).</li>
+</ol>
+<h2 id="glosar">Glosar</h2>
+<div class="tbl-wrap"><table><thead><tr><th>Termen</th><th>Definiție</th></tr></thead><tbody><tr><td><strong>Fișier sursă</strong></td><td>Fișier text cu codul scris de programator</td></tr><tr><td><strong>Executabil</strong></td><td>Fișier produs de compilator (C++), pe care sistemul de operare îl poate rula</td></tr><tr><td><strong>Bytecode</strong></td><td>Cod intermediar produs de <code>javac</code> și executat de JVM</td></tr><tr><td><strong>Compilator</strong></td><td>Program care traduce fișierul sursă într-un alt format (executabil sau bytecode)</td></tr><tr><td><strong>Interpretor</strong></td><td>Program care rulează fișierul sursă fără ca tu să creezi un executabil (în Python, <code>python3</code>)</td></tr><tr><td><strong>JVM</strong></td><td>Mașina virtuală Java, care execută bytecode-ul din fișierele <code>.class</code></td></tr><tr><td><strong>Mesaj de eroare</strong></td><td>Text produs de compilator sau interpretor, cu fișierul, linia și natura problemei</td></tr><tr><td><strong>Eroare de compilare</strong></td><td>Încălcare a regulilor limbajului, descoperită înainte de execuție</td></tr><tr><td><strong>Eroare la execuție</strong></td><td>Operație imposibilă întâlnită în timpul rulării; programul se oprește (în Java și Python: excepție)</td></tr><tr><td><strong>Eroare de logică</strong></td><td>Greșeală de algoritm: programul rulează complet, dar rezultatul este greșit</td></tr><tr><td><strong>Avertisment</strong></td><td>Mesaj al compilatorului despre ceva suspect; programul se compilează totuși</td></tr><tr><td><strong>Comportament nedefinit</strong></td><td>Situație în care standardul C++ nu impune niciun comportament programului (ex.: acces în afara unui vector)</td></tr><tr><td><strong>Depanare (debugging)</strong></td><td>Procesul de căutare și reparare a erorilor dintr-un program</td></tr><tr><td><strong>Afișare de control</strong></td><td>Instrucțiune temporară care arată valoarea unei variabile sau expresii într-un loc anume din program</td></tr></tbody></table></div>
+<h2 id="surse">Surse</h2>
+<p>Comenzile și mesajele din acest laborator au fost produse real, cu <code>g++</code> 13.3, JDK 21 (<code>javac</code> 21) și Python 3.13; pe alte versiuni, textul mesajelor poate diferi. Exercițiile sunt propuse de autor.</p>
+<ul><li>Downey, A., <em>Think Java</em>, <a href="https://eng.libretexts.org/Bookshelves/Computer_Science/Programming_Languages/Think_Java_-_How_to_Think_Like_a_Computer_Scientist_(Downey)/10%3A_Variables_and_Operators/10.10%3A_Types_of_Errors">Types of Errors</a> (erori de compilare, de execuție și de logică)</li>
+<li>cppreference, <a href="https://cppreference.net/cpp/language/ub.html">Undefined behavior</a> (nu există restricții asupra comportamentului; implementările nu sunt obligate să îl diagnosticheze) și <a href="https://cppreference.net/cpp/ndr.html">No Diagnostic Required</a></li>
+<li>Standardul C++ (ciornă), <a href="https://timsong-cpp.github.io/cppwp/intro.compliance.general">Conformance</a> (pentru o regulă diagnosticabilă, implementarea trebuie să emită cel puțin un mesaj de diagnostic)</li>
+</ul>
+<p class="text-sm text-muted">Clasificarea erorilor (compilare, execuție, logică) este cea din manualul citat; formulările definițiilor și metoda în șase pași pentru depanare sunt ale autorului materialului (nu pot confirma asta dintr-o sursă externă). Mesajul sistemului pentru împărțirea la zero în C++ depinde de sistemul de operare; cel afișat provine dintr-o rulare pe Linux. Afirmațiile despre documentația Python (interpret și compilator de bytecode), despre JLS 7.6 (tipuri publice și numele fișierului) și despre JEP 330 sunt preluate din versiunea anterioară a acestui laborator, unde fuseseră verificate; nu au fost reverificate în această redactare. Nu pot confirma asta din sursele primare, deci nu sunt însoțite de citate la nivel de secțiune. Convenția că <code>javac</code> impune numele fișierului a fost verificată prin rulare.</p>
+
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="page-footer">
+      <span>M9 · Lab 0a – Mediul de lucru</span>
+      <div class="footer-nav">
+        <a href="lab-0b.html" class="footer-link">Lab 0b – Recapitulare: subprograme →</a>
+
+      </div>
+    </footer>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+/* Linkurile din sidebar către secțiuni aflate în alt tab: se deschide întâi tab-ul potrivit. */
+(function () {
+  document.querySelectorAll('.sidebar-link[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      var pane = el.closest('.tab-pane');
+      if (pane && !pane.classList.contains('active')) {
+        var btn = document.querySelector('.tab-btn[data-tab="' + pane.id + '"]');
+        if (btn) btn.click();
+      }
+      ev.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

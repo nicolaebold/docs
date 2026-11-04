@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laborator 0b – Recapitulare: subprograme | M9 OCW</title>
+<meta name="description" content="Laborator 0b de POO (M9): recapitulare a subprogramelor în C++, Java și Python, cu exerciții și erori frecvente." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  /* pattern cards */
+  .pattern-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin: 1.25rem 0; }
+  .pattern-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); }
+  .pattern-card .pattern-header { background: var(--surface-2); padding: .6rem 1rem; font-weight: 700; font-size: .85rem; color: var(--text); border-bottom: 1px solid var(--border); }
+  .pattern-card pre { margin: 0; padding: .9rem 1.1rem; font-family: var(--mono); font-size: .82rem; overflow-x: auto; }
+
+  /* quiz-style exercises */
+  .quiz-item { margin: 1.35rem 0; padding-bottom: 1.1rem; border-bottom: 1px solid var(--surface-2); }
+  .quiz-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .quiz-item .qnum { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 .3rem; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark); font-size: .78rem; font-weight: 800; margin-right: .5rem; }
+  .choices { list-style: none; padding: 0; margin: .6rem 0 .8rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .4rem .6rem; }
+  .choices li { font-family: var(--mono); font-size: .84rem; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); padding: .4rem .65rem; border-radius: 6px; }
+  .quiz-item details { margin-top: .5rem; }
+  .quiz-item summary { background: var(--accent-light); color: var(--accent-dark); font-size: .82rem; }
+
+  /* problem-solving blocks */
+  .method-block { margin: .9rem 0; }
+  .method-label { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-dark); margin-bottom: .4rem; display: flex; align-items: center; gap: .4rem; }
+  .method-label i { color: var(--accent); }
+  .algo-steps { counter-reset: algo; list-style: none; padding: 0; margin: .3rem 0; }
+  .algo-steps li { counter-increment: algo; position: relative; padding: .32rem 0 .32rem 2.1rem; font-size: .87rem; border-bottom: 1px solid var(--surface-2); }
+  .algo-steps li:last-child { border-bottom: none; }
+  .algo-steps li::before { content: counter(algo); position: absolute; left: 0; top: .28rem; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark); font-size: .7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .diff-badge { display: inline-flex; align-items: center; font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: .15rem .55rem; border-radius: 20px; margin-left: .5rem; }
+  .diff-badge.usoara { background: var(--green-light); color: var(--green); }
+  .diff-badge.medie  { background: var(--amber-light); color: #b45309; }
+  .diff-badge.grea   { background: #f3e8ff; color: #7c3aed; }
+  .restrictii-list { margin: .2rem 0 0; padding-left: 1.2rem; }
+  .restrictii-list li { font-size: .85rem; margin-bottom: .2rem; }
+  .judge-example { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; margin: .4rem 0 .6rem; }
+  .judge-ex-col { background: #1e2235; border-radius: 8px; overflow: hidden; border: 1px solid #2d3250; }
+  .judge-ex-title { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #7c85b0; padding: .4rem .7rem; background: #252942; border-bottom: 1px solid #2d3250; }
+  .judge-ex-col pre { margin: 0; padding: .6rem .8rem; font-family: var(--mono); font-size: .82rem; color: #e0e4f5; white-space: pre-wrap; }
+  .judge-explicatie { font-size: .87rem; color: var(--text-2); margin: 0; }
+
+  /* vector and matrix diagrams */
+  .vec-wrap { margin: 1.1rem 0; overflow-x: auto; }
+  .vec-wrap .vname { font-family: var(--mono); font-size: .78rem; font-weight: 700; color: var(--text-2); margin-bottom: .4rem; }
+  .vec { display: inline-flex; }
+  .vc { display: flex; flex-direction: column; }
+  .vc .cell { min-width: 48px; height: 42px; padding: 0 .55rem; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1.5px solid var(--border); margin-left: -1.5px; font-family: var(--mono); font-weight: 700; font-size: .95rem; color: var(--text); }
+  .vc:first-child .cell { margin-left: 0; border-radius: 8px 0 0 8px; }
+  .vc:last-child .cell { border-radius: 0 8px 8px 0; }
+  .vc .cell.a, .mat .cell.a { background: var(--accent-light); border-color: var(--accent); }
+  .vc .cell.g, .mat .cell.g { background: var(--green-light);  border-color: var(--green); }
+  .vc .cell.r, .mat .cell.r { background: var(--red-light);    border-color: var(--red); }
+  .vc .cell.y, .mat .cell.y { background: var(--amber-light);  border-color: var(--amber); }
+  .vc .ix { text-align: center; font-family: var(--mono); font-size: .72rem; color: var(--text-3); margin-top: .3rem; }
+  .vec-wrap .vcap { font-size: .85rem; color: var(--text-2); margin-top: .6rem; }
+  .mat { display: inline-grid; gap: 0; }
+  .mat .mc { display: flex; align-items: center; justify-content: center; min-height: 40px; font-family: var(--mono); font-size: .95rem; }
+  .mat .mc.cell { background: var(--surface); border: 1.5px solid var(--border); margin: 0 -1.5px -1.5px 0; font-weight: 700; color: var(--text); }
+  .mat .mc.ix { font-size: .72rem; color: var(--text-3); }
+
+  /* concept map (SVG) */
+  .map-wrap { margin: 1.2rem 0 .4rem; overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: .8rem; }
+  .rel-svg { display: block; width: 100%; min-width: 560px; height: auto; font-family: var(--sans); }
+  .rel-svg .box rect { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  .rel-svg .b-tip rect { fill: var(--accent-light); stroke: var(--accent); stroke-width: 2; }
+  .rel-svg .b-val rect { fill: var(--amber-light); stroke: var(--amber); }
+  .rel-svg .b-var rect { fill: var(--green-light); stroke: var(--green); }
+  .rel-svg .b-simple rect { fill: var(--surface); stroke: var(--accent); }
+  .rel-svg .b-comp rect { fill: var(--surface); stroke: var(--accent-dark); stroke-width: 2; }
+  .rel-svg text { text-anchor: middle; fill: var(--text); }
+  .rel-svg .t1 { font-size: 17px; font-weight: 800; }
+  .rel-svg .t2 { font-size: 13px; font-family: var(--mono); fill: var(--text-2); }
+  .rel-svg .t3 { font-size: 12px; fill: var(--text-3); }
+  .rel-svg .lab { font-size: 12.5px; font-weight: 700; fill: var(--accent-dark); }
+  .rel-svg .arr { fill: none; stroke: var(--accent-dark); stroke-width: 2; }
+  .rel-svg .arr.dash { stroke-dasharray: 6 5; }
+  .rel-svg .ahead { fill: var(--accent-dark); }
+  .map-cap { font-size: .88rem; color: var(--text-2); margin: .5rem 0 1.2rem; }
+
+  /* bara de sus pe ecrane înguste: fără breadcrumb, ca să nu depășească lățimea */
+  @media (max-width: 500px) {
+    .topnav-breadcrumb { display: none; }
+    .topnav { gap: .5rem; }
+    .topnav-logo { font-size: .85rem; }
+    .topnav-actions { display: none; }
+  }
+
+  /* anatomie: părți colorate */
+  .an-box { margin: 1.25rem 0; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+  .an-title { padding: .55rem 1rem; font-size: .8rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-dark); background: var(--accent-light); }
+  .an-code { margin: 0; padding: 1rem 1.1rem; font-family: var(--mono); font-size: .95rem; line-height: 2.6; white-space: pre-wrap; overflow-x: auto; background: transparent; color: var(--text); }
+  .an-p { position: relative; padding: .12rem .3rem; border-radius: 6px; border-bottom: 3px solid; }
+  .an-p i { font-style: normal; font-family: var(--sans, sans-serif); font-size: .62rem; font-weight: 800; position: absolute; top: -.95rem; left: 50%; transform: translateX(-50%); color: #fff; border-radius: 999px; min-width: 1.05rem; height: 1.05rem; line-height: 1.05rem; text-align: center; padding: 0 .2rem; }
+  .an-1 { border-color: #3d5af1; background: color-mix(in srgb, #3d5af1 16%, var(--surface)); } .an-1 i { background: #3d5af1; }
+  .an-2 { border-color: #10b981; background: color-mix(in srgb, #10b981 18%, var(--surface)); } .an-2 i { background: #10b981; }
+  .an-3 { border-color: #f59e0b; background: color-mix(in srgb, #f59e0b 22%, var(--surface)); } .an-3 i { background: #d97706; }
+  .an-4 { border-color: #ef4444; background: color-mix(in srgb, #ef4444 16%, var(--surface)); } .an-4 i { background: #ef4444; }
+  .an-5 { border-color: #8b5cf6; background: color-mix(in srgb, #8b5cf6 16%, var(--surface)); } .an-5 i { background: #8b5cf6; }
+  .an-6 { border-color: #0d9488; background: color-mix(in srgb, #0d9488 16%, var(--surface)); } .an-6 i { background: #0d9488; }
+  .an-leg { list-style: none; margin: 0; padding: .75rem 1rem 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .5rem .9rem; border-top: 1px dashed var(--border); }
+  .an-leg li { display: flex; gap: .55rem; align-items: flex-start; font-size: .9rem; line-height: 1.4; }
+  .an-leg b.an-n { flex: none; width: 1.35rem; height: 1.35rem; border-radius: 999px; color: #fff; font-size: .72rem; display: inline-flex; align-items: center; justify-content: center; }
+  .an-leg .an-1b { background: #3d5af1; } .an-leg .an-2b { background: #10b981; } .an-leg .an-3b { background: #d97706; }
+  .an-leg .an-4b { background: #ef4444; } .an-leg .an-5b { background: #8b5cf6; } .an-leg .an-6b { background: #0d9488; }
+  .an-leg code { font-size: .85em; }
+  .an-key { padding: .7rem 1rem; border-top: 1px dashed var(--border); font-size: .9rem; background: color-mix(in srgb, #f59e0b 10%, var(--surface)); }
+  /* cutii de memorie */
+  .mem-row { display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem; align-items: stretch; }
+  .mem-panel { flex: 1 1 240px; border: 1px solid var(--border); border-radius: 10px; padding: .7rem .8rem .9rem; background: var(--surface); }
+  .mem-panel h5 { margin: 0 0 .5rem; font-size: .85rem; color: var(--accent-dark); }
+  .mem-cells { display: flex; flex-wrap: wrap; gap: .35rem; }
+  .mem-cell { min-width: 3.2rem; border: 2px solid var(--border); border-radius: 8px; text-align: center; font-family: var(--mono); background: var(--surface); }
+  .mem-cell small { display: block; font-family: var(--sans, sans-serif); font-size: .68rem; padding: .1rem .3rem; background: var(--accent-light); color: var(--accent-dark); border-radius: 6px 6px 0 0; }
+  .mem-cell span { display: block; padding: .3rem .45rem; font-size: .95rem; }
+  .mem-cell.hot { border-color: #ef4444; } .mem-cell.hot span { background: color-mix(in srgb, #ef4444 16%, var(--surface)); font-weight: 700; }
+  .mem-cell.ok { border-color: #10b981; } .mem-cell.ok span { background: color-mix(in srgb, #10b981 18%, var(--surface)); font-weight: 700; }
+  .mem-cell.end { border-style: dashed; }
+  .mem-note { margin: .5rem 0 0; font-size: .85rem; color: var(--text-muted, #6b7280); }
+  .mem-link { align-self: center; font-size: 1.4rem; color: var(--accent); }
+  /* flux */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: .35rem; padding: 1rem; }
+  .flow-step { flex: 1 1 130px; border: 2px solid var(--border); border-radius: 10px; padding: .55rem .7rem; text-align: center; background: var(--surface); }
+  .flow-step b { display: block; font-size: .9rem; } .flow-step span { font-size: .8rem; opacity: .8; }
+  .flow-step.f1 { border-color: #3d5af1; } .flow-step.f2 { border-color: #f59e0b; } .flow-step.f3 { border-color: #10b981; } .flow-step.f4 { border-color: #8b5cf6; }
+  .flow-arrow { align-self: center; font-size: 1.3rem; color: var(--accent); }
+  @media (max-width: 560px) { .an-code { font-size: .8rem; } .flow-arrow { transform: rotate(90deg); flex: 1 1 100%; text-align: center; } }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">M9</span>Programare orientată pe obiecte</a>
+  <div class="topnav-breadcrumb">
+    <a href="index.html">M9</a><span class="sep">›</span> <span>Lab 0b – Subprograme</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="https://www.onlinegdb.com/" target="_blank" class="btn-sm">Compilator online</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <span class="sidebar-label">Curs</span>
+    <a class="sidebar-link" href="#prereq"><i class="fa-solid fa-circle-check fa-fw"></i> Prerequisite</a>
+    <a class="sidebar-link" href="#intro"><i class="fa-solid fa-book-open fa-fw"></i> Introducere</a>
+    <a class="sidebar-link" href="#obiective"><i class="fa-solid fa-bullseye fa-fw"></i> Obiective</a>
+    <a class="sidebar-link" href="#subprograme"><i class="fa-solid fa-puzzle-piece fa-fw"></i> 1. Subprograme</a>
+    <a class="sidebar-link" href="#repetitie"><i class="fa-solid fa-arrows-rotate fa-fw"></i> 1.1 Ce se repetă</a>
+    <a class="sidebar-link" href="#modularitate"><i class="fa-solid fa-cubes fa-fw"></i> 1.2 Modularitatea</a>
+    <a class="sidebar-link" href="#scriere"><i class="fa-solid fa-circle-question fa-fw"></i> 2. Trei întrebări</a>
+    <a class="sidebar-link" href="#erori"><i class="fa-solid fa-triangle-exclamation fa-fw"></i> 3. Erori frecvente</a>
+    <span class="sidebar-label">Laborator</span>
+    <a class="sidebar-link" href="#exemple"><i class="fa-solid fa-lightbulb fa-fw"></i> Exemple rezolvate</a>
+    <a class="sidebar-link" href="#exemple-repetitie"><i class="fa-solid fa-copy fa-fw"></i> Exemple: repetarea</a>
+    <a class="sidebar-link" href="#exemple-modularitate"><i class="fa-solid fa-cubes fa-fw"></i> Exemple: modularitatea</a>
+    <a class="sidebar-link" href="#introductive"><i class="fa-solid fa-pencil fa-fw"></i> Exerciții introductive</a>
+    <a class="sidebar-link" href="#repetitie-ex"><i class="fa-solid fa-arrows-rotate fa-fw"></i> Găsește repetiția</a>
+    <a class="sidebar-link" href="#modularitate-ex"><i class="fa-solid fa-sitemap fa-fw"></i> Împarte problema</a>
+    <a class="sidebar-link" href="#tracing"><i class="fa-solid fa-chart-line fa-fw"></i> Code tracing</a>
+    <a class="sidebar-link" href="#lab"><i class="fa-solid fa-flask fa-fw"></i> Aplicații de rezolvat</a>
+    <a class="sidebar-link" href="#mcq"><i class="fa-solid fa-list-check fa-fw"></i> Alegere multiplă</a>
+    <span class="sidebar-label">Referință</span>
+    <a class="sidebar-link" href="#verificare"><i class="fa-solid fa-circle-check fa-fw"></i> Autoevaluare</a>
+    <a class="sidebar-link" href="#rezumat"><i class="fa-solid fa-thumbtack fa-fw"></i> Rezumat</a>
+    <a class="sidebar-link" href="#glosar"><i class="fa-solid fa-book fa-fw"></i> Glosar</a>
+    <a class="sidebar-link" href="#cheat"><i class="fa-solid fa-bolt fa-fw"></i> Cheat sheet</a>
+    <a class="sidebar-link" href="#surse"><i class="fa-solid fa-quote-right fa-fw"></i> Surse</a>
+    <span class="sidebar-label">Laboratoare M9</span>
+    <a class="sidebar-link" href="lab-0a.html">Lab 0a – Mediul de lucru</a>
+    <a class="sidebar-link active" href="lab-0b.html">Lab 0b – Recapitulare: subprograme</a>
+    <a class="sidebar-link" href="lab-1.html">Lab 1 – Datele și reprezentarea lor</a>
+    <a class="sidebar-link" href="lab-2.html">Lab 2 – Structura: modelarea datelor</a>
+    <a class="sidebar-link" href="lab-3.html">Lab 3 – Structuri în programe</a>
+    <a class="sidebar-link" href="lab-4.html">Lab 4 – Clase și obiecte</a>
+    <a class="sidebar-link" href="index.html">← Înapoi la modul</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-hero">
+      <span class="session-tag">Laborator 0b · POO · Pregătire</span>
+      <h1>Recapitulare: subprograme</h1>
+      <div class="hero-meta">
+        <span class="chip">Subprograme</span>
+        <span class="chip">Repetare</span>
+        <span class="chip">Modularitate</span>
+        <span class="chip">Parametri și return</span>
+        <span class="chip">Variabile locale</span>
+        <span class="chip">C++ · Java · Python</span>
+      </div>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="tb-curs">Curs</button>
+      <button class="tab-btn" data-tab="tb-lab">Exemple și laborator</button>
+      <button class="tab-btn" data-tab="tb-cheat">Cheat Sheet</button>
+      <button class="tab-btn" data-tab="tb-autoevaluare">Autoevaluare</button>
+    </div>
+
+    <div class="tab-wrap">
+      <div class="tab-pane active" id="tb-curs">
+        <div class="prose">
+<div class="prereq-box" id="prereq">
+<h4>Prerequisite – ce trebuie să știi înainte de acest laborator</h4>
+<ul>
+<li>Ai parcurs modulul în care s-au predat subprogramele (funcții); în acest laborator le reluăm, nu le introducem</li>
+<li>Ai scris în C++ programe cu variabile <code>int</code>, <code>double</code>, <code>bool</code> și <code>char</code>, decizii <code>if</code> și bucle <code>for</code> / <code>while</code> (M6)</li>
+<li>Ai lucrat cu vectori (declarare, indici, parcurgere) (M6)</li>
+<li>Ai rulat un program în C++ (Laboratorul 0a)</li>
+</ul>
+</div>
+
+<h2 id="intro">Introducere</h2>
+<p>Din Laboratorul 2 încolo, mare parte din ce vei scrie va fi sub forma unor subprograme care lucrează cu grupuri de date: ele sunt locul în care „trăiește” comportamentul unui program. De aceea, înainte de orice altceva, reluăm subprogramele: ce este un parametru, ce înseamnă să returnezi o valoare, ce se întâmplă cu variabilele din interior.</p>
+<p>Laboratorul nu aduce noțiuni noi. Reia același program în C++, Java și Python, ca să vezi că ideea este aceeași și doar scrierea diferă, apoi te antrenează să scrii un subprogram pornind de la trei întrebări simple și să recunoști cele mai frecvente erori.</p>
+<div class="objectives" id="obiective">
+<h3>La finalul acestui laborator vei putea să:</h3>
+<ol>
+<li><strong>Definești</strong> și <strong>apelezi</strong> un subprogram cu parametri, cu și fără valoare returnată</li>
+<li><strong>Deosebești</strong> parametrul (din definiție) de argument (din apel)</li>
+<li><strong>Explici</strong> ce înseamnă variabilă locală și de ce un argument numeric nu este schimbat de subprogram</li>
+<li><strong>Scrii</strong> un subprogram pornind de la trei întrebări: ce primește, ce returnează, cum se numește</li>
+<li><strong>Recunoști</strong> trei erori frecvente: lipsa lui <code>return</code>, apelul înainte de definiție, folosirea rezultatului unui subprogram <code>void</code></li>
+</ol>
+</div>
+<h2 id="subprograme">1. Reamintire: subprograme</h2>
+<p>Un <strong>subprogram</strong> (în C++ și Python îl numim <em>funcție</em>, în Java <em>metodă</em>) este o secvență de instrucțiuni cu un nume, care poate fi apelată de oricâte ori și, la nevoie, primește date și returnează un rezultat. Definiția conține <strong>tipul returnat</strong> (în C++ și Java), <strong>numele</strong>, lista de <strong>parametri</strong> și <strong>corpul</strong>; <strong>apelul</strong> scrie numele și, între paranteze, valorile (argumentele) cu care se execută. Tipul <code>void</code> arată că subprogramul nu returnează nicio valoare, iar instrucțiunea <code>return</code> încheie execuția și trimite rezultatul. Variabilele declarate în interiorul unui subprogram sunt <strong>locale</strong>: există numai cât timp se execută el. Chiar <code>main</code> este un subprogram, cel din care pornește execuția în C++ și Java.</p>
+<div class="an-box"><div class="an-title">Cele patru părți ale unui subprogram (funcție)</div><pre class="an-code"><span class="an-p an-1"><i>1</i>int</span> <span class="an-p an-2"><i>2</i>maxim</span>(<span class="an-p an-3"><i>3</i>int a, int b</span>) {
+    <span class="an-p an-4"><i>4</i>if (a &gt; b) { return a; }</span>
+    <span class="an-p an-4"><i>4</i>return b;</span>
+}</pre><ul class="an-leg"><li><b class="an-n an-1b">1</b><span><strong>Tipul returnat</strong> – felul rezultatului (<code>int</code>, <code>bool</code>, <code>void</code> = nimic)</span></li><li><b class="an-n an-2b">2</b><span><strong>Numele</strong> – spune ce face: <code>maxim</code>, nu <code>f1</code></span></li><li><b class="an-n an-3b">3</b><span><strong>Parametrii</strong> – datele primite, fiecare cu tipul lui</span></li><li><b class="an-n an-4b">4</b><span><strong>Corpul</strong> – instrucțiunile executate la apel; <code>return</code> trimite rezultatul</span></li></ul><div class="an-key"><strong>Obligatorii:</strong> tip, nume, parametri (pot lipsi ca listă, dar parantezele rămân) și corp. <span style="opacity:.8">Antetul = părțile 1 + 2 + 3.</span></div></div>
+<div class="an-box"><div class="an-title">Apelul unui subprogram</div><pre class="an-code">int m = <span class="an-p an-1"><i>1</i>maxim</span>(<span class="an-p an-2"><i>2</i>x, y + 1</span>);</pre><ul class="an-leg"><li><b class="an-n an-1b">1</b><span><strong>Numele apelat</strong> – trebuie să coincidă cu cel din antet</span></li><li><b class="an-n an-2b">2</b><span><strong>Argumentele</strong> – valorile transmise; se potrivesc, în ordine, cu parametrii</span></li></ul><div class="an-key"><strong>Parametru</strong> = variabila din antet; <strong>argument</strong> = valoarea din apel.</div></div>
+<p>Programul de mai jos conține trei subprograme: <code>maxim</code> returnează cel mai mare dintre două numere, <code>afiseazaNota</code> afișează un mesaj și nu returnează nimic, iar <code>incearcaSaSchimbi</code> modifică parametrul primit. Ultimul arată un fapt important: pentru un număr întreg trimis ca argument, subprogramul lucrează pe propria lui valoare, iar variabila din care a fost luat argumentul nu se schimbă.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · functii.cpp</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> maxim(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+    <span class="kw">if</span> (a <span class="op">&gt;</span> b) {
+        <span class="kw">return</span> a;
+    }
+    <span class="kw">return</span> b;
+}
+
+<span class="kw">void</span> afiseazaNota(<span class="tp">double</span> nota) {
+    cout <span class="op">&lt;&lt;</span> <span class="st">"Nota: "</span> <span class="op">&lt;&lt;</span> nota <span class="op">&lt;&lt;</span> endl;
+}
+
+<span class="kw">void</span> incearcaSaSchimbi(<span class="tp">int</span> x) {
+    x <span class="op">=</span> <span class="nm">100</span>;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"in functie: "</span> <span class="op">&lt;&lt;</span> x <span class="op">&lt;&lt;</span> endl;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> m <span class="op">=</span> maxim(<span class="nm">7</span>, <span class="nm">12</span>);
+    cout <span class="op">&lt;&lt;</span> m <span class="op">&lt;&lt;</span> endl;
+    afiseazaNota(<span class="nm">9.5</span>);
+
+    <span class="tp">int</span> y <span class="op">=</span> <span class="nm">5</span>;
+    incearcaSaSchimbi(y);
+    cout <span class="op">&lt;&lt;</span> y <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java · Functii.java</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Functii {
+    <span class="kw">static</span> <span class="tp">int</span> maxim(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+        <span class="kw">if</span> (a <span class="op">&gt;</span> b) {
+            <span class="kw">return</span> a;
+        }
+        <span class="kw">return</span> b;
+    }
+
+    <span class="kw">static</span> <span class="kw">void</span> afiseazaNota(<span class="tp">double</span> nota) {
+        System.out.println(<span class="st">"Nota: "</span> <span class="op">+</span> nota);
+    }
+
+    <span class="kw">static</span> <span class="kw">void</span> incearcaSaSchimbi(<span class="tp">int</span> x) {
+        x <span class="op">=</span> <span class="nm">100</span>;
+        System.out.println(<span class="st">"in functie: "</span> <span class="op">+</span> x);
+    }
+
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">int</span> m <span class="op">=</span> maxim(<span class="nm">7</span>, <span class="nm">12</span>);
+        System.out.println(m);
+        afiseazaNota(<span class="nm">9.5</span>);
+
+        <span class="tp">int</span> y <span class="op">=</span> <span class="nm">5</span>;
+        incearcaSaSchimbi(y);
+        System.out.println(y);
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python · functii.py</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">def</span> maxim(a, b)<span class="op">:</span>
+    <span class="kw">if</span> a <span class="op">&gt;</span> b<span class="op">:</span>
+        <span class="kw">return</span> a
+    <span class="kw">return</span> b
+
+
+<span class="kw">def</span> afiseaza_nota(nota)<span class="op">:</span>
+    <span class="kw">print</span>(<span class="st">"Nota:"</span>, nota)
+
+
+<span class="kw">def</span> incearca_sa_schimbi(x)<span class="op">:</span>
+    x <span class="op">=</span> <span class="nm">100</span>
+    <span class="kw">print</span>(<span class="st">"in functie:"</span>, x)
+
+
+m <span class="op">=</span> maxim(<span class="nm">7</span>, <span class="nm">12</span>)
+<span class="kw">print</span>(m)
+afiseaza_nota(<span class="nm">9.5</span>)
+
+y <span class="op">=</span> <span class="nm">5</span>
+incearca_sa_schimbi(y)
+<span class="kw">print</span>(y)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – identic în cele trei limbaje</span></div><pre><code>12
+Nota: 9.5
+in functie: 100
+5</code></pre></div><div class="tbl-wrap"><table><thead><tr><th>Aspect</th><th>C++</th><th>Java</th><th>Python</th></tr></thead><tbody><tr><td>Cum se definește</td><td>tipul returnat: <code>int maxim(int a, int b)</code></td><td><code>static int maxim(int a, int b)</code></td><td><code>def maxim(a, b):</code></td></tr><tr><td>Unde se scrie</td><td>la nivelul fișierului, în afara lui <code>main</code></td><td>în interiorul unei clase</td><td>oriunde la nivelul fișierului, înainte de primul apel</td></tr><tr><td>Fără rezultat</td><td><code>void</code></td><td><code>void</code></td><td>nu se scrie niciun tip; fără <code>return</code> sau cu <code>return</code> simplu</td></tr><tr><td>Tipurile parametrilor</td><td>se scriu</td><td>se scriu</td><td>nu se scriu</td></tr><tr><td>Apel</td><td><code>maxim(7, 12)</code></td><td><code>maxim(7, 12)</code> (în aceeași clasă)</td><td><code>maxim(7, 12)</code></td></tr></tbody></table></div>
+<p>În Java, subprogramele trebuie să se afle într-o clasă; aici ele sunt marcate cu <code>static</code>, deoarece sunt apelate din <code>main</code> fără să existe un obiect. Cuvântul <code>static</code> își găsește rostul abia când apar obiectele (Laboratorul 4): deocamdată, scrie-l. În Python, o definiție trebuie executată înainte ca subprogramul să fie apelat, deci <code>def</code> se scrie mai sus în fișier decât primul apel.</p>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Ce se păstrează doar pentru numere simple</strong><p>Observația „variabila din apelant nu se schimbă” a fost verificată aici pentru un argument numeric (<code>int</code>). Pentru vectori și pentru obiecte regula diferă de la un limbaj la altul. Nu extinde concluzia de la <code>int</code> la orice tip de argument.</p></div></div>
+<h3 id="repetitie">1.1. De ce avem subprograme: ce se repetă</h3>
+<p>Motivul principal pentru care există subprogramele este <strong>repetarea</strong>. Dacă ai nevoie de același calcul pentru date diferite (de trei ori, de zece ori, într-o buclă), nu îl scrii de fiecare dată din nou: îl scrii <strong>o singură dată</strong>, îi dai un nume și îl apelezi cu datele de fiecare dată. Mai jos, aceeași instrucțiune este scrisă de trei ori, cu alte valori; părțile colorate sunt singurele care se schimbă.</p>
+<div class="an-box"><div class="an-title">Fără subprogram: același text, alte date</div><pre class="an-code">if (<span class="an-p an-2"><i>2</i>a</span> &gt; <span class="an-p an-2"><i>2</i>b</span>) m1 = <span class="an-p an-2"><i>2</i>a</span>; else m1 = <span class="an-p an-2"><i>2</i>b</span>;
+if (<span class="an-p an-2"><i>2</i>c</span> &gt; <span class="an-p an-2"><i>2</i>d</span>) m2 = <span class="an-p an-2"><i>2</i>c</span>; else m2 = <span class="an-p an-2"><i>2</i>d</span>;
+if (<span class="an-p an-2"><i>2</i>e</span> &gt; <span class="an-p an-2"><i>2</i>f</span>) m3 = <span class="an-p an-2"><i>2</i>e</span>; else m3 = <span class="an-p an-2"><i>2</i>f</span>;</pre><ul class="an-leg"><li><b class="an-n an-2b">2</b><span><strong>Datele</strong> – se schimbă la fiecare repetare; tot ce nu este colorat se repetă identic</span></li></ul><div class="an-key"><strong>Semnal:</strong> dacă ai copiat o bucată de program și ai schimbat doar câteva valori, bucata respectivă trebuie să devină subprogram.</div></div>
+<div class="an-box"><div class="an-title">Cu subprogram: calculul scris o dată, datele schimbate la apel</div><pre class="an-code"><span class="an-p an-1"><i>1</i>int maxim(int x, int y) { if (x &gt; y) return x; return y; }</span>
+
+m1 = <span class="an-p an-3"><i>3</i>maxim</span>(<span class="an-p an-2"><i>2</i>a, b</span>);
+m2 = <span class="an-p an-3"><i>3</i>maxim</span>(<span class="an-p an-2"><i>2</i>c, d</span>);
+m3 = <span class="an-p an-3"><i>3</i>maxim</span>(<span class="an-p an-2"><i>2</i>e, f</span>);</pre><ul class="an-leg"><li><b class="an-n an-1b">1</b><span><strong>Definiția</strong> – calculul se scrie o singură dată</span></li><li><b class="an-n an-3b">3</b><span><strong>Apelurile</strong> – același nume, de câte ori ai nevoie</span></li><li><b class="an-n an-2b">2</b><span><strong>Argumentele</strong> – datele care se schimbă; ele devin parametrii</span></li></ul><div class="an-key"><strong>Regula de aur:</strong> ce se <em>repetă</em> devine corpul subprogramului; ce se <em>schimbă</em> devine parametri.</div></div>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Ce câștigi</strong><p><strong>Scrii o dată:</strong> mai puțin text. <strong>Repari o dată:</strong> dacă ai o greșeală, o corectezi într-un singur loc, nu în trei. <strong>Citești mai ușor:</strong> <code>maxim(a, b)</code> spune ce se întâmplă, fără să citești instrucțiunea. <strong>Refolosești:</strong> același subprogram poate fi apelat într-o buclă sau chiar din alt subprogram.</p></div></div>
+<h3 id="modularitate">1.2. Modularitatea: împărțim problema în bucăți</h3>
+<p>Repetarea nu este singurul motiv pentru subprograme. Când o problemă este mare, nu o rezolvi dintr-o dată: o desparți în <strong>subprobleme</strong> mai mici și rezolvi fiecare subproblemă separat. Fiecare subproblemă devine un subprogram; programul principal, <code>main</code>, doar citește datele și <em>coordonează</em> subprogramele. Acest fel de a scrie programe se numește <strong>modularitate</strong>. Observă că aici fiecare subprogram poate fi apelat <strong>o singură dată</strong>: scopul nu este să evităm copierea, ci să avem bucăți mici, clare, care se pot înțelege și testa pe rând.</p>
+<div class="an-box"><div class="an-title">Programul principal coordonează subprogramele</div><div class="mem-row"><div class="mem-panel"><h5>main()</h5><div class="mem-cells"><div class="mem-cell "><small>citește</small><span>datele</span></div><div class="mem-cell ok"><small>nrCifre(n)</small><span>câte cifre</span></div><div class="mem-cell ok"><small>sumaCifre(n)</small><span>suma</span></div><div class="mem-cell ok"><small>oglindit(n)</small><span>invers</span></div><div class="mem-cell "><small>afișează</small><span>rezultate</span></div></div><p class="mem-note">Problema „analizează un număr” este împărțită în subprobleme; fiecare are numele ei și se poate testa singură.</p></div></div><div class="an-key"><strong>Memorează:</strong> o problemă mare → mai multe subprobleme mici → câte un subprogram pentru fiecare; <code>main</code> le apelează în ordine.</div></div>
+<div class="an-box"><div class="an-title">Un program modular: main spune „ce”, subprogramele spun „cum”</div><pre class="an-code">int main() {
+    cin &gt;&gt; n;
+    cout &lt;&lt; <span class="an-p an-1"><i>1</i>nrCifre(n)</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="an-p an-1"><i>1</i>sumaCifre(n)</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="an-p an-1"><i>1</i>oglindit(n)</span> &lt;&lt; endl;
+}</pre><ul class="an-leg"><li><b class="an-n an-1b">1</b><span><strong>Un subprogram pentru fiecare subproblemă</strong> – fiecare este apelat o singură dată; detaliile calculului sunt în definiția lui, nu în <code>main</code></span></li></ul><div class="an-key"><strong>Cititorul programului</strong> vede în <code>main</code> pașii mari și intră în detalii doar când are nevoie.</div></div>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Definiție: modularitate</strong><p><strong>Modularitatea</strong> este împărțirea unui program în părți (module) independente, fiecare cu o sarcină bine precizată. În programele pe care le scriem acum, modulele sunt <strong>subprogramele</strong>. Avantaje: problema mare devine mai ușor de rezolvat, fiecare bucată se testează separat, iar bucățile bune pot fi refolosite în alte programe. <span class="text-sm text-muted">Idee preluată (în traducere liberă) din <a href="https://harpercollege.pressbooks.pub/programmingfundamentals/chapter/modular-programming/">Programming Fundamentals – Modular Programming</a>; formularea în română și exemplele sunt ale autorului materialului.</span></p></div></div>
+<div class="tbl-wrap"><table><thead><tr><th></th><th>Repetare</th><th>Modularitate</th></tr></thead><tbody><tr><td><strong>Motiv</strong></td><td>același calcul apare de mai multe ori</td><td>problema este mare și o împărțim în subprobleme</td></tr><tr><td><strong>De câte ori se apelează subprogramul?</strong></td><td>de mai multe ori</td><td>poate fi și o singură dată</td></tr><tr><td><strong>Câștig principal</strong></td><td>scrii și repari o singură dată</td><td>program mai clar, bucăți testate separat</td></tr><tr><td><strong>Exemplu</strong></td><td><code>maxim(a, b)</code> apelat de trei ori</td><td><code>nrCifre</code>, <code>sumaCifre</code>, <code>oglindit</code> într-un singur program</td></tr></tbody></table></div>
+<h2 id="scriere">2. Cum scrii un subprogram: trei întrebări</h2>
+<p>Când ai de rezolvat o sarcină și vrei să o scrii ca subprogram, răspunde, în ordine, la trei întrebări. Ele aleg aproape tot ce trebuie scris în antet.</p>
+<div class="an-box"><div class="an-title">Cele trei întrebări → antetul</div><pre class="an-code"><span class="an-p an-1"><i>1</i>bool</span> <span class="an-p an-3"><i>3</i>estePrim</span>(<span class="an-p an-2"><i>2</i>int n</span>)</pre><ul class="an-leg"><li><b class="an-n an-1b">1</b><span><strong>Ce returnează?</strong> – o valoare cu două stări: <code>bool</code></span></li><li><b class="an-n an-2b">2</b><span><strong>Ce primește?</strong> – un număr întreg: parametrul <code>int n</code></span></li><li><b class="an-n an-3b">3</b><span><strong>Cum se numește?</strong> – un nume care spune ce face: <code>estePrim</code></span></li></ul><div class="an-key">Ordinea întrebărilor: <strong>primește → returnează → nume</strong>; ordinea în antet: <strong>returnează, nume, primește</strong>.</div></div>
+<ol class="algo-steps"><li><strong>Ce primește?</strong> Datele de care are nevoie, fiecare cu un tip: devin parametrii.</li><li><strong>Ce returnează?</strong> Un rezultat de un anumit tip (<code>int</code>, <code>bool</code>, ...), sau nimic (<code>void</code>), dacă doar afișează sau face o acțiune.</li><li><strong>Cum se numește?</strong> Un nume care spune ce face: <code>estePrim</code>, <code>maxim</code>, nu <code>f1</code>.</li></ol><p>Exemplu: „este numărul <code>n</code> prim?”. Primește un <code>int</code>, returnează o valoare cu două stări (<code>bool</code>), se numește <code>estePrim</code>.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · prim.cpp</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">bool</span> estePrim(<span class="tp">int</span> n) {
+    <span class="kw">if</span> (n <span class="op">&lt;</span> <span class="nm">2</span>) {
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+    <span class="kw">for</span> (<span class="tp">int</span> d <span class="op">=</span> <span class="nm">2</span>; d <span class="op">*</span> d <span class="op">&lt;=</span> n; d<span class="op">++</span>) {
+        <span class="kw">if</span> (n <span class="op">%</span> d <span class="op">==</span> <span class="nm">0</span>) {
+            <span class="kw">return</span> <span class="kw">false</span>;
+        }
+    }
+    <span class="kw">return</span> <span class="kw">true</span>;
+}
+
+<span class="tp">int</span> main() {
+    cout <span class="op">&lt;&lt;</span> estePrim(<span class="nm">7</span>) <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> estePrim(<span class="nm">8</span>) <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> estePrim(<span class="nm">1</span>) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java · Prim.java</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Prim {
+    <span class="kw">static</span> <span class="tp">boolean</span> estePrim(<span class="tp">int</span> n) {
+        <span class="kw">if</span> (n <span class="op">&lt;</span> <span class="nm">2</span>) {
+            <span class="kw">return</span> <span class="kw">false</span>;
+        }
+        <span class="kw">for</span> (<span class="tp">int</span> d <span class="op">=</span> <span class="nm">2</span>; d <span class="op">*</span> d <span class="op">&lt;=</span> n; d<span class="op">++</span>) {
+            <span class="kw">if</span> (n <span class="op">%</span> d <span class="op">==</span> <span class="nm">0</span>) {
+                <span class="kw">return</span> <span class="kw">false</span>;
+            }
+        }
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        System.out.println(estePrim(<span class="nm">7</span>) <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> estePrim(<span class="nm">8</span>) <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> estePrim(<span class="nm">1</span>));
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python · prim.py</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">def</span> este_prim(n)<span class="op">:</span>
+    <span class="kw">if</span> n <span class="op">&lt;</span> <span class="nm">2</span><span class="op">:</span>
+        <span class="kw">return</span> <span class="kw">False</span>
+    d <span class="op">=</span> <span class="nm">2</span>
+    <span class="kw">while</span> d <span class="op">*</span> d <span class="op">&lt;=</span> n<span class="op">:</span>
+        <span class="kw">if</span> n <span class="op">%</span> d <span class="op">==</span> <span class="nm">0</span><span class="op">:</span>
+            <span class="kw">return</span> <span class="kw">False</span>
+        d <span class="op">+=</span> <span class="nm">1</span>
+    <span class="kw">return</span> <span class="kw">True</span>
+
+
+<span class="kw">print</span>(este_prim(<span class="nm">7</span>), este_prim(<span class="nm">8</span>), este_prim(<span class="nm">1</span>))</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – C++ · prim.cpp</span></div><pre><code>1 0 0</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – Java · Prim.java</span></div><pre><code>true false false</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – Python · prim.py</span></div><pre><code>True False False</code></pre></div><p>Observă că cele trei limbaje afișează diferit aceeași valoare logică: C++ afișează <code>1</code> și <code>0</code>, Java scrie <code>true</code> și <code>false</code>, Python scrie <code>True</code> și <code>False</code>. Valoarea este aceeași; diferă doar afișarea. Observă și <code>return</code>-urile din interiorul buclei: un <code>return</code> încheie subprogramul pe loc, deci imediat ce găsim un divizor, răspunsul este gata.</p>
+<h2 id="erori">3. Erori frecvente</h2>
+<h3>Eroarea 1 – Lipsește <code>return</code> într-o funcție care trebuie să returneze</h3>
+<p>Funcția <code>dublu</code> calculează <code>r</code>, dar nu îl returnează. Compilatorul nu o refuză, ci doar avertizează, și numai dacă ai cerut avertizări (<code>-Wall</code>):</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ · dublu.cpp</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> dublu(<span class="tp">int</span> x) {
+    <span class="tp">int</span> r <span class="op">=</span> x <span class="op">*</span> <span class="nm">2</span>;
+}
+
+<span class="tp">int</span> main() {
+    cout <span class="op">&lt;&lt;</span> dublu(<span class="nm">4</span>);
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">g++ -Wall</span></div><pre><code>dublu.cpp:5:9: warning: unused variable ‘r’ [-Wunused-variable]
+dublu.cpp:6:1: warning: no return statement in function returning non-void [-Wreturn-type]</code></pre></div><p>În C++, ieșirea dintr-o funcție care returnează valoare, fără <code>return</code>, este comportament nedefinit dacă folosești rezultatul: programul poate afișa orice. Tocmai de aceea merită să compilezi cu <code>-Wall</code> și să citești avertizările.</p>
+<h3>Eroarea 2 – Apelul înainte de definiție</h3>
+<p>În C++, un subprogram trebuie să fie cunoscut înainte de a fi apelat; aici, <code>dublu</code> este scris după <code>main</code>.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">g++</span></div><pre><code>ordine.cpp:5:13: error: ‘dublu’ was not declared in this scope; did you mean ‘double’?</code></pre></div><p>În Python, <code>def</code> este o instrucțiune care se execută: dacă apelul vine înaintea ei, numele încă nu există.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">python3</span></div><pre><code>NameError: name 'dublu' is not defined</code></pre></div><h3>Eroarea 3 – Folosirea rezultatului unui subprogram <code>void</code></h3>
+<p>Un subprogram <code>void</code> nu returnează nimic, deci nu poți păstra rezultatul într-o variabilă.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">g++</span></div><pre><code>voidv.cpp:9:21: error: void value not ignored as it ought to be</code></pre></div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="tb-lab">
+        <div class="prose">
+<h2 id="exemple">Exemple rezolvate</h2>
+<p>Aplicăm metodologia din M6 (<strong>cerință</strong>, <strong>date</strong>, <strong>rezultat</strong>, <strong>proiectarea algoritmului</strong>, <strong>cod</strong>), la care adăugăm un pas: <strong>reprezentarea</strong>. Exemplul de mai jos scrie un subprogram care lucrează cu un vector.</p>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">1</div><div class="exercise-title">Căutarea într-un vector, ca subprogram<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram care primește un vector de numere întregi, numărul lui de elemente și o valoare <code>x</code> și returnează indicele primei apariții a lui <code>x</code>, sau <code>−1</code> dacă <code>x</code> nu apare. Apelează-l pentru două valori.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare</div><ol class="algo-steps"><li><strong>Lucrul și întrebarea:</strong> o colecție de numere și întrebarea „unde este <code>x</code>?”.</li><li><strong>Tip și formă:</strong> vector de întregi; rezultatul este un indice, deci tot <code>int</code>.</li><li><strong>Domeniul rezultatului:</strong> un indice valid, <code>0 … n − 1</code>, sau valoarea <code>−1</code>, care <em>nu poate fi indice valid</em> și semnalează „nu există”. Alegerea lui <code>−1</code> face parte din reprezentare.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-circle-info"></i> Observație</div><p>Subprogramul doar <strong>citește</strong> vectorul. Dacă un subprogram ar <em>modifica</em> vectorul primit, lucrurile ar sta altfel; nu extinde concluzia de la acest exemplu.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> cauta(<span class="tp">int</span> v[], <span class="tp">int</span> n, <span class="tp">int</span> x) {
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        <span class="kw">if</span> (v[i] <span class="op">==</span> x) {
+            <span class="kw">return</span> i;
+        }
+    }
+    <span class="kw">return</span> <span class="op">-</span><span class="nm">1</span>;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> v[<span class="nm">7</span>] <span class="op">=</span> {<span class="nm">5</span>, <span class="nm">2</span>, <span class="nm">8</span>, <span class="nm">2</span>, <span class="nm">9</span>, <span class="nm">2</span>, <span class="nm">1</span>};
+    cout <span class="op">&lt;&lt;</span> cauta(v, <span class="nm">7</span>, <span class="nm">2</span>) <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> cauta(v, <span class="nm">7</span>, <span class="nm">4</span>) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Cautare {
+    <span class="kw">static</span> <span class="tp">int</span> cauta(<span class="tp">int</span>[] v, <span class="tp">int</span> x) {
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> v.length; i<span class="op">++</span>) {
+            <span class="kw">if</span> (v[i] <span class="op">==</span> x) {
+                <span class="kw">return</span> i;
+            }
+        }
+        <span class="kw">return</span> <span class="op">-</span><span class="nm">1</span>;
+    }
+
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">int</span>[] v <span class="op">=</span> {<span class="nm">5</span>, <span class="nm">2</span>, <span class="nm">8</span>, <span class="nm">2</span>, <span class="nm">9</span>, <span class="nm">2</span>, <span class="nm">1</span>};
+        System.out.println(cauta(v, <span class="nm">2</span>));
+        System.out.println(cauta(v, <span class="nm">4</span>));
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">def</span> cauta(v, x)<span class="op">:</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="kw">len</span>(v))<span class="op">:</span>
+        <span class="kw">if</span> v[i] <span class="op">==</span> x<span class="op">:</span>
+            <span class="kw">return</span> i
+    <span class="kw">return</span> <span class="op">-</span><span class="nm">1</span>
+
+
+v <span class="op">=</span> [<span class="nm">5</span>, <span class="nm">2</span>, <span class="nm">8</span>, <span class="nm">2</span>, <span class="nm">9</span>, <span class="nm">2</span>, <span class="nm">1</span>]
+<span class="kw">print</span>(cauta(v, <span class="nm">2</span>))
+<span class="kw">print</span>(cauta(v, <span class="nm">4</span>))</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – identic în cele trei limbaje</span></div><pre><code>1
+-1</code></pre></div></div>
+<p>În C++ vectorul nu își cunoaște dimensiunea, de aceea <code>n</code> se transmite separat. În Java, <code>v.length</code> este disponibil, iar în Python, <code>len(v)</code>. Valoarea 2 apare pe indicii 1, 3 și 5, iar subprogramul se oprește la prima.</p></div></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<p id="exemple-repetitie" style="font-size:1.2rem;font-weight:700;margin-top:1.5rem;">Exemple: subprogramul ca răspuns la repetare</p>
+<p>Fiecare exemplu arată mai întâi programul <strong>fără subprogram</strong> (cu același cod scris de mai multe ori), apoi cel <strong>cu subprogram</strong>. Ambele au fost rulate și dau exact aceeași ieșire.</p>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">2</div><div class="exercise-title">Maximul a trei perechi<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citesc șase numere întregi, grupate în trei perechi. Pentru fiecare pereche afișează numărul mai mare.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-arrows-rotate"></i> Ce se repetă și ce se schimbă</div><ol class="algo-steps"><li><strong>Se repetă:</strong> compararea a două numere și alegerea celui mai mare.</li><li><strong>Se schimbă:</strong> perechea de numere.</li><li><strong>Subprogram:</strong> <code>int maxim(int x, int y)</code> — primește două numere, returnează unul.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-copy"></i> Fără subprogram</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · varianta repetată</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a, b, c, d, e, f, m1, m2, m3;
+    cin <span class="op">&gt;&gt;</span> a <span class="op">&gt;&gt;</span> b <span class="op">&gt;&gt;</span> c <span class="op">&gt;&gt;</span> d <span class="op">&gt;&gt;</span> e <span class="op">&gt;&gt;</span> f;
+    <span class="kw">if</span> (a <span class="op">&gt;</span> b) { m1 <span class="op">=</span> a; } <span class="kw">else</span> { m1 <span class="op">=</span> b; }
+    <span class="kw">if</span> (c <span class="op">&gt;</span> d) { m2 <span class="op">=</span> c; } <span class="kw">else</span> { m2 <span class="op">=</span> d; }
+    <span class="kw">if</span> (e <span class="op">&gt;</span> f) { m3 <span class="op">=</span> e; } <span class="kw">else</span> { m3 <span class="op">=</span> f; }
+    cout <span class="op">&lt;&lt;</span> m1 <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> m2 <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> m3 <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se citește</span></div><pre><code>3 7 9 2 5 5</code></pre></div></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-cube"></i> Cu subprogram</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · cu subprogram</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> maxim(<span class="tp">int</span> x, <span class="tp">int</span> y) {
+    <span class="kw">if</span> (x <span class="op">&gt;</span> y) {
+        <span class="kw">return</span> x;
+    }
+    <span class="kw">return</span> y;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a, b, c, d, e, f;
+    cin <span class="op">&gt;&gt;</span> a <span class="op">&gt;&gt;</span> b <span class="op">&gt;&gt;</span> c <span class="op">&gt;&gt;</span> d <span class="op">&gt;&gt;</span> e <span class="op">&gt;&gt;</span> f;
+    cout <span class="op">&lt;&lt;</span> maxim(a, b) <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> maxim(c, d) <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> maxim(e, f) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează (identic în ambele variante)</span></div><pre><code>7 9 5</code></pre></div></div>
+</div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">3</div><div class="exercise-title">Prim sau nu, pentru mai multe numere<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citesc 5 numere naturale. Pentru fiecare afișează <code>prim</code> sau <code>neprim</code>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-arrows-rotate"></i> Ce se repetă și ce se schimbă</div><ol class="algo-steps"><li><strong>Se repetă:</strong> verificarea primalității, o dată pentru fiecare număr (aici, în buclă).</li><li><strong>Se schimbă:</strong> numărul verificat.</li><li><strong>Subprogram:</strong> <code>bool estePrim(int n)</code> — primește un număr, returnează adevărat sau fals.</li><li><strong>Observație:</strong> chiar și într-o buclă, fără subprogram corpul verificării ar sta în interiorul buclei, amestecat cu citirea și afișarea; cu subprogram, bucla rămâne scurtă.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-copy"></i> Fără subprogram</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · varianta repetată</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n, x;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> x;
+        <span class="tp">bool</span> prim <span class="op">=</span> (x <span class="op">&gt;=</span> <span class="nm">2</span>);
+        <span class="kw">for</span> (<span class="tp">int</span> d <span class="op">=</span> <span class="nm">2</span>; d <span class="op">*</span> d <span class="op">&lt;=</span> x; d<span class="op">++</span>) {
+            <span class="kw">if</span> (x <span class="op">%</span> d <span class="op">==</span> <span class="nm">0</span>) {
+                prim <span class="op">=</span> <span class="kw">false</span>;
+            }
+        }
+        <span class="kw">if</span> (prim) {
+            cout <span class="op">&lt;&lt;</span> <span class="st">"prim"</span> <span class="op">&lt;&lt;</span> endl;
+        } <span class="kw">else</span> {
+            cout <span class="op">&lt;&lt;</span> <span class="st">"neprim"</span> <span class="op">&lt;&lt;</span> endl;
+        }
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se citește</span></div><pre><code>5
+7 10 13 1 97</code></pre></div></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-cube"></i> Cu subprogram</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · cu subprogram</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">bool</span> estePrim(<span class="tp">int</span> n) {
+    <span class="kw">if</span> (n <span class="op">&lt;</span> <span class="nm">2</span>) {
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+    <span class="kw">for</span> (<span class="tp">int</span> d <span class="op">=</span> <span class="nm">2</span>; d <span class="op">*</span> d <span class="op">&lt;=</span> n; d<span class="op">++</span>) {
+        <span class="kw">if</span> (n <span class="op">%</span> d <span class="op">==</span> <span class="nm">0</span>) {
+            <span class="kw">return</span> <span class="kw">false</span>;
+        }
+    }
+    <span class="kw">return</span> <span class="kw">true</span>;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n, x;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> x;
+        <span class="kw">if</span> (estePrim(x)) {
+            cout <span class="op">&lt;&lt;</span> <span class="st">"prim"</span> <span class="op">&lt;&lt;</span> endl;
+        } <span class="kw">else</span> {
+            cout <span class="op">&lt;&lt;</span> <span class="st">"neprim"</span> <span class="op">&lt;&lt;</span> endl;
+        }
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează (identic în ambele variante)</span></div><pre><code>prim
+neprim
+prim
+neprim
+prim</code></pre></div></div>
+</div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">4</div><div class="exercise-title">Desenarea cu linii<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Afișează pe ecran un dreptunghi format din patru linii de câte 5 caractere: prima și ultima din <code>*</code>, cele două din mijloc din <code>#</code>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-arrows-rotate"></i> Ce se repetă și ce se schimbă</div><ol class="algo-steps"><li><strong>Se repetă:</strong> afișarea unei linii de caractere identice, urmată de trecerea la rândul următor.</li><li><strong>Se schimbă:</strong> câte caractere are linia și care este caracterul.</li><li><strong>Subprogram:</strong> <code>void linie(int n, char c)</code> — primește două date și <strong>nu returnează nimic</strong>, doar afișează (tip <code>void</code>).</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-copy"></i> Fără subprogram</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · varianta repetată</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">5</span>; i<span class="op">++</span>) { cout <span class="op">&lt;&lt;</span> <span class="st">'*'</span>; }
+    cout <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">5</span>; i<span class="op">++</span>) { cout <span class="op">&lt;&lt;</span> <span class="st">'#'</span>; }
+    cout <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">5</span>; i<span class="op">++</span>) { cout <span class="op">&lt;&lt;</span> <span class="st">'#'</span>; }
+    cout <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">5</span>; i<span class="op">++</span>) { cout <span class="op">&lt;&lt;</span> <span class="st">'*'</span>; }
+    cout <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-cube"></i> Cu subprogram</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · cu subprogram</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">void</span> linie(<span class="tp">int</span> n, <span class="tp">char</span> c) {
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cout <span class="op">&lt;&lt;</span> c;
+    }
+    cout <span class="op">&lt;&lt;</span> endl;
+}
+
+<span class="tp">int</span> main() {
+    linie(<span class="nm">5</span>, <span class="st">'*'</span>);
+    linie(<span class="nm">5</span>, <span class="st">'#'</span>);
+    linie(<span class="nm">5</span>, <span class="st">'#'</span>);
+    linie(<span class="nm">5</span>, <span class="st">'*'</span>);
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează (identic în ambele variante)</span></div><pre><code>*****
+#####
+#####
+*****</code></pre></div></div>
+</div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">5</div><div class="exercise-title">Tabel de conversie<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Afișează un tabel cu temperaturile 0, 10, 20 și 30 de grade Celsius și valorile lor în grade Fahrenheit (formula: <em>F = C · 9 / 5 + 32</em>).</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-arrows-rotate"></i> Ce se repetă și ce se schimbă</div><ol class="algo-steps"><li><strong>Se repetă:</strong> aplicarea formulei de conversie, pentru fiecare temperatură din tabel.</li><li><strong>Se schimbă:</strong> temperatura în grade Celsius.</li><li><strong>Subprogram:</strong> <code>double fahrenheit(double c)</code> — primește un număr, returnează un număr; apelat în buclă.</li><li><strong>Avantaj:</strong> dacă formula se schimbă sau o corectezi, modifici un singur loc.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-copy"></i> Fără subprogram</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · varianta repetată</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="kw">for</span> (<span class="tp">int</span> c <span class="op">=</span> <span class="nm">0</span>; c <span class="op">&lt;=</span> <span class="nm">30</span>; c <span class="op">+=</span> <span class="nm">10</span>) {
+        <span class="tp">double</span> f <span class="op">=</span> c <span class="op">*</span> <span class="nm">9.0</span> <span class="op">/</span> <span class="nm">5</span> <span class="op">+</span> <span class="nm">32</span>;
+        cout <span class="op">&lt;&lt;</span> c <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> f <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-cube"></i> Cu subprogram</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · cu subprogram</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">double</span> fahrenheit(<span class="tp">double</span> c) {
+    <span class="kw">return</span> c <span class="op">*</span> <span class="nm">9.0</span> <span class="op">/</span> <span class="nm">5</span> <span class="op">+</span> <span class="nm">32</span>;
+}
+
+<span class="tp">int</span> main() {
+    <span class="kw">for</span> (<span class="tp">int</span> c <span class="op">=</span> <span class="nm">0</span>; c <span class="op">&lt;=</span> <span class="nm">30</span>; c <span class="op">+=</span> <span class="nm">10</span>) {
+        cout <span class="op">&lt;&lt;</span> c <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> fahrenheit(c) <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează (identic în ambele variante)</span></div><pre><code>0 32
+10 50
+20 68
+30 86</code></pre></div></div>
+</div></div>
+<div class="callout info"><strong>Observație despre exemplul 5:</strong> aici varianta fără subprogram nu repetă textul de mai multe ori (bucla îl scrie o dată), dar subprogramul ajută și așa: formula are un nume, poate fi testată separat și poate fi folosită din alt loc al programului.</div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<p id="exemple-modularitate" style="font-size:1.2rem;font-weight:700;margin-top:1.5rem;">Exemple: modularitatea</p>
+<p>Aici nu mai există copii ale aceluiași cod: fiecare bucată apare o singură dată. Subprogramele sunt folosite pentru a <strong>împărți problema</strong>. Ambele variante au fost rulate și dau aceeași ieșire.</p>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">6</div><div class="exercise-title">Analiza unui număr<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citește un număr natural. Afișează, pe rânduri separate: câte cifre are, suma cifrelor, numărul scris invers și, dacă este palindrom, cuvântul <code>palindrom</code>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-sitemap"></i> Împărțirea în subprobleme</div><ol class="algo-steps"><li><strong>Subproblema 1:</strong> numărul de cifre — <code>int nrCifre(int n)</code>.</li><li><strong>Subproblema 2:</strong> suma cifrelor — <code>int sumaCifre(int n)</code>.</li><li><strong>Subproblema 3:</strong> oglinditul — <code>int oglindit(int n)</code>.</li><li><strong>Subproblema 4:</strong> palindrom — <code>bool estePalindrom(int n)</code>, care <strong>folosește</strong> subprogramul <code>oglindit</code>.</li><li><strong>Programul principal:</strong> citește <em>n</em> și apelează subprogramele în ordine, o singură dată fiecare.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-copy"></i> Tot în main</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · varianta fără subprograme</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="tp">int</span> c <span class="op">=</span> <span class="nm">0</span>, s <span class="op">=</span> <span class="nm">0</span>, r <span class="op">=</span> <span class="nm">0</span>, t <span class="op">=</span> n;
+    <span class="kw">while</span> (t <span class="op">&gt;</span> <span class="nm">0</span>) {
+        c<span class="op">++</span>;
+        s <span class="op">+=</span> t <span class="op">%</span> <span class="nm">10</span>;
+        r <span class="op">=</span> r <span class="op">*</span> <span class="nm">10</span> <span class="op">+</span> t <span class="op">%</span> <span class="nm">10</span>;
+        t <span class="op">=</span> t <span class="op">/</span> <span class="nm">10</span>;
+    }
+    cout <span class="op">&lt;&lt;</span> c <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> s <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> r <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">if</span> (r <span class="op">==</span> n) {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"palindrom"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se citește</span></div><pre><code>1331</code></pre></div></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-cubes"></i> Împărțit în subprograme</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · varianta modulară</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> nrCifre(<span class="tp">int</span> n) {
+    <span class="tp">int</span> c <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        c<span class="op">++</span>;
+        n <span class="op">=</span> n <span class="op">/</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> c;
+}
+
+<span class="tp">int</span> sumaCifre(<span class="tp">int</span> n) {
+    <span class="tp">int</span> s <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        s <span class="op">+=</span> n <span class="op">%</span> <span class="nm">10</span>;
+        n <span class="op">=</span> n <span class="op">/</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> s;
+}
+
+<span class="tp">int</span> oglindit(<span class="tp">int</span> n) {
+    <span class="tp">int</span> r <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        r <span class="op">=</span> r <span class="op">*</span> <span class="nm">10</span> <span class="op">+</span> n <span class="op">%</span> <span class="nm">10</span>;
+        n <span class="op">=</span> n <span class="op">/</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> r;
+}
+
+<span class="tp">bool</span> estePalindrom(<span class="tp">int</span> n) {
+    <span class="kw">return</span> oglindit(n) <span class="op">==</span> n;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n;
+    cin <span class="op">&gt;&gt;</span> n;
+    cout <span class="op">&lt;&lt;</span> nrCifre(n) <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> sumaCifre(n) <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> oglindit(n) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">if</span> (estePalindrom(n)) {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"palindrom"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează (identic în ambele variante)</span></div><pre><code>4
+8
+1331
+palindrom</code></pre></div></div>
+</div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">7</div><div class="exercise-title">Statistică pe un vector<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citesc <em>n</em> numere întregi. Afișează cel mai mic număr, cel mai mare număr și media lor, cu două zecimale.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-sitemap"></i> Împărțirea în subprobleme</div><ol class="algo-steps"><li><strong>Citirea:</strong> rămâne în <code>main</code>, pentru că vectorul este creat acolo.</li><li><strong>Subproblema 1:</strong> minimul — <code>int minim(int v[], int n)</code>.</li><li><strong>Subproblema 2:</strong> maximul — <code>int maxim(int v[], int n)</code>.</li><li><strong>Subproblema 3:</strong> media — <code>double medie(int v[], int n)</code>.</li><li><strong>Avantaj:</strong> fiecare subprogram se poate testa separat, cu un vector mic, înainte de a-l folosi în program.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-copy"></i> Tot în main</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · varianta fără subprograme</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">#include &lt;iomanip&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> v[<span class="nm">100</span>], n;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> v[i];
+    }
+    <span class="tp">int</span> mn <span class="op">=</span> v[<span class="nm">0</span>], mx <span class="op">=</span> v[<span class="nm">0</span>];
+    <span class="tp">long</span> <span class="tp">long</span> suma <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        <span class="kw">if</span> (v[i] <span class="op">&lt;</span> mn) { mn <span class="op">=</span> v[i]; }
+        <span class="kw">if</span> (v[i] <span class="op">&gt;</span> mx) { mx <span class="op">=</span> v[i]; }
+        suma <span class="op">+=</span> v[i];
+    }
+    cout <span class="op">&lt;&lt;</span> mn <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> mx <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> fixed <span class="op">&lt;&lt;</span> setprecision(<span class="nm">2</span>) <span class="op">&lt;&lt;</span> (<span class="tp">double</span>)suma <span class="op">/</span> n <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se citește</span></div><pre><code>5
+4 9 2 7 8</code></pre></div></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-cubes"></i> Împărțit în subprograme</div><div class="code-block"><div class="code-header"><span class="code-lang">C++ · varianta modulară</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">#include &lt;iomanip&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> minim(<span class="tp">int</span> v[], <span class="tp">int</span> n) {
+    <span class="tp">int</span> m <span class="op">=</span> v[<span class="nm">0</span>];
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        <span class="kw">if</span> (v[i] <span class="op">&lt;</span> m) {
+            m <span class="op">=</span> v[i];
+        }
+    }
+    <span class="kw">return</span> m;
+}
+
+<span class="tp">int</span> maxim(<span class="tp">int</span> v[], <span class="tp">int</span> n) {
+    <span class="tp">int</span> m <span class="op">=</span> v[<span class="nm">0</span>];
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        <span class="kw">if</span> (v[i] <span class="op">&gt;</span> m) {
+            m <span class="op">=</span> v[i];
+        }
+    }
+    <span class="kw">return</span> m;
+}
+
+<span class="tp">double</span> medie(<span class="tp">int</span> v[], <span class="tp">int</span> n) {
+    <span class="tp">long</span> <span class="tp">long</span> suma <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        suma <span class="op">+=</span> v[i];
+    }
+    <span class="kw">return</span> (<span class="tp">double</span>)suma <span class="op">/</span> n;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> v[<span class="nm">100</span>], n;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> v[i];
+    }
+    cout <span class="op">&lt;&lt;</span> minim(v, n) <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> maxim(v, n) <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> fixed <span class="op">&lt;&lt;</span> setprecision(<span class="nm">2</span>) <span class="op">&lt;&lt;</span> medie(v, n) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează (identic în ambele variante)</span></div><pre><code>2 9 6.00</code></pre></div></div>
+</div></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="introductive">Exerciții introductive (fără scriere de cod)</h2>
+<p>Rezolvă pe hârtie, apoi verifică cu răspunsul. Exercițiile sunt propuse de autorul materialului; nu provin dintr-o sursă externă.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>Care este diferența dintre un subprogram care returnează o valoare și unul <code>void</code>? Dă un exemplu din programul din secțiunea „Reamintire: subprograme”. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><code>maxim</code> returnează un <code>int</code> prin <code>return</code>, iar rezultatul se folosește (<code>int m = maxim(7, 12);</code>). <code>afiseazaNota</code> este <code>void</code>: nu returnează nimic, ci doar afișează un mesaj.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Programul din secțiunea „Reamintire: subprograme” afișează <code>5</code> după apelul <code>incearcaSaSchimbi(y)</code>, deși funcția a pus <code>x = 100</code>. De ce? Putem generaliza la orice tip de argument? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Subprogramul a modificat propria valoare a parametrului <code>x</code>, nu variabila <code>y</code> din apelant. Concluzia este verificată doar pentru argumente numerice; pentru vectori și obiecte regula diferă între limbaje și nu o tratăm aici, deci nu se generalizează.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Ce greșeală face programul de mai jos și ce spune compilatorul?</p><div class="code-block"><div class="code-header"><span class="code-lang">C++ · m.cpp</span></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">void</span> afiseaza(<span class="tp">int</span> x) {
+    cout <span class="op">&lt;&lt;</span> x;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> m <span class="op">=</span> afiseaza(<span class="nm">5</span>);
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">g++ – mesajul real</span></div><pre><code>m.cpp:9:21: error: void value not ignored as it ought to be</code></pre></div><details><summary>Vezi răspunsul</summary><p>Funcția <code>afiseaza</code> este <code>void</code>: nu returnează nimic, deci nu are ce să pună în <code>m</code>. Corectezi apelând-o fără atribuire (<code>afiseaza(5);</code>) sau schimbând funcția să returneze o valoare.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="repetitie-ex">Găsește repetiția</h2>
+<p>Pentru fiecare fragment spune <strong>ce se repetă</strong>, <strong>ce se schimbă</strong> și cum ar arăta antetul subprogramului. Apoi deschide răspunsul. Fragmentele au fost rulate.</p>
+<div class="quiz-item"><p><span class="qnum">1</span><div class="code-block"><div class="code-header"><span class="code-lang">C++ · fragment (în main)</span></div><pre><code><span class="tp">int</span> s1 <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">4</span>; i<span class="op">++</span>) { s1 <span class="op">+=</span> i; }
+<span class="tp">int</span> s2 <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">7</span>; i<span class="op">++</span>) { s2 <span class="op">+=</span> i; }
+<span class="tp">int</span> s3 <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;=</span> <span class="nm">10</span>; i<span class="op">++</span>) { s3 <span class="op">+=</span> i; }
+cout <span class="op">&lt;&lt;</span> s1 <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> s2 <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> s3;</code></pre></div> <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><strong>Se repetă:</strong> suma numerelor de la 1 la un număr. <strong>Se schimbă:</strong> limita (4, 7, 10). <strong>Antet:</strong> <code>int suma(int n)</code>. Apelurile devin <code>suma(4)</code>, <code>suma(7)</code>, <code>suma(10)</code>.<div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>10 28 55</code></pre></div></p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span><div class="code-block"><div class="code-header"><span class="code-lang">C++ · fragment (în main)</span></div><pre><code><span class="tp">int</span> x <span class="op">=</span> <span class="nm">7</span>;
+<span class="kw">if</span> (x <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>) { cout <span class="op">&lt;&lt;</span> x <span class="op">&lt;&lt;</span> <span class="st">" par"</span> <span class="op">&lt;&lt;</span> endl; } <span class="kw">else</span> { cout <span class="op">&lt;&lt;</span> x <span class="op">&lt;&lt;</span> <span class="st">" impar"</span> <span class="op">&lt;&lt;</span> endl; }
+x <span class="op">=</span> <span class="nm">10</span>;
+<span class="kw">if</span> (x <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>) { cout <span class="op">&lt;&lt;</span> x <span class="op">&lt;&lt;</span> <span class="st">" par"</span> <span class="op">&lt;&lt;</span> endl; } <span class="kw">else</span> { cout <span class="op">&lt;&lt;</span> x <span class="op">&lt;&lt;</span> <span class="st">" impar"</span> <span class="op">&lt;&lt;</span> endl; }
+x <span class="op">=</span> <span class="nm">15</span>;
+<span class="kw">if</span> (x <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>) { cout <span class="op">&lt;&lt;</span> x <span class="op">&lt;&lt;</span> <span class="st">" par"</span> <span class="op">&lt;&lt;</span> endl; } <span class="kw">else</span> { cout <span class="op">&lt;&lt;</span> x <span class="op">&lt;&lt;</span> <span class="st">" impar"</span> <span class="op">&lt;&lt;</span> endl; }</code></pre></div> <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><strong>Se repetă:</strong> testarea parității și afișarea rezultatului. <strong>Se schimbă:</strong> numărul <code>x</code>. <strong>Antet:</strong> <code>void afiseazaParitate(int x)</code> — nu returnează nimic, pentru că doar afișează.<div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>7 impar
+10 par
+15 impar</code></pre></div></p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span><div class="code-block"><div class="code-header"><span class="code-lang">C++ · fragment (în main)</span></div><pre><code><span class="tp">int</span> a <span class="op">=</span> <span class="nm">3</span>, b <span class="op">=</span> <span class="nm">4</span>, c <span class="op">=</span> <span class="nm">6</span>, d <span class="op">=</span> <span class="nm">8</span>;
+cout <span class="op">&lt;&lt;</span> a <span class="op">*</span> a <span class="op">+</span> b <span class="op">*</span> b <span class="op">&lt;&lt;</span> endl;
+cout <span class="op">&lt;&lt;</span> c <span class="op">*</span> c <span class="op">+</span> d <span class="op">*</span> d <span class="op">&lt;&lt;</span> endl;</code></pre></div> <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><strong>Se repetă:</strong> suma pătratelor a două numere. <strong>Se schimbă:</strong> cele două numere. <strong>Antet:</strong> <code>int sumaPatrate(int x, int y)</code>. Atenție: aici sunt <strong>doi</strong> parametri, pentru că se schimbă două date.<div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>25
+100</code></pre></div></p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Un calcul apare o singură dată în program. Trebuie neapărat scris ca subprogram? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><strong>Nu neapărat.</strong> Repetarea este motivul principal pentru subprograme, dar un subprogram poate fi util și pentru a da un nume unui calcul care face programul mai ușor de citit. Când nu există repetare și nici o prea mare complexitate, este bine și fără subprogram. (Observație didactică a autorului.)</p></details></div>
+<div class="quiz-item"><p><span class="qnum">5</span>Ai scris același calcul în trei locuri și ai descoperit o greșeală în el. În ce variantă repari mai ușor: cu subprogram sau fără? De ce? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Cu subprogram: calculul este scris într-un singur loc, deci îl corectezi o dată și toate apelurile se repară. Fără subprogram trebuie să găsești și să corectezi fiecare copie; dacă uiți una, ai o greșeală ascunsă.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="modularitate-ex">Împarte problema</h2>
+<p>Pentru fiecare problemă scrie <strong>antetele</strong> subprogramelor în care ai împărți-o și spune ce face <code>main</code>. Nu scrie corpurile. Antetele propuse sunt ale autorului; pot exista și alte împărțiri valide.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>Programul citește un număr și afișează: dacă este prim, dacă este palindrom și suma cifrelor. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><ul><li><code>bool estePrim(int n)</code></li><li><code>int oglindit(int n)</code> și <code>bool estePalindrom(int n)</code> (acesta folosește oglinditul)</li><li><code>int sumaCifre(int n)</code></li></ul><p><code>main</code> citește <em>n</em> și afișează cele trei rezultate.</p></p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Programul citește laturile a două dreptunghiuri și afișează care dintre ele are aria mai mare. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><ul><li><code>int arie(int lungime, int latime)</code></li></ul><p>Subprogramul este apelat de două ori (repetare), iar <code>main</code> compară cele două arii. Aici apar <strong>și repetarea, și împărțirea</strong>: un singur subprogram răspunde la ambele.</p></p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Programul citește <em>n</em> note și afișează media, cea mai mare notă și câte note sunt cel puțin 5. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><ul><li><code>double medie(int note[], int n)</code></li><li><code>int notaMaxima(int note[], int n)</code></li><li><code>int nrPromovate(int note[], int n)</code></li></ul><p>Citirea vectorului rămâne în <code>main</code>.</p></p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Prin ce diferă motivul pentru care scrii un subprogram în cazul repetării față de cel din cazul modularității? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>La <strong>repetare</strong>, același calcul apare de mai multe ori și îl scrii o singură dată. La <strong>modularitate</strong>, problema este mare și o împarți în subprobleme; un subprogram poate fi apelat chiar și o singură dată, pentru ca programul să fie mai clar și fiecare bucată să poată fi testată separat.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="tracing">Code Tracing – Exerciții</h2>
+<p>Urmărește execuția <strong>fără să rulezi programul</strong>; apoi verifică rulând codul.</p>
+<details><summary>Exercițiul 1 — subprogram și variabilă locală</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> f(<span class="tp">int</span> x) {
+    x <span class="op">=</span> x <span class="op">*</span> <span class="nm">2</span>;
+    <span class="kw">return</span> x <span class="op">+</span> <span class="nm">1</span>;
+}
+
+
+<span class="tp">int</span> y <span class="op">=</span> <span class="nm">4</span>;
+<span class="tp">int</span> z <span class="op">=</span> f(y);
+cout <span class="op">&lt;&lt;</span> y <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> z;</code></pre></div><p><strong>Soluție:</strong> Subprogramul dublează propria copie a lui <code>x</code> (4 → 8) și returnează 9. Variabila <code>y</code> din apelant nu s-a schimbat. (Concluzie valabilă pentru argument numeric.) Se afișează <code>4 9</code>.</p></details>
+<details><summary>Exercițiul 2 — return în interiorul buclei</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> primPar(<span class="tp">int</span> a, <span class="tp">int</span> b, <span class="tp">int</span> c, <span class="tp">int</span> d) {
+    <span class="tp">int</span> v[<span class="nm">4</span>] <span class="op">=</span> {a, b, c, d};
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">4</span>; i<span class="op">++</span>) {
+        <span class="kw">if</span> (v[i] <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>) {
+            <span class="kw">return</span> v[i];
+        }
+    }
+    <span class="kw">return</span> <span class="op">-</span><span class="nm">1</span>;
+}
+
+
+cout <span class="op">&lt;&lt;</span> primPar(<span class="nm">5</span>, <span class="nm">8</span>, <span class="nm">3</span>, <span class="nm">6</span>);</code></pre></div><p><strong>Soluție:</strong> Subprogramul parcurge cele patru valori în ordine și returnează <em>prima</em> pereche găsită, adică <code>8</code>; la <code>return</code> se iese imediat, deci <code>6</code> nu mai este examinat. Se afișează <code>8</code>.</p></details>
+<details><summary>Exercițiul 3 — același nume, variabile diferite</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> f(<span class="tp">int</span> x) {
+    x <span class="op">=</span> x <span class="op">+</span> <span class="nm">4</span>;
+    <span class="kw">return</span> x;
+}
+
+
+<span class="tp">int</span> x <span class="op">=</span> <span class="nm">10</span>;
+<span class="tp">int</span> y <span class="op">=</span> f(<span class="nm">3</span>);
+cout <span class="op">&lt;&lt;</span> x <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> y;</code></pre></div><p><strong>Soluție:</strong> <code>x</code> din <code>main</code> și <code>x</code> din <code>f</code> sunt variabile diferite, chiar dacă au același nume: parametrul este o copie a argumentului <code>3</code>, deci <code>f</code> calculează <code>3 + 4 = 7</code>, iar <code>x</code> din <code>main</code> rămâne <code>10</code>. Se afișează <code>10 7</code>.</p></details>
+<details><summary>Exercițiul 4 — apeluri imbricate</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> maxim(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+    <span class="kw">if</span> (a <span class="op">&gt;</span> b) {
+        <span class="kw">return</span> a;
+    }
+    <span class="kw">return</span> b;
+}
+
+
+cout <span class="op">&lt;&lt;</span> maxim(maxim(<span class="nm">3</span>, <span class="nm">9</span>), maxim(<span class="nm">5</span>, <span class="nm">2</span>));</code></pre></div><p><strong>Soluție:</strong> Se evaluează mai întâi apelurile dinăuntru: <code>maxim(3, 9) = 9</code> și <code>maxim(5, 2) = 5</code>; apoi <code>maxim(9, 5) = 9</code>. Se afișează <code>9</code>.</p></details>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="lab">Laborator – Aplicații de rezolvat</h2>
+<p>Pentru fiecare problemă: stabilește cele trei întrebări (ce primește subprogramul, ce returnează, cum se numește), apoi scrie programul complet în C++. Soluția este ascunsă; încearcă mai întâi singur.</p>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">1</div><div class="exercise-title">Subprogram: este șirul crescător?<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>estecrescator(v, n)</code> care returnează <code>true</code> dacă elementele vectorului sunt în ordine crescătoare (fiecare este mai mic sau egal cu următorul), altfel <code>false</code>. Programul principal citește vectorul și afișează <code>DA</code> sau <code>NU</code>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Programul citește <code>n</code>, apoi <code>n</code> numere întregi.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p><code>DA</code> sau <code>NU</code>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ n ≤ 100</code></li><li>un șir cu un singur element este crescător</li><li>subprogramul doar citește vectorul</li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>5
+1 3 3 7 9</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>DA</pre></div></div><p class="judge-explicatie"><em>Explicație:</em> Fiecare element este cel mult egal cu următorul: <code>1 ≤ 3 ≤ 3 ≤ 7 ≤ 9</code>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p>Rezultatul este una dintre două valori → <code>bool</code>. Verificarea se face pe perechi de vecini, deci indicele <code>i</code> se oprește la <code>n − 2</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">bool</span> estecrescator(<span class="tp">int</span> v[], <span class="tp">int</span> n) {
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n <span class="op">-</span> <span class="nm">1</span>; i<span class="op">++</span>) {
+        <span class="kw">if</span> (v[i] <span class="op">&gt;</span> v[i <span class="op">+</span> <span class="nm">1</span>]) {
+            <span class="kw">return</span> <span class="kw">false</span>;
+        }
+    }
+    <span class="kw">return</span> <span class="kw">true</span>;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> v[<span class="nm">100</span>], n;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> v[i];
+    }
+    <span class="kw">if</span> (estecrescator(v, n)) {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"DA"</span>;
+    } <span class="kw">else</span> {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"NU"</span>;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">2</div><div class="exercise-title">Cel mai mare divizor comun<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>cmmdc(a, b)</code> care returnează cel mai mare divizor comun al două numere naturale nenule, folosind algoritmul lui Euclid (se înlocuiesc <code>a</code> și <code>b</code> cu <code>b</code> și <code>a % b</code> până când <code>b</code> devine 0). În <code>main</code>, citește două numere și afișează rezultatul.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Programul citește două numere naturale.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: cel mai mare divizor comun.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ a, b ≤ 1000000</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>12 18</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>6</pre></div></div><p>12 = 2·2·3 și 18 = 2·3·3; factorii comuni sunt 2 și 3, deci divizorul comun cel mai mare este 6.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p>Primește două <code>int</code>, returnează un <code>int</code>, se numește <code>cmmdc</code>. Parametrii se modifică în interior, dar sunt copii, deci variabilele din <code>main</code> rămân neschimbate.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> cmmdc(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+    <span class="kw">while</span> (b <span class="op">!=</span> <span class="nm">0</span>) {
+        <span class="tp">int</span> r <span class="op">=</span> a <span class="op">%</span> b;
+        a <span class="op">=</span> b;
+        b <span class="op">=</span> r;
+    }
+    <span class="kw">return</span> a;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> x, y;
+    cin <span class="op">&gt;&gt;</span> x <span class="op">&gt;&gt;</span> y;
+    cout <span class="op">&lt;&lt;</span> cmmdc(x, y);
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">3</div><div class="exercise-title">Suma cifrelor<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>sumaCifre(n)</code> care returnează suma cifrelor numărului natural <code>n</code>. În <code>main</code>, citește <code>n</code> și afișează rezultatul.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Programul citește un număr natural.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: suma cifrelor.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>0 ≤ n ≤ 1000000000</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>4721</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>14</pre></div></div><p>4 + 7 + 2 + 1 = 14.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p>Primește un <code>int</code>, returnează un <code>int</code>. Ultima cifră este <code>n % 10</code>, iar <code>n / 10</code> elimină ultima cifră.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> sumaCifre(<span class="tp">int</span> n) {
+    <span class="tp">int</span> s <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        s <span class="op">+=</span> n <span class="op">%</span> <span class="nm">10</span>;
+        n <span class="op">/=</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> s;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n;
+    cin <span class="op">&gt;&gt;</span> n;
+    cout <span class="op">&lt;&lt;</span> sumaCifre(n);
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">4</div><div class="exercise-title">Câte numere prime între a și b<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>estePrim(n)</code> și folosește-l pentru a număra câte numere prime sunt în intervalul <code>[a, b]</code>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Două numere naturale, <em>a</em> și <em>b</em>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: câte numere prime sunt între <em>a</em> și <em>b</em> (capetele incluse).</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ a ≤ b ≤ 10000</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>10 30</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>6</pre></div></div><p>Numerele prime sunt 11, 13, 17, 19, 23, 29.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Se repetă:</strong> verificarea primalității, pentru fiecare număr din interval. <strong>Antet:</strong> <code>bool estePrim(int n)</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">bool</span> estePrim(<span class="tp">int</span> n) {
+    <span class="kw">if</span> (n <span class="op">&lt;</span> <span class="nm">2</span>) {
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+    <span class="kw">for</span> (<span class="tp">int</span> d <span class="op">=</span> <span class="nm">2</span>; d <span class="op">*</span> d <span class="op">&lt;=</span> n; d<span class="op">++</span>) {
+        <span class="kw">if</span> (n <span class="op">%</span> d <span class="op">==</span> <span class="nm">0</span>) {
+            <span class="kw">return</span> <span class="kw">false</span>;
+        }
+    }
+    <span class="kw">return</span> <span class="kw">true</span>;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a, b, nr <span class="op">=</span> <span class="nm">0</span>;
+    cin <span class="op">&gt;&gt;</span> a <span class="op">&gt;&gt;</span> b;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> a; i <span class="op">&lt;=</span> b; i<span class="op">++</span>) {
+        <span class="kw">if</span> (estePrim(i)) {
+            nr<span class="op">++</span>;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> nr <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">5</div><div class="exercise-title">Palindroame<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Un număr este palindrom dacă citit de la dreapta la stânga are aceeași valoare. Scrie un subprogram <code>oglindit(n)</code> și folosește-l pentru a număra câte dintre cele <em>n</em> numere citite sunt palindroame.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Pe prima linie <em>n</em>; pe a doua, <em>n</em> numere naturale.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: câte numere sunt palindroame.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ n ≤ 100</code></li><li>Numerele au cel mult 9 cifre</li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>5
+121 123 1331 7 10</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>3</pre></div></div><p>121, 1331 și 7 sunt palindroame; 123 oglindit este 321, iar 10 oglindit este 1.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Se repetă:</strong> construirea oglinditului unui număr. <strong>Antet:</strong> <code>int oglindit(int n)</code>; numărul este palindrom dacă <code>oglindit(x) == x</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> oglindit(<span class="tp">int</span> n) {
+    <span class="tp">int</span> r <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        r <span class="op">=</span> r <span class="op">*</span> <span class="nm">10</span> <span class="op">+</span> n <span class="op">%</span> <span class="nm">10</span>;
+        n <span class="op">=</span> n <span class="op">/</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> r;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n, x, nr <span class="op">=</span> <span class="nm">0</span>;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> x;
+        <span class="kw">if</span> (oglindit(x) <span class="op">==</span> x) {
+            nr<span class="op">++</span>;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> nr <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">6</div><div class="exercise-title">Cel mai mic multiplu comun<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>cmmdc(a, b)</code> și un subprogram <code>cmmmc(a, b)</code> care îl folosește. Afișează cel mai mic multiplu comun al două numere.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Două numere naturale nenule.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: cel mai mic multiplu comun.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ a, b ≤ 30000</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>12 18</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>36</pre></div></div><p>cmmdc(12, 18) = 6, deci cmmmc = 12 · 18 / 6 = 36.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Subprogram care apelează alt subprogram:</strong> <code>cmmmc</code> nu repetă algoritmul lui Euclid, ci apelează <code>cmmdc</code>. Formula: <code>a / cmmdc(a, b) * b</code> (împărțirea înaintea înmulțirii evită depășirea).</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> cmmdc(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+    <span class="kw">while</span> (b <span class="op">!=</span> <span class="nm">0</span>) {
+        <span class="tp">int</span> r <span class="op">=</span> a <span class="op">%</span> b;
+        a <span class="op">=</span> b;
+        b <span class="op">=</span> r;
+    }
+    <span class="kw">return</span> a;
+}
+
+<span class="tp">int</span> cmmmc(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+    <span class="kw">return</span> a <span class="op">/</span> cmmdc(a, b) <span class="op">*</span> b;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a, b;
+    cin <span class="op">&gt;&gt;</span> a <span class="op">&gt;&gt;</span> b;
+    cout <span class="op">&lt;&lt;</span> cmmmc(a, b) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">7</div><div class="exercise-title">Maximul a trei numere<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>maxim(x, y)</code> care returnează cel mai mare dintre două numere și folosește-l (de două ori) pentru a afla maximul a trei numere.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Trei numere întregi.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: cel mai mare dintre cele trei.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li>Numerele au valoarea absolută cel mult 1000000</li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>4 9 6</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>9</pre></div></div><p>9 este cel mai mare dintre 4, 9 și 6.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Se repetă:</strong> compararea a două numere. Maximul a trei numere este maximul dintre primul și maximul celorlalte două: <code>maxim(a, maxim(b, c))</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> maxim(<span class="tp">int</span> x, <span class="tp">int</span> y) {
+    <span class="kw">if</span> (x <span class="op">&gt;</span> y) {
+        <span class="kw">return</span> x;
+    }
+    <span class="kw">return</span> y;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a, b, c;
+    cin <span class="op">&gt;&gt;</span> a <span class="op">&gt;&gt;</span> b <span class="op">&gt;&gt;</span> c;
+    cout <span class="op">&lt;&lt;</span> maxim(a, maxim(b, c)) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">8</div><div class="exercise-title">Pătrat din stele<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>void linie(int n)</code> care afișează <em>n</em> stele (<code>*</code>) pe un rând. Folosește-l pentru a desena un pătrat cu latura <em>n</em>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Un număr natural <em>n</em>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p><em>n</em> linii, fiecare cu <em>n</em> stele.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ n ≤ 20</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>4</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>****
+****
+****
+****</pre></div></div><p>Patru linii de câte patru stele.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Se repetă:</strong> afișarea unei linii. <strong>Antet:</strong> <code>void linie(int n)</code> — nu returnează nimic. Apelul se face într-o buclă, de <em>n</em> ori.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">void</span> linie(<span class="tp">int</span> n) {
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cout <span class="op">&lt;&lt;</span> <span class="st">'*'</span>;
+    }
+    cout <span class="op">&lt;&lt;</span> endl;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        linie(n);
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">9</div><div class="exercise-title">Combinări<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Numărul de moduri de a alege <em>k</em> obiecte din <em>n</em> este <em>n! / (k! · (n − k)!)</em>. Scrie un subprogram <code>factorial(n)</code> și folosește-l <strong>de trei ori</strong> pentru a calcula combinări de <em>n</em> luate câte <em>k</em>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Două numere naturale, <em>n</em> și <em>k</em>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: combinări de <em>n</em> luate câte <em>k</em>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>0 ≤ k ≤ n ≤ 15</code></li><li>Folosește <code>long long</code> pentru factorial</li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>5 2</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>10</pre></div></div><p>5! = 120, 2! = 2, 3! = 6; 120 / (2 · 6) = 10.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Se repetă:</strong> calculul unui factorial, de trei ori cu date diferite (<em>n</em>, <em>k</em>, <em>n − k</em>). <strong>Antet:</strong> <code>long long factorial(int n)</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">long</span> <span class="tp">long</span> factorial(<span class="tp">int</span> n) {
+    <span class="tp">long</span> <span class="tp">long</span> f <span class="op">=</span> <span class="nm">1</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">2</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+        f <span class="op">*=</span> i;
+    }
+    <span class="kw">return</span> f;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n, k;
+    cin <span class="op">&gt;&gt;</span> n <span class="op">&gt;&gt;</span> k;
+    cout <span class="op">&lt;&lt;</span> factorial(n) <span class="op">/</span> (factorial(k) <span class="op">*</span> factorial(n <span class="op">-</span> k)) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">10</div><div class="exercise-title">Numere cu suma cifrelor dată<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>sumaCifre(n)</code> și folosește-l pentru a număra câte numere de la 1 la <em>n</em> au suma cifrelor egală cu <em>s</em>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Două numere naturale, <em>n</em> și <em>s</em>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: câte numere din intervalul <code>[1, n]</code> au suma cifrelor <em>s</em>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ n ≤ 100000</code></li><li><code>1 ≤ s ≤ 45</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>50 5</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>6</pre></div></div><p>Numerele sunt 5, 14, 23, 32, 41 și 50.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Se repetă:</strong> calculul sumei cifrelor, pentru fiecare număr din interval. <strong>Antet:</strong> <code>int sumaCifre(int n)</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> sumaCifre(<span class="tp">int</span> n) {
+    <span class="tp">int</span> s <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        s <span class="op">+=</span> n <span class="op">%</span> <span class="nm">10</span>;
+        n <span class="op">=</span> n <span class="op">/</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> s;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n, s, nr <span class="op">=</span> <span class="nm">0</span>;
+    cin <span class="op">&gt;&gt;</span> n <span class="op">&gt;&gt;</span> s;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+        <span class="kw">if</span> (sumaCifre(i) <span class="op">==</span> s) {
+            nr<span class="op">++</span>;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> nr <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">11</div><div class="exercise-title">Zilele unei luni<span class="diff-badge grea">Grea</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>bisect(an)</code> și un subprogram <code>zileInLuna(luna, an)</code> care îl folosește. Citește o lună și un an și afișează numărul de zile al lunii. Un an este bisect dacă este divizibil cu 4, dar nu cu 100, sau este divizibil cu 400.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Două numere: luna (1 … 12) și anul.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: numărul de zile.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ luna ≤ 12</code></li><li><code>1900 ≤ an ≤ 2100</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>2 2024</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>29</pre></div></div><p>2024 este bisect (divizibil cu 4, nu cu 100), deci februarie are 29 de zile.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Două subprograme legate:</strong> <code>bool bisect(int an)</code> răspunde la o întrebare; <code>int zileInLuna(int luna, int an)</code> o folosește doar pentru luna februarie.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">bool</span> bisect(<span class="tp">int</span> an) {
+    <span class="kw">return</span> (an <span class="op">%</span> <span class="nm">4</span> <span class="op">==</span> <span class="nm">0</span> <span class="op">&amp;&amp;</span> an <span class="op">%</span> <span class="nm">100</span> <span class="op">!=</span> <span class="nm">0</span>) <span class="op">||</span> an <span class="op">%</span> <span class="nm">400</span> <span class="op">==</span> <span class="nm">0</span>;
+}
+
+<span class="tp">int</span> zileInLuna(<span class="tp">int</span> luna, <span class="tp">int</span> an) {
+    <span class="kw">if</span> (luna <span class="op">==</span> <span class="nm">2</span>) {
+        <span class="kw">if</span> (bisect(an)) {
+            <span class="kw">return</span> <span class="nm">29</span>;
+        }
+        <span class="kw">return</span> <span class="nm">28</span>;
+    }
+    <span class="kw">if</span> (luna <span class="op">==</span> <span class="nm">4</span> <span class="op">||</span> luna <span class="op">==</span> <span class="nm">6</span> <span class="op">||</span> luna <span class="op">==</span> <span class="nm">9</span> <span class="op">||</span> luna <span class="op">==</span> <span class="nm">11</span>) {
+        <span class="kw">return</span> <span class="nm">30</span>;
+    }
+    <span class="kw">return</span> <span class="nm">31</span>;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> luna, an;
+    cin <span class="op">&gt;&gt;</span> luna <span class="op">&gt;&gt;</span> an;
+    cout <span class="op">&lt;&lt;</span> zileInLuna(luna, an) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">12</div><div class="exercise-title">Suma puterilor<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>putere(baza, exponent)</code> care returnează <em>baza<sup>exponent</sup></em>. Folosește-l pentru a calcula <em>1<sup>k</sup> + 2<sup>k</sup> + … + n<sup>k</sup></em>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Două numere naturale, <em>n</em> și <em>k</em>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: suma puterilor.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ n ≤ 20</code></li><li><code>1 ≤ k ≤ 5</code></li><li>Folosește <code>long long</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>4 3</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>100</pre></div></div><p>1 + 8 + 27 + 64 = 100.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Se repetă:</strong> ridicarea la putere, pentru fiecare număr de la 1 la <em>n</em>. <strong>Antet:</strong> <code>long long putere(int baza, int exponent)</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">long</span> <span class="tp">long</span> putere(<span class="tp">int</span> baza, <span class="tp">int</span> exponent) {
+    <span class="tp">long</span> <span class="tp">long</span> r <span class="op">=</span> <span class="nm">1</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> exponent; i<span class="op">++</span>) {
+        r <span class="op">*=</span> baza;
+    }
+    <span class="kw">return</span> r;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n, k;
+    cin <span class="op">&gt;&gt;</span> n <span class="op">&gt;&gt;</span> k;
+    <span class="tp">long</span> <span class="tp">long</span> suma <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+        suma <span class="op">+=</span> putere(i, k);
+    }
+    cout <span class="op">&lt;&lt;</span> suma <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">13</div><div class="exercise-title">Numere cu număr par de cifre<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>nrCifre(n)</code> care returnează numărul de cifre ale lui <em>n</em>. Citește <em>n</em> numere și afișează câte dintre ele au un număr par de cifre.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Pe prima linie <em>n</em>; pe a doua, <em>n</em> numere naturale nenule.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr: câte numere au un număr par de cifre.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ n ≤ 100</code></li><li>Numerele au cel mult 9 cifre</li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>5
+12 345 6789 1 100000</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>3</pre></div></div><p>12 (2 cifre), 6789 (4 cifre) și 100000 (6 cifre) au număr par de cifre.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Se repetă:</strong> numărarea cifrelor, pentru fiecare număr citit. <strong>Antet:</strong> <code>int nrCifre(int n)</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> nrCifre(<span class="tp">int</span> n) {
+    <span class="tp">int</span> c <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        c<span class="op">++</span>;
+        n <span class="op">=</span> n <span class="op">/</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> c;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n, x, nr <span class="op">=</span> <span class="nm">0</span>;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> x;
+        <span class="kw">if</span> (nrCifre(x) <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>) {
+            nr<span class="op">++</span>;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> nr <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">14</div><div class="exercise-title">Numere prietene<span class="diff-badge grea">Grea</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Două numere diferite sunt <em>prietene</em> dacă suma divizorilor proprii ai fiecăruia (divizorii mai mici decât numărul însuși, inclusiv 1) este egală cu celălalt număr. Scrie un subprogram <code>sumaDivizori(n)</code> și afișează <code>DA</code> dacă cele două numere citite sunt prietene, altfel <code>NU</code>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Două numere naturale, mai mari decât 1.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Cuvântul <code>DA</code> sau <code>NU</code>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>2 ≤ a, b ≤ 100000</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>220 284</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>DA</pre></div></div><p>Divizorii proprii ai lui 220 au suma 284, iar ai lui 284 au suma 220.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Se repetă:</strong> suma divizorilor proprii, apelată de două ori (pentru <em>a</em> și pentru <em>b</em>). <strong>Antet:</strong> <code>int sumaDivizori(int n)</code>. Condiția: <code>a != b</code>, <code>sumaDivizori(a) == b</code> și <code>sumaDivizori(b) == a</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> sumaDivizori(<span class="tp">int</span> n) {
+    <span class="tp">int</span> s <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> d <span class="op">=</span> <span class="nm">1</span>; d <span class="op">&lt;</span> n; d<span class="op">++</span>) {
+        <span class="kw">if</span> (n <span class="op">%</span> d <span class="op">==</span> <span class="nm">0</span>) {
+            s <span class="op">+=</span> d;
+        }
+    }
+    <span class="kw">return</span> s;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a, b;
+    cin <span class="op">&gt;&gt;</span> a <span class="op">&gt;&gt;</span> b;
+    <span class="kw">if</span> (a <span class="op">!=</span> b <span class="op">&amp;&amp;</span> sumaDivizori(a) <span class="op">==</span> b <span class="op">&amp;&amp;</span> sumaDivizori(b) <span class="op">==</span> a) {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"DA"</span> <span class="op">&lt;&lt;</span> endl;
+    } <span class="kw">else</span> {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"NU"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">15</div><div class="exercise-title">Durate în ore, minute, secunde<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Scrie un subprogram <code>void afiseazaTimp(int secunde)</code> care afișează o durată în forma <code>ore:minute:secunde</code>. Citește <em>n</em> durate, în secunde, și afișează-le pe fiecare, pe câte un rând.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Pe prima linie <em>n</em>; pe a doua, <em>n</em> numere naturale (secunde).</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Câte un rând pentru fiecare durată, în forma <code>ore:minute:secunde</code>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ n ≤ 20</code></li><li><code>0 ≤ secunde ≤ 86399</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>2
+3725 59</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>1:2:5
+0:0:59</pre></div></div><p>3725 s = 1 h (3600 s) + 2 min (120 s) + 5 s; 59 s = 0 h 0 min 59 s.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Se repetă:</strong> descompunerea în ore, minute, secunde și afișarea. <strong>Antet:</strong> <code>void afiseazaTimp(int secunde)</code> — nu returnează nimic, doar afișează.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">void</span> afiseazaTimp(<span class="tp">int</span> secunde) {
+    <span class="tp">int</span> ore <span class="op">=</span> secunde <span class="op">/</span> <span class="nm">3600</span>;
+    <span class="tp">int</span> minute <span class="op">=</span> secunde <span class="op">%</span> <span class="nm">3600</span> <span class="op">/</span> <span class="nm">60</span>;
+    <span class="tp">int</span> sec <span class="op">=</span> secunde <span class="op">%</span> <span class="nm">60</span>;
+    cout <span class="op">&lt;&lt;</span> ore <span class="op">&lt;&lt;</span> <span class="st">":"</span> <span class="op">&lt;&lt;</span> minute <span class="op">&lt;&lt;</span> <span class="st">":"</span> <span class="op">&lt;&lt;</span> sec <span class="op">&lt;&lt;</span> endl;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n, x;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> x;
+        afiseazaTimp(x);
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">16</div><div class="exercise-title">Statistică pe vector<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citesc <em>n</em> numere întregi. Împarte problema în trei subprograme: <code>minim(v, n)</code>, <code>maxim(v, n)</code> și <code>medie(v, n)</code>. Afișează minimul, maximul și media (cu două zecimale), pe un singur rând.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Pe prima linie <em>n</em>; pe a doua, <em>n</em> numere întregi.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Trei valori pe un rând: minimul, maximul, media cu două zecimale.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ n ≤ 100</code></li><li>Numerele au valoarea absolută cel mult 10000</li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>5
+4 9 2 7 8</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>2 9 6.00</pre></div></div><p>Minimul este 2, maximul 9, iar media (4 + 9 + 2 + 7 + 8) / 5 = 6.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Subprobleme:</strong> trei calcule independente, câte un subprogram pentru fiecare. Subprogramele primesc vectorul și numărul de elemente; citirea rămâne în <code>main</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">#include &lt;iomanip&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> minim(<span class="tp">int</span> v[], <span class="tp">int</span> n) {
+    <span class="tp">int</span> m <span class="op">=</span> v[<span class="nm">0</span>];
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        <span class="kw">if</span> (v[i] <span class="op">&lt;</span> m) {
+            m <span class="op">=</span> v[i];
+        }
+    }
+    <span class="kw">return</span> m;
+}
+
+<span class="tp">int</span> maxim(<span class="tp">int</span> v[], <span class="tp">int</span> n) {
+    <span class="tp">int</span> m <span class="op">=</span> v[<span class="nm">0</span>];
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        <span class="kw">if</span> (v[i] <span class="op">&gt;</span> m) {
+            m <span class="op">=</span> v[i];
+        }
+    }
+    <span class="kw">return</span> m;
+}
+
+<span class="tp">double</span> medie(<span class="tp">int</span> v[], <span class="tp">int</span> n) {
+    <span class="tp">long</span> <span class="tp">long</span> suma <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        suma <span class="op">+=</span> v[i];
+    }
+    <span class="kw">return</span> (<span class="tp">double</span>)suma <span class="op">/</span> n;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> v[<span class="nm">100</span>], n;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> v[i];
+    }
+    cout <span class="op">&lt;&lt;</span> minim(v, n) <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> maxim(v, n) <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> fixed <span class="op">&lt;&lt;</span> setprecision(<span class="nm">2</span>) <span class="op">&lt;&lt;</span> medie(v, n) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">17</div><div class="exercise-title">Analiza unui număr<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citește un număr natural. Scrie subprogramele <code>nrCifre</code>, <code>sumaCifre</code> și <code>estePrim</code>. Afișează, pe rânduri separate: numărul de cifre, suma cifrelor și <code>DA</code> sau <code>NU</code> după cum numărul este prim sau nu.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Un număr natural.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Trei rânduri: numărul de cifre, suma cifrelor, <code>DA</code> / <code>NU</code>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>2 ≤ n ≤ 1000000</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>29</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>2
+11
+DA</pre></div></div><p>29 are 2 cifre (suma 2 + 9 = 11) și este prim.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Subprobleme:</strong> trei subprograme, fiecare apelat o singură dată. Aici scopul nu este repetarea, ci claritatea: <code>main</code> citește și afișează.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> nrCifre(<span class="tp">int</span> n) {
+    <span class="tp">int</span> c <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        c<span class="op">++</span>;
+        n <span class="op">=</span> n <span class="op">/</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> c;
+}
+
+<span class="tp">int</span> sumaCifre(<span class="tp">int</span> n) {
+    <span class="tp">int</span> s <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        s <span class="op">+=</span> n <span class="op">%</span> <span class="nm">10</span>;
+        n <span class="op">=</span> n <span class="op">/</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> s;
+}
+
+<span class="tp">bool</span> estePrim(<span class="tp">int</span> n) {
+    <span class="kw">if</span> (n <span class="op">&lt;</span> <span class="nm">2</span>) {
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+    <span class="kw">for</span> (<span class="tp">int</span> d <span class="op">=</span> <span class="nm">2</span>; d <span class="op">*</span> d <span class="op">&lt;=</span> n; d<span class="op">++</span>) {
+        <span class="kw">if</span> (n <span class="op">%</span> d <span class="op">==</span> <span class="nm">0</span>) {
+            <span class="kw">return</span> <span class="kw">false</span>;
+        }
+    }
+    <span class="kw">return</span> <span class="kw">true</span>;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> n;
+    cin <span class="op">&gt;&gt;</span> n;
+    cout <span class="op">&lt;&lt;</span> nrCifre(n) <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> sumaCifre(n) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">if</span> (estePrim(n)) {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"DA"</span> <span class="op">&lt;&lt;</span> endl;
+    } <span class="kw">else</span> {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"NU"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">18</div><div class="exercise-title">Triunghiul cu laturi date<span class="diff-badge grea">Grea</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citesc trei numere care ar putea fi laturile unui triunghi. Scrie subprogramele <code>bool esteTriunghi(a, b, c)</code>, <code>double perimetru(a, b, c)</code> și <code>double arie(a, b, c)</code> (formula lui Heron). Dacă numerele pot forma un triunghi, afișează perimetrul și aria (cu două zecimale), pe un rând; altfel afișează <code>nu este triunghi</code>.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Trei numere naturale nenule.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Perimetrul și aria, cu două zecimale, sau mesajul <code>nu este triunghi</code>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ a, b, c ≤ 1000</code></li><li>Trei numere formează un triunghi dacă fiecare este mai mic decât suma celorlalte două</li><li>Formula lui Heron: <em>s = (a + b + c) / 2</em>, aria = √(s·(s − a)·(s − b)·(s − c))</li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>3 4 5</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>12.00 6.00</pre></div></div><p>Triunghiul 3-4-5 există; perimetrul este 12, iar aria este √(6·3·2·1) = 6.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Subprobleme:</strong> verificarea, perimetrul, aria. <code>arie</code> are nevoie de semiperimetru; poți apela <code>perimetru</code> din ea. <code>main</code> apelează <code>arie</code> doar dacă <code>esteTriunghi</code> este adevărat.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">#include &lt;cmath&gt;</span>
+<span class="kw">#include &lt;iomanip&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">bool</span> esteTriunghi(<span class="tp">int</span> a, <span class="tp">int</span> b, <span class="tp">int</span> c) {
+    <span class="kw">return</span> a <span class="op">&lt;</span> b <span class="op">+</span> c <span class="op">&amp;&amp;</span> b <span class="op">&lt;</span> a <span class="op">+</span> c <span class="op">&amp;&amp;</span> c <span class="op">&lt;</span> a <span class="op">+</span> b;
+}
+
+<span class="tp">double</span> perimetru(<span class="tp">int</span> a, <span class="tp">int</span> b, <span class="tp">int</span> c) {
+    <span class="kw">return</span> a <span class="op">+</span> b <span class="op">+</span> c;
+}
+
+<span class="tp">double</span> arie(<span class="tp">int</span> a, <span class="tp">int</span> b, <span class="tp">int</span> c) {
+    <span class="tp">double</span> s <span class="op">=</span> perimetru(a, b, c) <span class="op">/</span> <span class="nm">2</span>;
+    <span class="kw">return</span> sqrt(s <span class="op">*</span> (s <span class="op">-</span> a) <span class="op">*</span> (s <span class="op">-</span> b) <span class="op">*</span> (s <span class="op">-</span> c));
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a, b, c;
+    cin <span class="op">&gt;&gt;</span> a <span class="op">&gt;&gt;</span> b <span class="op">&gt;&gt;</span> c;
+    <span class="kw">if</span> (esteTriunghi(a, b, c)) {
+        cout <span class="op">&lt;&lt;</span> fixed <span class="op">&lt;&lt;</span> setprecision(<span class="nm">2</span>) <span class="op">&lt;&lt;</span> perimetru(a, b, c) <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> arie(a, b, c) <span class="op">&lt;&lt;</span> endl;
+    } <span class="kw">else</span> {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"nu este triunghi"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">19</div><div class="exercise-title">Meniu de operații pe un număr<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citesc o opțiune (1, 2 sau 3) și un număr natural <em>n</em>. Opțiunea 1 afișează factorialul lui <em>n</em>, opțiunea 2 afișează suma cifrelor, opțiunea 3 afișează numărul scris invers. Scrie câte un subprogram pentru fiecare operație.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Două numere naturale: opțiunea și <em>n</em>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Rezultatul operației alese.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li>Opțiunea este 1, 2 sau 3</li><li><code>0 ≤ n ≤ 15</code> pentru opțiunea 1; <code>0 ≤ n ≤ 1000000000</code> pentru celelalte</li><li>Folosește <code>long long</code> pentru factorial</li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>2 4721</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>14</pre></div></div><p>Opțiunea 2 (suma cifrelor): 4 + 7 + 2 + 1 = 14.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Subprobleme:</strong> trei operații independente. <code>main</code> doar alege subprogramul potrivit, cu un <code>if</code> sau <code>switch</code>. Fiecare subprogram se testează separat.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">long</span> <span class="tp">long</span> factorial(<span class="tp">int</span> n) {
+    <span class="tp">long</span> <span class="tp">long</span> f <span class="op">=</span> <span class="nm">1</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">2</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+        f <span class="op">*=</span> i;
+    }
+    <span class="kw">return</span> f;
+}
+
+<span class="tp">int</span> sumaCifre(<span class="tp">int</span> n) {
+    <span class="tp">int</span> s <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        s <span class="op">+=</span> n <span class="op">%</span> <span class="nm">10</span>;
+        n <span class="op">=</span> n <span class="op">/</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> s;
+}
+
+<span class="tp">int</span> oglindit(<span class="tp">int</span> n) {
+    <span class="tp">int</span> r <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">while</span> (n <span class="op">&gt;</span> <span class="nm">0</span>) {
+        r <span class="op">=</span> r <span class="op">*</span> <span class="nm">10</span> <span class="op">+</span> n <span class="op">%</span> <span class="nm">10</span>;
+        n <span class="op">=</span> n <span class="op">/</span> <span class="nm">10</span>;
+    }
+    <span class="kw">return</span> r;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> optiune, n;
+    cin <span class="op">&gt;&gt;</span> optiune <span class="op">&gt;&gt;</span> n;
+    <span class="kw">if</span> (optiune <span class="op">==</span> <span class="nm">1</span>) {
+        cout <span class="op">&lt;&lt;</span> factorial(n) <span class="op">&lt;&lt;</span> endl;
+    } <span class="kw">else</span> <span class="kw">if</span> (optiune <span class="op">==</span> <span class="nm">2</span>) {
+        cout <span class="op">&lt;&lt;</span> sumaCifre(n) <span class="op">&lt;&lt;</span> endl;
+    } <span class="kw">else</span> {
+        cout <span class="op">&lt;&lt;</span> oglindit(n) <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">20</div><div class="exercise-title">Raportul unui elev<span class="diff-badge grea">Grea</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citesc <em>n</em> note. Scrie subprogramele <code>medie(note, n)</code>, <code>notaMaxima(note, n)</code>, <code>nrPromovate(note, n)</code> (câte note sunt cel puțin 5) și <code>bool promovat(media)</code> (media cel puțin 5). Afișează, pe rânduri separate: media (două zecimale), nota maximă, numărul de note promovate și <code>DA</code> sau <code>NU</code> pentru promovarea elevului.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Pe prima linie <em>n</em>; pe a doua, <em>n</em> note.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Patru rânduri: media, nota maximă, numărul de note promovate, <code>DA</code> / <code>NU</code>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ n ≤ 30</code></li><li>Notele sunt întregi între 1 și 10</li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>4
+10 4 6 8</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>7.00
+10
+3
+DA</pre></div></div><p>Media este (10 + 4 + 6 + 8) / 4 = 7; nota maximă este 10; trei note sunt cel puțin 5; media este cel puțin 5.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p><strong>Subprobleme:</strong> patru bucăți, dintre care una (<code>promovat</code>) primește ca argument rezultatul alteia (<code>medie</code>). <code>main</code> citește vectorul și afișează cele patru rezultate.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">#include &lt;iomanip&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">double</span> medie(<span class="tp">int</span> note[], <span class="tp">int</span> n) {
+    <span class="tp">int</span> s <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        s <span class="op">+=</span> note[i];
+    }
+    <span class="kw">return</span> (<span class="tp">double</span>)s <span class="op">/</span> n;
+}
+
+<span class="tp">int</span> notaMaxima(<span class="tp">int</span> note[], <span class="tp">int</span> n) {
+    <span class="tp">int</span> m <span class="op">=</span> note[<span class="nm">0</span>];
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        <span class="kw">if</span> (note[i] <span class="op">&gt;</span> m) {
+            m <span class="op">=</span> note[i];
+        }
+    }
+    <span class="kw">return</span> m;
+}
+
+<span class="tp">int</span> nrPromovate(<span class="tp">int</span> note[], <span class="tp">int</span> n) {
+    <span class="tp">int</span> c <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        <span class="kw">if</span> (note[i] <span class="op">&gt;=</span> <span class="nm">5</span>) {
+            c<span class="op">++</span>;
+        }
+    }
+    <span class="kw">return</span> c;
+}
+
+<span class="tp">bool</span> promovat(<span class="tp">double</span> media) {
+    <span class="kw">return</span> media <span class="op">&gt;=</span> <span class="nm">5</span>;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> note[<span class="nm">30</span>], n;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> note[i];
+    }
+    <span class="tp">double</span> m <span class="op">=</span> medie(note, n);
+    cout <span class="op">&lt;&lt;</span> fixed <span class="op">&lt;&lt;</span> setprecision(<span class="nm">2</span>) <span class="op">&lt;&lt;</span> m <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> notaMaxima(note, n) <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> nrPromovate(note, n) <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">if</span> (promovat(m)) {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"DA"</span> <span class="op">&lt;&lt;</span> endl;
+    } <span class="kw">else</span> {
+        cout <span class="op">&lt;&lt;</span> <span class="st">"NU"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h3 id="mcq">Întrebări cu alegere multiplă</h3>
+<p>O singură variantă este corectă la fiecare întrebare.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>Ce se afișează?</p><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> f(<span class="tp">int</span> x) {
+    x <span class="op">=</span> x <span class="op">*</span> <span class="nm">2</span>;
+    <span class="kw">return</span> x <span class="op">+</span> <span class="nm">1</span>;
+}
+
+<span class="tp">int</span> y <span class="op">=</span> <span class="nm">4</span>;
+<span class="tp">int</span> z <span class="op">=</span> f(y);
+cout <span class="op">&lt;&lt;</span> y <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> z;</code></pre></div><ul class="choices"><li>a) 8 9</li><li>b) 4 9</li><li>c) 4 8</li><li>d) 9 9</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b) 4 9</strong> – subprogramul lucrează pe propria copie a lui <code>x</code>; <code>y</code> rămâne 4. (Concluzia este valabilă pentru argumente numerice.)</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Ce se afișează?</p><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> maxim(<span class="tp">int</span> a, <span class="tp">int</span> b) {
+    <span class="kw">if</span> (a <span class="op">&gt;</span> b) {
+        <span class="kw">return</span> a;
+    }
+    <span class="kw">return</span> b;
+}
+
+cout <span class="op">&lt;&lt;</span> maxim(maxim(<span class="nm">3</span>, <span class="nm">9</span>), maxim(<span class="nm">5</span>, <span class="nm">2</span>));</code></pre></div><ul class="choices"><li>a) 3</li><li>b) 5</li><li>c) 9</li><li>d) 2</li></ul><details><summary>Vezi răspunsul</summary><p><strong>c) 9</strong> – <code>maxim(3, 9) = 9</code>, <code>maxim(5, 2) = 5</code>, apoi <code>maxim(9, 5) = 9</code>.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>În <code>int maxim(int a, int b)</code> apelat ca <code>maxim(7, 12)</code>, ce sunt <code>a</code> și <code>b</code>, respectiv <code>7</code> și <code>12</code>?</p><ul class="choices"><li>a) argumente, respectiv parametri</li><li>b) parametri, respectiv argumente</li><li>c) variabile globale, respectiv constante</li><li>d) tipuri, respectiv valori</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – <code>a</code> și <code>b</code> sunt parametrii (din definiție), iar <code>7</code> și <code>12</code> sunt argumentele (din apel).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Un subprogram are tipul <code>void</code>. Ce înseamnă?</p><ul class="choices"><li>a) nu poate avea parametri</li><li>b) nu returnează nicio valoare</li><li>c) nu poate afișa nimic</li><li>d) returnează întotdeauna 0</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – <code>void</code> înseamnă că nu returnează nicio valoare; poate avea parametri și poate afișa.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">5</span>Care este motivul principal pentru care folosim subprograme?</p><ul class="choices"><li>a) ca programul să ruleze mai repede</li><li>b) ca să nu scriem de mai multe ori același calcul pentru date diferite</li><li>c) ca să nu mai avem nevoie de variabile</li><li>d) ca să evităm complet erorile</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – ce se repetă se scrie o singură dată; datele care se schimbă devin parametri. Subprogramul nu garantează viteza și nu înlătură erorile.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">6</span>Într-un program, aceeași formulă este scrisă de patru ori, cu valori diferite. Ce devine formula și ce devin valorile într-un subprogram?</p><ul class="choices"><li>a) formula devine parametru, valorile devin corp</li><li>b) formula devine corp, valorile devin parametri</li><li>c) ambele devin parametri</li><li>d) ambele rămân în <code>main</code></li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – ce se repetă devine corpul; ce se schimbă devine parametri.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">7</span>Un calcul se schimbă și trebuie corectat. Programul îl avea scris în trei locuri. Cum este mai simplu?</p><ul class="choices"><li>a) cu subprogram, într-un singur loc</li><li>b) fără subprogram, în fiecare loc, în același mod</li><li>c) nu se poate corecta</li><li>d) la fel de simplu în ambele cazuri</li></ul><details><summary>Vezi răspunsul</summary><p><strong>a)</strong> – corectezi o singură definiție, iar toate apelurile folosesc varianta corectă.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">8</span>Un program mare este împărțit în subprograme, fiecare apelat o singură dată. Ce principiu ilustrează?</p><ul class="choices"><li>a) repetarea</li><li>b) modularitatea</li><li>c) recursivitatea</li><li>d) compilarea separată</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – împărțirea problemei în subprobleme, câte un subprogram pentru fiecare; nu există nicio repetare a codului.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">9</span>Care dintre următoarele este un avantaj al modularității?</p><ul class="choices"><li>a) fiecare subprogram se poate testa separat</li><li>b) programul rulează întotdeauna mai repede</li><li>c) nu mai este nevoie de <code>main</code></li><li>d) nu mai există erori de logică</li></ul><details><summary>Vezi răspunsul</summary><p><strong>a)</strong> – testarea separată a bucăților. Celelalte afirmații nu sunt adevărate: viteza nu este garantată, <code>main</code> rămâne necesar, iar erorile de logică pot apărea și într-un subprogram.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">10</span>Ce face, în general, programul principal într-un program modular?</p><ul class="choices"><li>a) conține tot calculul</li><li>b) citește datele și apelează subprogramele în ordinea potrivită</li><li>c) nu face nimic</li><li>d) se execută ultimul</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – coordonează subprogramele; detaliile calculelor sunt în definițiile lor.</p></details></div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="tb-cheat">
+        <div class="prose">
+<h2 id="cheat">Fișă rapidă – Laborator 0b</h2>
+<p>Referință compactă pentru folosit în laborator.</p>
+<div class="cheat-grid">
+<div class="cheat-card"><div class="cheat-card-header">Subprogram</div><pre>C++:    int f(int a, int b) { return a+b; }
+        void g(double x) { ... }
+Java:   static int f(int a, int b) {...}
+Python: def f(a, b): return a + b
+
+Variabilele din subprogram sunt locale.
+Argument numeric: se lucreaza pe o
+copie (variabila apelantului ramane).</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Trei întrebări pentru un subprogram</div><pre>1. Ce primeste?     -&gt; parametri (cu tip)
+2. Ce returneaza?   -&gt; tip (sau void)
+3. Cum se numeste?  -&gt; nume care spune ce face
+
+bool estePrim(int n) { ... }
+int  cmmdc(int a, int b) { ... }
+void afiseaza(double nota) { ... }</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Erori cu subprograme</div><pre>fara return intr-o functie non-void
+   -&gt; avertizare cu -Wall; rezultat nedefinit
+apel inainte de definitie
+   -&gt; C++: "was not declared in this scope"
+   -&gt; Python: NameError
+int m = f(5);  cu f void
+   -&gt; "void value not ignored"</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Ce se repetă?</div><pre>aceeasi bucata de cod, alte date
+   -&gt; subprogram
+
+ce se REPETA   -&gt; corpul
+ce se SCHIMBA  -&gt; parametrii
+
+scrii o data, repari o data,
+apelezi de cate ori ai nevoie
+
+subprogram care apeleaza alt
+subprogram: cmmmc -&gt; cmmdc</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Modularitate</div><pre>problema MARE
+  -&gt; subprobleme mici
+  -&gt; cate un subprogram fiecare
+
+main  = citeste + coordoneaza
+subprogram = o sarcina precisa
+
+Repetare   : acelasi calcul, mai multe ori
+Modularitate: problema mare, bucati clare
+  (un subprogram poate fi apelat si o data)</pre></div>
+</div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="tb-autoevaluare">
+        <div class="prose">
+<h2 id="verificare">Întrebări de autoevaluare</h2>
+<details><summary>1. Ce este un subprogram și ce înseamnă „variabilă locală”?</summary><p>Un subprogram este o secvență de instrucțiuni cu nume, apelabilă de oricâte ori, care poate primi parametri și returna o valoare. O variabilă locală este declarată în interiorul lui și există numai cât timp se execută subprogramul.</p></details>
+<li>Un <strong>subprogram</strong> are tip returnat (C++ și Java), nume, parametri și corp; variabilele lui sunt locale. Pentru argumente numerice, subprogramul lucrează pe o copie.</li>
+<tr><td><strong>Subprogram</strong></td><td>Secvență de instrucțiuni cu nume, apelabilă, care poate primi parametri și returna o valoare</td></tr><details><summary>2. Care este diferența dintre parametru și argument?</summary><p>Parametrul este variabila din antetul definiției (<code>int a</code>), iar argumentul este valoarea dată la apel (<code>7</code>). La apel, parametrul primește valoarea argumentului.</p></details>
+<details><summary>3. De ce se folosesc subprograme?</summary><p>Pentru că o secvență de instrucțiuni scrisă o dată poate fi apelată de oricâte ori, programul se împarte în părți cu nume, iar fiecare parte se verifică separat. Aceste motive sunt formulări didactice ale autorului, nu citate din vreo sursă.</p></details>
+<details><summary>4. Ce se întâmplă în C++ dacă o funcție care trebuie să returneze o valoare ajunge la final fără <code>return</code>?</summary><p>Compilatorul poate doar avertiza (cu <code>-Wall</code>), iar folosirea rezultatului este comportament nedefinit. Nu pot confirma asta dintr-o citare a standardului în acest material; regula este prezentată ca regulă cunoscută a limbajului și avertismentul a fost verificat cu <code>g++</code> 13.3.</p></details>
+<details><summary>5. De ce un subprogram nu schimbă un argument numeric din <code>main</code>?</summary><p>Pentru că parametrul este o copie a valorii argumentului. Concluzia a fost verificată pentru <code>int</code>; pentru vectori și obiecte regula diferă între limbaje.</p></details>
+<details><summary>6. Ce legătură este între repetare și subprograme?</summary><p>Dacă același calcul se face de mai multe ori, cu date diferite, el se scrie o singură dată ca subprogram și se apelează cu datele potrivite. Ce se repetă devine corpul, ce se schimbă devine parametri.</p></details>
+<details><summary>7. De ce este mai simplu să repari un calcul scris ca subprogram?</summary><p>Pentru că există într-un singur loc: îl corectezi o dată, iar toate apelurile îl folosesc. Dacă ar fi copiat în mai multe locuri, ar trebui corectat în fiecare.</p></details>
+<details><summary>8. Ce este modularitatea?</summary><p>Împărțirea unui program în părți independente, fiecare cu o sarcină precisă; la noi, părțile sunt subprogramele. O problemă mare se desparte în subprobleme, iar <code>main</code> le coordonează.</p></details>
+<details><summary>9. Prin ce diferă modularitatea de repetare?</summary><p>Repetarea cere un subprogram pentru că același calcul apare de mai multe ori; modularitatea cere subprograme pentru că problema este mare, chiar dacă fiecare bucată apare o singură dată.</p></details>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="rezumat">Rezumat – De reținut</h2>
+<div class="callout ok"><span class="callout-icon">✅</span><div class="callout-body"><strong>Cele mai importante idei din acest laborator</strong><p>Citește lista de mai jos după ce ai rezolvat exercițiile; fiecare punct trimite la o secțiune din tabul Curs.</p></div></div>
+<ol>
+<li>Subprogramul răspunde la repetare: <strong>ce se repetă</strong> devine corpul, <strong>ce se schimbă</strong> devine parametri. Scrii o dată, repari o dată, apelezi de câte ori ai nevoie.</li>
+<li><strong>Modularitatea</strong> înseamnă împărțirea problemei în subprobleme, câte un subprogram pentru fiecare; <code>main</code> citește datele și le coordonează. Un subprogram poate fi apelat și o singură dată.</li>
+<li>Un <strong>subprogram</strong> are tip returnat (C++ și Java), nume, parametri și corp; variabilele lui sunt locale. Pentru argumente numerice, subprogramul lucrează pe o copie.</li>
+<li><strong>Parametrul</strong> este din definiție, <strong>argumentul</strong> este din apel; la apel, parametrul primește valoarea argumentului.</li>
+<li>Scrii un subprogram răspunzând la trei întrebări: ce primește, ce returnează, cum se numește.</li>
+<li>Trei erori frecvente: lipsa lui <code>return</code>, apelul înainte de definiție, folosirea rezultatului unui subprogram <code>void</code>.</li>
+</ol>
+<h2 id="glosar">Glosar</h2>
+<div class="tbl-wrap"><table><thead><tr><th>Termen</th><th>Definiție</th></tr></thead><tbody><tr><td><strong>Subprogram</strong></td><td>Secvență de instrucțiuni cu nume, apelabilă, care poate primi parametri și returna o valoare</td></tr><tr><td><strong>Repetare</strong></td><td>Situația în care același calcul se face de mai multe ori, cu date diferite; motivul principal pentru care se scriu subprograme</td></tr><tr><td><strong>Modularitate</strong></td><td>Împărțirea unui program în părți independente (module), fiecare cu o sarcină bine precizată; aici, subprogramele</td></tr><tr><td><strong>Subproblemă</strong></td><td>Parte mai mică a unei probleme, rezolvată de un subprogram</td></tr><tr><td><strong>Parametru</strong></td><td>Variabila din antetul unui subprogram, care primește o valoare la apel</td></tr><tr><td><strong>Argument</strong></td><td>Valoarea dată subprogramului la apel</td></tr><tr><td><strong>Apel</strong></td><td>Folosirea unui subprogram prin numele lui, cu argumente</td></tr><tr><td><strong>Valoare returnată</strong></td><td>Rezultatul pe care subprogramul îl dă apelantului prin <code>return</code></td></tr><tr><td><strong>void</strong></td><td>Tip returnat care arată că subprogramul nu returnează nicio valoare</td></tr><tr><td><strong>Variabilă locală</strong></td><td>Variabilă declarată în interiorul unui subprogram; există numai cât timp acesta se execută</td></tr></tbody></table></div>
+<h2 id="surse">Surse</h2>
+<ul>
+<li>Programming Fundamentals, <a href="https://harpercollege.pressbooks.pub/programmingfundamentals/chapter/modular-programming/">Modular Programming</a> (programarea modulară ca împărțire a funcționalității unui program în module independente; avantaje: bucăți mai mici, testare separată, refolosire). Definiția din Lab 0b este o traducere liberă și o adaptare a autorului.</li>
+</ul>
+<p>Programele din acest laborator au fost compilate și rulate cu <code>g++</code> 13.3, JDK 21 și Python 3.13, iar mesajele de eroare sunt cele produse real. Exercițiile și formularea „trei întrebări pentru un subprogram” sunt propuse de autor. Afirmația despre ieșirea dintr-o funcție fără <code>return</code> (comportament nedefinit în C++) este prezentată ca regulă cunoscută a limbajului; nu pot confirma asta printr-un citat din standard în această redactare.</p>
+
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="page-footer">
+      <span>M9 · Lab 0b – Recapitulare: subprograme</span>
+      <div class="footer-nav">
+        <a href="lab-0a.html" class="footer-link">← Lab 0a – Mediul de lucru</a>
+        <a href="lab-1.html" class="footer-link">Lab 1 – Datele și reprezentarea lor →</a>
+
+      </div>
+    </footer>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+/* Linkurile din sidebar către secțiuni aflate în alt tab: se deschide întâi tab-ul potrivit. */
+(function () {
+  document.querySelectorAll('.sidebar-link[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      var pane = el.closest('.tab-pane');
+      if (pane && !pane.classList.contains('active')) {
+        var btn = document.querySelector('.tab-btn[data-tab="' + pane.id + '"]');
+        if (btn) btn.click();
+      }
+      ev.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

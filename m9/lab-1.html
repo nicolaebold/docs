@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laborator 1 – Datele și reprezentarea lor | M9 OCW</title>
+<meta name="description" content="Laborator 1 de POO (M9): tip, valoare, variabilă, vector, matrice, text, tipuri simple și compuse, și trecerea de la realitate la reprezentare." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  /* pattern cards */
+  .pattern-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin: 1.25rem 0; }
+  .pattern-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); }
+  .pattern-card .pattern-header { background: var(--surface-2); padding: .6rem 1rem; font-weight: 700; font-size: .85rem; color: var(--text); border-bottom: 1px solid var(--border); }
+  .pattern-card pre { margin: 0; padding: .9rem 1.1rem; font-family: var(--mono); font-size: .82rem; overflow-x: auto; }
+
+  /* quiz-style exercises */
+  .quiz-item { margin: 1.35rem 0; padding-bottom: 1.1rem; border-bottom: 1px solid var(--surface-2); }
+  .quiz-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .quiz-item .qnum { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 .3rem; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark); font-size: .78rem; font-weight: 800; margin-right: .5rem; }
+  .choices { list-style: none; padding: 0; margin: .6rem 0 .8rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .4rem .6rem; }
+  .choices li { font-family: var(--mono); font-size: .84rem; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); padding: .4rem .65rem; border-radius: 6px; }
+  .quiz-item details { margin-top: .5rem; }
+  .quiz-item summary { background: var(--accent-light); color: var(--accent-dark); font-size: .82rem; }
+
+  /* problem-solving blocks */
+  .method-block { margin: .9rem 0; }
+  .method-label { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-dark); margin-bottom: .4rem; display: flex; align-items: center; gap: .4rem; }
+  .method-label i { color: var(--accent); }
+  .algo-steps { counter-reset: algo; list-style: none; padding: 0; margin: .3rem 0; }
+  .algo-steps li { counter-increment: algo; position: relative; padding: .32rem 0 .32rem 2.1rem; font-size: .87rem; border-bottom: 1px solid var(--surface-2); }
+  .algo-steps li:last-child { border-bottom: none; }
+  .algo-steps li::before { content: counter(algo); position: absolute; left: 0; top: .28rem; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark); font-size: .7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .diff-badge { display: inline-flex; align-items: center; font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: .15rem .55rem; border-radius: 20px; margin-left: .5rem; }
+  .diff-badge.usoara { background: var(--green-light); color: var(--green); }
+  .diff-badge.medie  { background: var(--amber-light); color: #b45309; }
+  .diff-badge.grea   { background: #f3e8ff; color: #7c3aed; }
+  .restrictii-list { margin: .2rem 0 0; padding-left: 1.2rem; }
+  .restrictii-list li { font-size: .85rem; margin-bottom: .2rem; }
+  .judge-example { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; margin: .4rem 0 .6rem; }
+  .judge-ex-col { background: #1e2235; border-radius: 8px; overflow: hidden; border: 1px solid #2d3250; }
+  .judge-ex-title { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #7c85b0; padding: .4rem .7rem; background: #252942; border-bottom: 1px solid #2d3250; }
+  .judge-ex-col pre { margin: 0; padding: .6rem .8rem; font-family: var(--mono); font-size: .82rem; color: #e0e4f5; white-space: pre-wrap; }
+  .judge-explicatie { font-size: .87rem; color: var(--text-2); margin: 0; }
+
+  /* vector and matrix diagrams */
+  .vec-wrap { margin: 1.1rem 0; overflow-x: auto; }
+  .vec-wrap .vname { font-family: var(--mono); font-size: .78rem; font-weight: 700; color: var(--text-2); margin-bottom: .4rem; }
+  .vec { display: inline-flex; }
+  .vc { display: flex; flex-direction: column; }
+  .vc .cell { min-width: 48px; height: 42px; padding: 0 .55rem; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1.5px solid var(--border); margin-left: -1.5px; font-family: var(--mono); font-weight: 700; font-size: .95rem; color: var(--text); }
+  .vc:first-child .cell { margin-left: 0; border-radius: 8px 0 0 8px; }
+  .vc:last-child .cell { border-radius: 0 8px 8px 0; }
+  .vc .cell.a, .mat .cell.a { background: var(--accent-light); border-color: var(--accent); }
+  .vc .cell.g, .mat .cell.g { background: var(--green-light);  border-color: var(--green); }
+  .vc .cell.r, .mat .cell.r { background: var(--red-light);    border-color: var(--red); }
+  .vc .cell.y, .mat .cell.y { background: var(--amber-light);  border-color: var(--amber); }
+  .vc .ix { text-align: center; font-family: var(--mono); font-size: .72rem; color: var(--text-3); margin-top: .3rem; }
+  .vec-wrap .vcap { font-size: .85rem; color: var(--text-2); margin-top: .6rem; }
+  .mat { display: inline-grid; gap: 0; }
+  .mat .mc { display: flex; align-items: center; justify-content: center; min-height: 40px; font-family: var(--mono); font-size: .95rem; }
+  .mat .mc.cell { background: var(--surface); border: 1.5px solid var(--border); margin: 0 -1.5px -1.5px 0; font-weight: 700; color: var(--text); }
+  .mat .mc.ix { font-size: .72rem; color: var(--text-3); }
+
+  /* concept map (SVG) */
+  .map-wrap { margin: 1.2rem 0 .4rem; overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: .8rem; }
+  .rel-svg { display: block; width: 100%; min-width: 560px; height: auto; font-family: var(--sans); }
+  .rel-svg .box rect { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  .rel-svg .b-tip rect { fill: var(--accent-light); stroke: var(--accent); stroke-width: 2; }
+  .rel-svg .b-val rect { fill: var(--amber-light); stroke: var(--amber); }
+  .rel-svg .b-var rect { fill: var(--green-light); stroke: var(--green); }
+  .rel-svg .b-simple rect { fill: var(--surface); stroke: var(--accent); }
+  .rel-svg .b-comp rect { fill: var(--surface); stroke: var(--accent-dark); stroke-width: 2; }
+  .rel-svg text { text-anchor: middle; fill: var(--text); }
+  .rel-svg .t1 { font-size: 17px; font-weight: 800; }
+  .rel-svg .t2 { font-size: 13px; font-family: var(--mono); fill: var(--text-2); }
+  .rel-svg .t3 { font-size: 12px; fill: var(--text-3); }
+  .rel-svg .lab { font-size: 12.5px; font-weight: 700; fill: var(--accent-dark); }
+  .rel-svg .arr { fill: none; stroke: var(--accent-dark); stroke-width: 2; }
+  .rel-svg .arr.dash { stroke-dasharray: 6 5; }
+  .rel-svg .ahead { fill: var(--accent-dark); }
+  .map-cap { font-size: .88rem; color: var(--text-2); margin: .5rem 0 1.2rem; }
+
+  /* bara de sus pe ecrane înguste: fără breadcrumb, ca să nu depășească lățimea */
+  @media (max-width: 500px) {
+    .topnav-breadcrumb { display: none; }
+    .topnav { gap: .5rem; }
+    .topnav-logo { font-size: .85rem; }
+    .topnav-actions { display: none; }
+  }
+
+  /* anatomie: părți colorate */
+  .an-box { margin: 1.25rem 0; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow); overflow: hidden; }
+  .an-title { padding: .55rem 1rem; font-size: .8rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-dark); background: var(--accent-light); }
+  .an-code { margin: 0; padding: 1rem 1.1rem; font-family: var(--mono); font-size: .95rem; line-height: 2.6; white-space: pre-wrap; overflow-x: auto; background: transparent; color: var(--text); }
+  .an-p { position: relative; padding: .12rem .3rem; border-radius: 6px; border-bottom: 3px solid; }
+  .an-p i { font-style: normal; font-family: var(--sans, sans-serif); font-size: .62rem; font-weight: 800; position: absolute; top: -.95rem; left: 50%; transform: translateX(-50%); color: #fff; border-radius: 999px; min-width: 1.05rem; height: 1.05rem; line-height: 1.05rem; text-align: center; padding: 0 .2rem; }
+  .an-1 { border-color: #3d5af1; background: color-mix(in srgb, #3d5af1 16%, var(--surface)); } .an-1 i { background: #3d5af1; }
+  .an-2 { border-color: #10b981; background: color-mix(in srgb, #10b981 18%, var(--surface)); } .an-2 i { background: #10b981; }
+  .an-3 { border-color: #f59e0b; background: color-mix(in srgb, #f59e0b 22%, var(--surface)); } .an-3 i { background: #d97706; }
+  .an-4 { border-color: #ef4444; background: color-mix(in srgb, #ef4444 16%, var(--surface)); } .an-4 i { background: #ef4444; }
+  .an-5 { border-color: #8b5cf6; background: color-mix(in srgb, #8b5cf6 16%, var(--surface)); } .an-5 i { background: #8b5cf6; }
+  .an-6 { border-color: #0d9488; background: color-mix(in srgb, #0d9488 16%, var(--surface)); } .an-6 i { background: #0d9488; }
+  .an-leg { list-style: none; margin: 0; padding: .75rem 1rem 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .5rem .9rem; border-top: 1px dashed var(--border); }
+  .an-leg li { display: flex; gap: .55rem; align-items: flex-start; font-size: .9rem; line-height: 1.4; }
+  .an-leg b.an-n { flex: none; width: 1.35rem; height: 1.35rem; border-radius: 999px; color: #fff; font-size: .72rem; display: inline-flex; align-items: center; justify-content: center; }
+  .an-leg .an-1b { background: #3d5af1; } .an-leg .an-2b { background: #10b981; } .an-leg .an-3b { background: #d97706; }
+  .an-leg .an-4b { background: #ef4444; } .an-leg .an-5b { background: #8b5cf6; } .an-leg .an-6b { background: #0d9488; }
+  .an-leg code { font-size: .85em; }
+  .an-key { padding: .7rem 1rem; border-top: 1px dashed var(--border); font-size: .9rem; background: color-mix(in srgb, #f59e0b 10%, var(--surface)); }
+  /* cutii de memorie */
+  .mem-row { display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem; align-items: stretch; }
+  .mem-panel { flex: 1 1 240px; border: 1px solid var(--border); border-radius: 10px; padding: .7rem .8rem .9rem; background: var(--surface); }
+  .mem-panel h5 { margin: 0 0 .5rem; font-size: .85rem; color: var(--accent-dark); }
+  .mem-cells { display: flex; flex-wrap: wrap; gap: .35rem; }
+  .mem-cell { min-width: 3.2rem; border: 2px solid var(--border); border-radius: 8px; text-align: center; font-family: var(--mono); background: var(--surface); }
+  .mem-cell small { display: block; font-family: var(--sans, sans-serif); font-size: .68rem; padding: .1rem .3rem; background: var(--accent-light); color: var(--accent-dark); border-radius: 6px 6px 0 0; }
+  .mem-cell span { display: block; padding: .3rem .45rem; font-size: .95rem; }
+  .mem-cell.hot { border-color: #ef4444; } .mem-cell.hot span { background: color-mix(in srgb, #ef4444 16%, var(--surface)); font-weight: 700; }
+  .mem-cell.ok { border-color: #10b981; } .mem-cell.ok span { background: color-mix(in srgb, #10b981 18%, var(--surface)); font-weight: 700; }
+  .mem-cell.end { border-style: dashed; }
+  .mem-note { margin: .5rem 0 0; font-size: .85rem; color: var(--text-muted, #6b7280); }
+  .mem-link { align-self: center; font-size: 1.4rem; color: var(--accent); }
+  /* flux */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: .35rem; padding: 1rem; }
+  .flow-step { flex: 1 1 130px; border: 2px solid var(--border); border-radius: 10px; padding: .55rem .7rem; text-align: center; background: var(--surface); }
+  .flow-step b { display: block; font-size: .9rem; } .flow-step span { font-size: .8rem; opacity: .8; }
+  .flow-step.f1 { border-color: #3d5af1; } .flow-step.f2 { border-color: #f59e0b; } .flow-step.f3 { border-color: #10b981; } .flow-step.f4 { border-color: #8b5cf6; }
+  .flow-arrow { align-self: center; font-size: 1.3rem; color: var(--accent); }
+  @media (max-width: 560px) { .an-code { font-size: .8rem; } .flow-arrow { transform: rotate(90deg); flex: 1 1 100%; text-align: center; } }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Meniu">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <a class="topnav-logo" href="index.html"><span class="badge">M9</span>Programare orientată pe obiecte</a>
+  <div class="topnav-breadcrumb">
+    <a href="index.html">M9</a><span class="sep">›</span> <span>Lab 1 – Datele și reprezentarea lor</span>
+  </div>
+  <div class="topnav-actions">
+    <a href="https://www.onlinegdb.com/" target="_blank" class="btn-sm">Compilator online</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <span class="sidebar-label">Curs</span>
+    <a class="sidebar-link" href="#prereq"><i class="fa-solid fa-circle-check fa-fw"></i> Prerequisite</a>
+    <a class="sidebar-link" href="#intro"><i class="fa-solid fa-book-open fa-fw"></i> Introducere</a>
+    <a class="sidebar-link" href="#obiective"><i class="fa-solid fa-bullseye fa-fw"></i> Obiective</a>
+    <a class="sidebar-link" href="#harta"><i class="fa-solid fa-sitemap fa-fw"></i> 1. Harta datelor</a>
+    <a class="sidebar-link" href="#tip"><i class="fa-solid fa-shapes fa-fw"></i> &nbsp;&nbsp;Tipul de date</a>
+    <a class="sidebar-link" href="#variabila"><i class="fa-solid fa-box fa-fw"></i> &nbsp;&nbsp;Variabila</a>
+    <a class="sidebar-link" href="#constructii"><i class="fa-solid fa-table-cells fa-fw"></i> &nbsp;&nbsp;Vector, matrice, text</a>
+    <a class="sidebar-link" href="#compunere"><i class="fa-solid fa-layer-group fa-fw"></i> &nbsp;&nbsp;Compunerea</a>
+    <a class="sidebar-link" href="#raport"><i class="fa-solid fa-diagram-project fa-fw"></i> &nbsp;&nbsp;Raportul dintre concepte</a>
+    <a class="sidebar-link" href="#reprezentare"><i class="fa-solid fa-arrows-turn-right fa-fw"></i> 2. Realitate → reprezentare</a>
+    <a class="sidebar-link" href="#erori"><i class="fa-solid fa-triangle-exclamation fa-fw"></i> 3. Erori frecvente</a>
+    <a class="sidebar-link" href="#comparatie"><i class="fa-solid fa-language fa-fw"></i> 4. Comparație între limbaje</a>
+    <a class="sidebar-link" href="#ce-urmeaza"><i class="fa-solid fa-forward fa-fw"></i> 5. Ce urmează?</a>
+    <span class="sidebar-label">Laborator</span>
+    <a class="sidebar-link" href="#exemple"><i class="fa-solid fa-lightbulb fa-fw"></i> Exemple rezolvate</a>
+    <a class="sidebar-link" href="#introductive"><i class="fa-solid fa-pencil fa-fw"></i> Exerciții introductive</a>
+    <a class="sidebar-link" href="#tracing"><i class="fa-solid fa-chart-line fa-fw"></i> Code tracing</a>
+    <a class="sidebar-link" href="#lab-repr"><i class="fa-solid fa-diagram-project fa-fw"></i> Aplicații de reprezentare</a>
+    <a class="sidebar-link" href="#lab"><i class="fa-solid fa-flask fa-fw"></i> Aplicații de rezolvat</a>
+    <a class="sidebar-link" href="#mcq"><i class="fa-solid fa-list-check fa-fw"></i> Alegere multiplă</a>
+    <span class="sidebar-label">Referință</span>
+    <a class="sidebar-link" href="#verificare"><i class="fa-solid fa-circle-check fa-fw"></i> Autoevaluare</a>
+    <a class="sidebar-link" href="#rezumat"><i class="fa-solid fa-thumbtack fa-fw"></i> Rezumat</a>
+    <a class="sidebar-link" href="#glosar"><i class="fa-solid fa-book fa-fw"></i> Glosar</a>
+    <a class="sidebar-link" href="#cheat"><i class="fa-solid fa-bolt fa-fw"></i> Cheat sheet</a>
+    <a class="sidebar-link" href="#surse"><i class="fa-solid fa-quote-right fa-fw"></i> Surse</a>
+    <span class="sidebar-label">Laboratoare M9</span>
+    <a class="sidebar-link" href="lab-0a.html">Lab 0a – Mediul de lucru</a>
+    <a class="sidebar-link" href="lab-0b.html">Lab 0b – Recapitulare: subprograme</a>
+    <a class="sidebar-link active" href="lab-1.html">Lab 1 – Datele și reprezentarea lor</a>
+    <a class="sidebar-link" href="lab-2.html">Lab 2 – Structura: modelarea datelor</a>
+    <a class="sidebar-link" href="lab-3.html">Lab 3 – Structuri în programe</a>
+    <a class="sidebar-link" href="lab-4.html">Lab 4 – Clase și obiecte</a>
+    <a class="sidebar-link" href="index.html">← Înapoi la modul</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-hero">
+      <span class="session-tag">Laborator 1 · POO · Date</span>
+      <h1>Datele și reprezentarea lor</h1>
+      <div class="hero-meta">
+        <span class="chip">Tip · valoare · variabilă</span>
+        <span class="chip">Vector · matrice · text</span>
+        <span class="chip">Tipuri simple și compuse</span>
+        <span class="chip">De la realitate la reprezentare</span>
+      </div>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="t1-curs">Curs</button>
+      <button class="tab-btn" data-tab="t1-exemple">Exemple</button>
+      <button class="tab-btn" data-tab="t1-lab">Laborator</button>
+      <button class="tab-btn" data-tab="t1-cheat">Cheat Sheet</button>
+      <button class="tab-btn" data-tab="t1-autoevaluare">Autoevaluare</button>
+    </div>
+
+    <div class="tab-wrap">
+      <div class="tab-pane active" id="t1-curs">
+        <div class="prose">
+<div class="prereq-box" id="prereq">
+<h4>Prerequisite – ce trebuie să știi înainte de acest laborator</h4>
+<ul>
+<li>Ai scris în C++ programe cu variabile <code>int</code>, <code>double</code>, <code>bool</code> și <code>char</code>, decizii <code>if</code> și bucle <code>for</code> / <code>while</code> (M6)</li>
+<li>Ai lucrat cu vectori (declarare, indici, parcurgere, maxim cu poziție) și ai văzut cum se declară o matrice (M6)</li>
+<li>Ai folosit text ca vector de <code>char</code> (<code>char nume[20]</code>); în C++ îl folosim așa și aici</li>
+<li>Știi să definești și să apelezi un subprogram (Laboratorul 0b)</li>
+</ul>
+</div>
+
+<h2 id="intro">Introducere</h2>
+<p>Un program lucrează cu date, iar felul în care alegi să reprezinți datele hotărăște cât de simplu sau de greu devine restul programului. Modulul M9 construiește, pas cu pas, instrumente pentru a grupa și a proteja datele: mai întâi o structură simplă (<code>struct</code>), apoi clasa, apoi cele patru principii ale programării orientate pe obiecte. Toate pornesc de la câteva idei pe care le-ai întâlnit deja, dar de obicei separat: ce este un tip de date, ce este o variabilă, cum se construiesc vectorii și matricele, cum alegi o formă pentru o informație din realitate.</p>
+<p>Laboratorul le așază într-o <strong>hartă</strong>, ca să vezi ce relație este între ele. Are două scopuri. Primul este teoretic: tipul de date, variabila, vectorul, matricea și textul sunt prezentate ca părți ale aceleiași scheme, nu ca vocabular izolat. Al doilea este de modelare: pornești de la un lucru din realitate și ajungi, prin pași clari, la o reprezentare în program.</p>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Punct cheie</strong><p>Ideile programării din M6 (variabile, condiții, bucle, vectori) rămân valabile: nu înlocuim nimic din ce știi. Ce se schimbă este întrebarea de la care pornești. Nu mai întrebi „ce instrucțiuni scriu?”, ci mai întâi „ce informații din realitate păstrez, de ce tip și în ce formă?”. Instrucțiunile vin după ce răspunsul la această întrebare este clar.</p></div></div>
+<div class="objectives" id="obiective">
+<h3>La finalul acestui laborator vei putea să:</h3>
+<ol>
+<li><strong>Definești</strong> tipul de date ca mulțime de valori împreună cu operațiile permise și <strong>deosebești</strong> tipul, valoarea și variabila</li>
+<li><strong>Clasifici</strong> un tip ca simplu sau compus și <strong>explici</strong> vectorul, matricea și textul ca moduri de a construi un tip compus</li>
+<li><strong>Explici</strong> de ce compunerea este recursivă (vector de vectori, vector de texte) și ce criterii de clasificare există</li>
+<li><strong>Parcurgi</strong> cei cinci pași de la un lucru din realitate la o reprezentare: informații relevante, tip și domeniu, formă de grupare, verificare</li>
+<li><strong>Alegi</strong> și <strong>justifici</strong> forma potrivită (variabilă, vector, matrice) pentru o situație dată și <strong>recunoști</strong> când aceste forme nu mai ajung</li>
+<li><strong>Citești</strong> un mesaj de eroare și <strong>localizezi</strong> greșeala</li>
+</ol>
+</div>
+<h2 id="harta">1. Harta datelor: tip, valoare, variabilă, structură</h2>
+<p>Cuvintele <em>tip</em>, <em>valoare</em>, <em>variabilă</em>, <em>vector</em> sau <em>structură de date</em> sunt folosite adesea ca și cum ar însemna același lucru. Nu înseamnă. Ele se află pe niveluri diferite, iar confuzia dintre niveluri este sursa multor greșeli de începător: o variabilă nu este un tip, un vector nu este o variabilă, o valoare nu are un nume. Schema de mai jos este harta pe care o vom parcurge în această secțiune, concept cu concept.</p>
+
+<div class="map-wrap"><svg class="rel-svg" viewBox="0 0 780 372" role="img" aria-labelledby="mapt mapd" xmlns="http://www.w3.org/2000/svg">
+<title id="mapt">Harta conceptelor: valoare, tip, variabilă, tip simplu, tip compus</title>
+<desc id="mapd">Valoarea aparține unui tip. Variabila este un exemplar al unui tip. Un tip poate fi simplu sau compus. Un tip compus se construiește din alte tipuri, recursiv, prin vector, matrice sau struct.</desc>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs>
+<g class="box b-val"><rect x="14" y="40" width="170" height="74" rx="12"/><text x="99" y="68" class="t1">valoare</text><text x="99" y="92" class="t2">7 · 3.5 · 'a' · true</text></g>
+<g class="box b-tip"><rect x="300" y="26" width="190" height="102" rx="12"/><text x="395" y="58" class="t1">TIP DE DATE</text><text x="395" y="82" class="t2">mulțime de valori</text><text x="395" y="102" class="t2">+ operații permise</text></g>
+<g class="box b-var"><rect x="606" y="40" width="160" height="74" rx="12"/><text x="686" y="68" class="t1">variabilă</text><text x="686" y="92" class="t2">nume · tip · valoare</text></g>
+<path d="M184,77 L296,77" class="arr" marker-end="url(#ar)"/><text x="240" y="64" class="lab">aparține</text>
+<path d="M606,77 L494,77" class="arr" marker-end="url(#ar)"/><text x="550" y="64" class="lab">exemplar al</text>
+<path d="M395,128 L395,162" class="arr"/>
+<path d="M395,162 L185,162 L185,190" class="arr" marker-end="url(#ar)"/>
+<path d="M395,162 L623,162 L623,190" class="arr" marker-end="url(#ar)"/>
+<text x="330" y="152" class="lab">poate fi</text><text x="460" y="152" class="lab">poate fi</text>
+<g class="box b-simple"><rect x="40" y="192" width="290" height="92" rx="12"/><text x="185" y="220" class="t1">tip simplu (primitiv)</text><text x="185" y="244" class="t2">int · double · bool · char</text><text x="185" y="264" class="t3">o singură valoare</text></g>
+<g class="box b-comp"><rect x="480" y="192" width="286" height="92" rx="12"/><text x="623" y="220" class="t1">tip compus</text><text x="623" y="244" class="t2">vector · matrice · text · struct</text><text x="623" y="264" class="t3">din tipuri simple sau compuse (recursiv)</text></g>
+<path d="M480,238 L334,238" class="arr dash" marker-end="url(#ar)"/><text x="405" y="228" class="lab">se construiește din</text>
+</svg></div>
+<p class="map-cap">Trei relații leagă conceptele: o <strong>valoare aparține</strong> unui tip, o <strong>variabilă este exemplar</strong> al unui tip, iar un <strong>tip compus se construiește din alte tipuri</strong>, simple sau compuse (săgeata punctată). Pentru că ingredientele pot fi, la rândul lor, tipuri compuse, construcția se poate relua: așa apar matricea (vector de vectori) sau vectorul de texte.</p>
+<h3 id="informatie">1.1. De la informație la date</h3>
+<p>Descrierea editurii pentru volumul 1 din <em>The Art of Computer Programming</em> (Knuth) spune că subiectul capitolului „Information Structures” este <strong>reprezentarea informației în calculator</strong> și relațiile structurale dintre elementele de date. Wirth, în <em>Algorithms and Data Structures</em>, adaugă o observație care justifică de ce ne ocupăm de tipuri înainte de programare orientată pe obiecte: deciziile despre structurarea datelor nu se pot lua fără să cunoști algoritmii care vor lucra cu ele, iar alegerea algoritmilor depinde la rândul ei de structura datelor. Cu alte cuvinte, reprezentarea datelor nu este un detaliu de declarare, ci jumătate din soluția problemei.</p>
+<h3 id="tip">1.2. Tipul de date</h3>
+<p>Definiția clasică, de curs introductiv, este: un <strong>tip de date</strong> este o <strong>mulțime de valori</strong> împreună cu <strong>operațiile</strong> definite pe acea mulțime (prezentarea de curs a lui M. Minea, UPT). Cardelli și Wegner (1985) tratează la rândul lor tipurile ca mulțimi de valori dintr-un univers și adaugă o a doua față: un tip <strong>protejează</strong> o reprezentare netipată de utilizări arbitrare sau neintenționate. Pentru tine, merită reținute ambele fețe. Tipul spune ce valori sunt permise și ce operații au sens pe ele, și, totodată, te apără de folosirea greșită a biților din memorie.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Tip (C++)</th><th>Valori</th><th>Operații (exemple)</th><th>De reținut</th></tr></thead><tbody><tr><td><code>int</code></td><td>numere întregi dintr-un interval finit</td><td><code>+ − * /</code> (împărțire întreagă), <code>%</code>, comparații</td><td>limitele intervalului depind de implementare</td></tr><tr><td><code>double</code></td><td>numere reale, aproximate (virgulă mobilă)</td><td><code>+ − * /</code>, comparații; <strong>nu</strong> are <code>%</code></td><td>un rezultat poate fi aproximativ, nu exact</td></tr><tr><td><code>bool</code></td><td><code>false</code>, <code>true</code></td><td><code>&amp;&amp;</code>, <code>||</code>, <code>!</code></td><td>rezultatul oricărei comparații</td></tr><tr><td><code>char</code></td><td>un caracter (în C++ este și un întreg mic)</td><td>comparații, comparație de coduri</td><td>un text este un vector de <code>char</code></td></tr></tbody></table></div>
+<p>Faptul că operațiile aparțin tipului se vede când încerci o operație care nu este definită. Pentru <code>double</code>, operatorul <code>%</code> nu există, iar compilatorul refuză programul înainte să ruleze. Mesajul real al lui <code>g++</code> 13.3 pentru <code>double b = a % 2;</code> este:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">g++ – mesajul de eroare (prima linie cu „error”)</span></div><pre><code>tip.cpp:3:18: error: invalid operands of types ‘double’ and ‘int’ to binary ‘operator%’</code></pre></div><p>Rolul tipului nu se oprește la a refuza operații. El decide și <strong>ce înseamnă</strong> o operație: <code>7 / 2</code> are valoarea <code>3</code> pentru că ambele valori sunt <code>int</code>, iar <code>7.0 / 2</code> are valoarea <code>3.5</code> pentru că una dintre ele este <code>double</code>. Același simbol, <code>/</code>, face lucruri diferite pe tipuri diferite.</p>
+<h3 id="variabila">1.3. Variabila</h3>
+<p>Tipul este un concept; o <strong>variabilă</strong> este ceva concret din program. În formularea didactică a acestui material, o variabilă este un <strong>obiect denumit, de un anumit tip, care ține o valoare din mulțimea acelui tip, valoare care se poate schimba pe parcursul programului</strong>. Standardul C++ spune la rândul lui că tipurile descriu obiecte, referințe și funcții, deci tipul este cel care descrie variabila, nu invers.</p>
+<div class="an-box"><div class="an-title">Anatomia unei declarări cu inițializare</div><pre class="an-code"><span class="an-p an-1"><i>1</i>int</span> <span class="an-p an-2"><i>2</i>varsta</span> = <span class="an-p an-3"><i>3</i>17</span>;</pre><ul class="an-leg"><li><b class="an-n an-1b">1</b><span><strong>Tipul</strong> – ce fel de valori poate ține</span></li><li><b class="an-n an-2b">2</b><span><strong>Numele</strong> – cum o regăsești în program</span></li><li><b class="an-n an-3b">3</b><span><strong>Valoarea</strong> – ce ține acum; se poate schimba</span></li></ul><div class="an-key"><strong>Tip + nume + valoare:</strong> orice variabilă le are pe toate trei.</div></div>
+<p class="text-sm text-muted">Formularea de mai sus este o formulare didactică a autorului materialului, nu o definiție preluată dintr-o sursă.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ – secvență (în main)</span></div><pre><code><span class="tp">int</span> x <span class="op">=</span> <span class="nm">7</span>;
+<span class="tp">int</span> y <span class="op">=</span> <span class="nm">7</span>;
+x <span class="op">=</span> <span class="nm">9</span>;
+cout <span class="op">&lt;&lt;</span> x <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> y;</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>9 7</code></pre></div><p>Cele două variabile, <code>x</code> și <code>y</code>, sunt de același tip (<code>int</code>) și au avut la început aceeași valoare, <code>7</code>. Ele rămân însă <strong>obiecte diferite</strong>: modificarea lui <code>x</code> nu schimbă <code>y</code>. Observă cele trei lucruri distincte din schemă: <code>int</code> este tipul, <code>7</code> și <code>9</code> sunt valori din mulțimea acelui tip, iar <code>x</code> și <code>y</code> sunt variabilele care le țin.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Concept</th><th>Ce este</th><th>Exemplu</th><th>Se poate schimba?</th></tr></thead><tbody><tr><td>Tip</td><td>mulțime de valori + operații</td><td><code>int</code></td><td>nu, în timpul programului</td></tr><tr><td>Valoare</td><td>un element al mulțimii tipului</td><td><code>7</code></td><td>nu; o valoare nouă o înlocuiește pe cea veche</td></tr><tr><td>Variabilă</td><td>obiect denumit, de un tip, care ține o valoare</td><td><code>x</code> din <code>int x = 7;</code></td><td>da: valoarea ei se schimbă prin atribuire</td></tr></tbody></table></div>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Și în Java și în Python?</strong><p>În Java, ca în C++, tipul se declară pentru variabilă (<code>int x = 7;</code>). În Python nu se declară niciun tip: <code>x = 7</code> leagă numele <code>x</code> de un obiect, iar tipul aparține <strong>obiectului</strong>, nu numelui; același nume poate fi legat mai târziu de un obiect de alt tip (legarea numelor la obiecte este descrisă în Python Tutorial, cap. 9). Ideea schemei rămâne aceeași: tipul este mulțimea de valori și operații, iar valoarea concretă are un tip.</p></div></div>
+<h3 id="simple-compuse">1.4. Tipuri simple și tipuri compuse</h3>
+<p>Un tip <strong>simplu</strong> (primitiv) este un element de bază oferit de limbaj, din care se construiesc recursiv tipurile mai complicate (Wikipedia, „Primitive data type”). O valoare a unui tip simplu este o singură „bucată” de informație: un număr, un caracter, o valoare de adevăr. Un tip <strong>compus</strong> este construit din tipuri simple și din alte tipuri compuse, iar modurile de combinare se numesc, în limbajul curent, <strong>structuri de date</strong> (Wikipedia, „Data type”). Wirth numește „structuri fundamentale” cele trei principii de construcție din care derivă celelalte: <em>înregistrarea</em>, <em>tabloul</em> de dimensiune fixă și <em>mulțimea</em>.</p>
+<p>Pentru M9 ne interesează două dintre ele. <strong>Tabloul</strong> (vectorul, matricea) grupează valori de același tip și le accesează după număr. <strong>Înregistrarea</strong> (<code>struct</code>) grupează valori care pot avea tipuri diferite și le accesează după nume. Prima este subiectul restului acestui laborator; a doua este subiectul Laboratorului 2.</p>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Atenție la cuvântul „compus”</strong><p>În manualele de programare, „tip compus” înseamnă, de regulă, tablou sau înregistrare. Standardul C++ folosește același cuvânt într-un sens mai larg: împarte tipurile în <em>fundamentale</em> și <em>compuse</em>, iar în categoria compuselor intră și pointerii, referințele, enumerările, uniunile și funcțiile (C++ draft, [basic.types]; cppreference, <code>std::is_compound</code>). În acest material folosim sensul din manuale. Dacă citești standardul, ține minte diferența.</p></div></div>
+<h3 id="constructii">1.5. Vectorul, matricea și textul: recapitulare</h3>
+<p>Cele trei forme sunt <strong>moduri de a construi un tip compus</strong>, nu trei lucruri independente de tipurile pe care le cunoști. Un <strong>vector</strong> (tablou unidimensional) este un șir de <em>n</em> elemente de același tip, memorate unul după altul și accesate printr-un indice; standardul C++ definește tabloul ca o mulțime nevidă de <em>N</em> subobiecte de același tip, alocate contiguu, numerotate <code>0, …, N − 1</code>. O <strong>matrice</strong> este un tablou cu doi indici: linia și coloana. Un <strong>text</strong> este, în C++, un vector de <code>char</code>.</p>
+<div class="an-box"><div class="an-title">Anatomia unui vector</div><pre class="an-code"><span class="an-p an-1"><i>1</i>int</span> <span class="an-p an-2"><i>2</i>v</span><span class="an-p an-3"><i>3</i>[5</span>];
+v[<span class="an-p an-4"><i>4</i>0</span>] = 7;      v[<span class="an-p an-5"><i>5</i>4</span>] = 3;</pre><ul class="an-leg"><li><b class="an-n an-1b">1</b><span><strong>Tipul elementelor</strong> – toate elementele au același tip</span></li><li><b class="an-n an-2b">2</b><span><strong>Numele</strong> – numele vectorului</span></li><li><b class="an-n an-3b">3</b><span><strong>Dimensiunea</strong> – câte elemente are (aici 5)</span></li><li><b class="an-n an-4b">4</b><span><strong>Primul indice</strong> – numerotarea începe de la 0</span></li><li><b class="an-n an-5b">5</b><span><strong>Ultimul indice</strong> – este dimensiunea minus 1 (aici 4)</span></li></ul><div class="an-key"><strong>Indici valizi:</strong> 0 … n − 1. Un indice în afara intervalului este greșeală, chiar dacă programul nu spune nimic.</div></div>
+<div class="an-box"><div class="an-title">Textul ca vector de char: caracterul de sfârșit</div><div class="mem-row"><div class="mem-panel"><h5>char nume[6] = "Ana";</h5><div class="mem-cells"><div class="mem-cell "><small>0</small><span>'A'</span></div><div class="mem-cell "><small>1</small><span>'n'</span></div><div class="mem-cell "><small>2</small><span>'a'</span></div><div class="mem-cell end"><small>3</small><span>'\0'</span></div><div class="mem-cell "><small>4</small><span>?</span></div><div class="mem-cell "><small>5</small><span>?</span></div></div><p class="mem-note">Textul „Ana” folosește 3 poziții, apoi <code>'\0'</code> (chenarul punctat) marchează sfârșitul. Dimensiunea vectorului = lungimea maximă + 1.</p></div></div><div class="an-key"><strong>Memorează:</strong> un text de cel mult 29 de litere cere <code>char t[30]</code>.</div></div>
+<div class="vec-wrap"><div class="vname">v (int v[5])</div><div class="vec"><div class="vc"><div class="cell g">7</div><div class="ix">0</div></div><div class="vc"><div class="cell">12</div><div class="ix">1</div></div><div class="vc"><div class="cell">5</div><div class="ix">2</div></div><div class="vc"><div class="cell">9</div><div class="ix">3</div></div><div class="vc"><div class="cell r">3</div><div class="ix">4</div></div></div><div class="vcap">Cinci elemente de tip <code>int</code>. Primul element (verde) este <code>v[0]</code>, ultimul (roșu) este <code>v[4]</code>: indicii valizi sunt <code>0 … n − 1</code>.</div></div>
+<div class="vec-wrap"><div class="vname">m (int m[3][4])</div><div class="mat" style="grid-template-columns: 28px repeat(4, 48px);"><div class="mc corner"></div><div class="mc ix">0</div><div class="mc ix">1</div><div class="mc ix">2</div><div class="mc ix">3</div><div class="mc ix">0</div><div class="mc cell">1</div><div class="mc cell">2</div><div class="mc cell">3</div><div class="mc cell">4</div><div class="mc ix">1</div><div class="mc cell">5</div><div class="mc cell">6</div><div class="mc cell a">7</div><div class="mc cell">8</div><div class="mc ix">2</div><div class="mc cell">9</div><div class="mc cell">10</div><div class="mc cell">11</div><div class="mc cell">12</div></div><div class="vcap">O matrice cu 3 linii și 4 coloane. Elementul evidențiat este <code>m[1][2]</code>, adică linia 1, coloana 2, cu valoarea 7. Prima parte a indicelui alege linia, a doua alege coloana.</div></div>
+<p>Remarcă definiția recursivă din schemă. În C++, <code>int m[3][4]</code> este un tablou de 3 elemente, iar fiecare element este el însuși un tablou de 4 <code>int</code>: matricea este un vector construit din alți vectori. Java și Python reflectă direct această idee: <code>int[][]</code> este un tablou de tablouri, iar în Python o matrice se reprezintă ca o listă de liste. Programul de mai jos declară și parcurge un vector și o matrice în cele trei limbaje.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> v[<span class="nm">5</span>] <span class="op">=</span> {<span class="nm">7</span>, <span class="nm">12</span>, <span class="nm">5</span>, <span class="nm">9</span>, <span class="nm">3</span>};
+    <span class="tp">int</span> suma <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">5</span>; i<span class="op">++</span>) {
+        suma <span class="op">+=</span> v[i];
+    }
+    cout <span class="op">&lt;&lt;</span> <span class="st">"suma vectorului: "</span> <span class="op">&lt;&lt;</span> suma <span class="op">&lt;&lt;</span> endl;
+
+    <span class="tp">int</span> m[<span class="nm">3</span>][<span class="nm">4</span>] <span class="op">=</span> {{<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>}, {<span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">7</span>, <span class="nm">8</span>}, {<span class="nm">9</span>, <span class="nm">10</span>, <span class="nm">11</span>, <span class="nm">12</span>}};
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+        <span class="tp">int</span> sl <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> <span class="nm">4</span>; j<span class="op">++</span>) {
+            sl <span class="op">+=</span> m[i][j];
+        }
+        cout <span class="op">&lt;&lt;</span> <span class="st">"linia "</span> <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="st">": "</span> <span class="op">&lt;&lt;</span> sl <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">public</span> <span class="kw">class</span> VectorMatrice {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">int</span>[] v <span class="op">=</span> {<span class="nm">7</span>, <span class="nm">12</span>, <span class="nm">5</span>, <span class="nm">9</span>, <span class="nm">3</span>};
+        <span class="tp">int</span> suma <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> v.length; i<span class="op">++</span>) {
+            suma <span class="op">+=</span> v[i];
+        }
+        System.out.println(<span class="st">"suma vectorului: "</span> <span class="op">+</span> suma);
+
+        <span class="tp">int</span>[][] m <span class="op">=</span> {{<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>}, {<span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">7</span>, <span class="nm">8</span>}, {<span class="nm">9</span>, <span class="nm">10</span>, <span class="nm">11</span>, <span class="nm">12</span>}};
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> m.length; i<span class="op">++</span>) {
+            <span class="tp">int</span> sl <span class="op">=</span> <span class="nm">0</span>;
+            <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> m[i].length; j<span class="op">++</span>) {
+                sl <span class="op">+=</span> m[i][j];
+            }
+            System.out.println(<span class="st">"linia "</span> <span class="op">+</span> i <span class="op">+</span> <span class="st">": "</span> <span class="op">+</span> sl);
+        }
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copiază</button></div><pre><code>v <span class="op">=</span> [<span class="nm">7</span>, <span class="nm">12</span>, <span class="nm">5</span>, <span class="nm">9</span>, <span class="nm">3</span>]
+suma <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="kw">len</span>(v))<span class="op">:</span>
+    suma <span class="op">+=</span> v[i]
+<span class="kw">print</span>(<span class="st">"suma vectorului:"</span>, suma)
+
+m <span class="op">=</span> [[<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>], [<span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">7</span>, <span class="nm">8</span>], [<span class="nm">9</span>, <span class="nm">10</span>, <span class="nm">11</span>, <span class="nm">12</span>]]
+<span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="kw">len</span>(m))<span class="op">:</span>
+    sl <span class="op">=</span> <span class="nm">0</span>
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="kw">range</span>(<span class="kw">len</span>(m[i]))<span class="op">:</span>
+        sl <span class="op">+=</span> m[i][j]
+    <span class="kw">print</span>(<span class="st">"linia"</span>, <span class="tp">str</span>(i) <span class="op">+</span> <span class="st">":"</span>, sl)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – identic în cele trei limbaje</span></div><pre><code>suma vectorului: 36
+linia 0: 10
+linia 1: 26
+linia 2: 42</code></pre></div><p>Textul completează tabloul de numere cu un tablou de caractere. În C++, un text este un <code>char[]</code> în care sfârșitul textului este marcat de caracterul special <code>'\0'</code>; de aceea, <code>char s[20]</code> poate păstra cel mult 19 caractere vizibile, iar funcția <code>strlen</code> (din <code>&lt;cstring&gt;</code>) numără caracterele de dinaintea lui <code>'\0'</code>. În Java și Python, textul nu este un simplu tablou: <code>String</code>, respectiv <code>str</code>, sunt tipuri proprii, iar elementele lor se pot citi, dar nu se pot modifica pe loc.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">#include &lt;cstring&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">char</span> s[<span class="nm">20</span>] <span class="op">=</span> <span class="st">"Ana"</span>;
+    cout <span class="op">&lt;&lt;</span> strlen(s) <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> s[<span class="nm">0</span>] <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> s <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Text {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">String</span> s <span class="op">=</span> <span class="st">"Ana"</span>;
+        System.out.println(s.length() <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> s.charAt(<span class="nm">0</span>) <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> s);
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copiază</button></div><pre><code>s <span class="op">=</span> <span class="st">"Ana"</span>
+<span class="kw">print</span>(<span class="kw">len</span>(s), s[<span class="nm">0</span>], s)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – identic în cele trei limbaje</span></div><pre><code>3 A Ana</code></pre></div><div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Notă despre sursa convenției „\0”</strong><p>Convenția textului terminat cu <code>'\0'</code> este cea folosită în cursurile de C și C++; în această sesiune de lucru nu am putut verifica formularea exactă din standard sau din cppreference (accesul la aceste pagini nu a fost disponibil), deci o prezentăm ca regulă a limbajului, fără citat. Imutabilitatea lui <code>String</code> (Java) și <code>str</code> (Python) este o proprietate cunoscută a celor două limbaje; textul exact din documentație nu a fost verificat aici.</p></div></div>
+<h3 id="compunere">1.6. Compunerea este recursivă</h3>
+<p>Cea mai importantă consecință a definiției „tip compus = construit din alte tipuri” este că <strong>construcția poate fi reluată</strong>: elementele unui tablou pot fi ele însele tablouri sau texte, iar standardul C++ spune explicit că metodele de construire a tipurilor compuse se pot aplica recursiv. Ai folosit deja asta, probabil fără să o numești. Un vector de nume este un vector în care fiecare element este un text, adică un vector de <code>char</code>.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ – un vector de 3 texte, fiecare de cel mult 19 caractere</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">char</span> nume[<span class="nm">3</span>][<span class="nm">20</span>] <span class="op">=</span> {<span class="st">"Ana"</span>, <span class="st">"Bogdan"</span>, <span class="st">"Cezar"</span>};
+    cout <span class="op">&lt;&lt;</span> nume[<span class="nm">1</span>] <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> nume[<span class="nm">1</span>][<span class="nm">0</span>] <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>Bogdan B</code></pre></div><p>Expresia <code>nume[1]</code> este un text întreg („Bogdan”), iar <code>nume[1][0]</code> este un singur caracter („B”). Același tip, <code>char</code>, apare la trei niveluri: caracterul, textul, vectorul de texte. Tabelul de mai jos ordonează câteva compuneri după ce poți construi cu ele; ultimele două cer un tip pe care nu îl avem încă, structura, și sunt anunțul Laboratorului 2.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Compunere</th><th>Se citește</th><th>Exemplu în C++</th><th>Unde o studiem</th></tr></thead><tbody><tr><td>vector de numere</td><td>un șir de valori de același fel</td><td><code>double t[7]</code></td><td>acest laborator</td></tr><tr><td>vector de vectori</td><td>matrice: un tabel de valori de același fel</td><td><code>bool loc[6][8]</code></td><td>acest laborator</td></tr><tr><td>vector de texte</td><td>mai multe nume</td><td><code>char nume[3][20]</code></td><td>acest laborator</td></tr><tr><td>vector de structuri</td><td>mai multe fișe, fiecare cu rubrici de tipuri diferite</td><td>se introduce în Laboratorul 2</td><td>Laboratorul 2</td></tr><tr><td>structură care conține un vector</td><td>o fișă cu o rubrică ce are mai multe valori</td><td>se introduce în Laboratorul 2</td><td>Laboratorul 2</td></tr></tbody></table></div>
+<h3 id="criterii">1.7. Criterii de clasificare: proprietăți, nu categorii</h3>
+<p>În manuale și materiale de curs, structurile de date se clasifică după câteva criterii. Cele mai întâlnite sunt <strong>omogene / eterogene</strong> (toate componentele au același tip sau nu), <strong>statice / dinamice</strong> (dimensiunea este fixă sau se poate schimba în timpul execuției) și <strong>liniare / neliniare</strong> (componentele sunt aranjate într-un șir sau într-o altă relație, de exemplu arbore sau graf). Esențial este că acestea sunt <strong>proprietăți</strong> ale unui tip compus, nu categorii de același rang cu vectorul sau structura: o aceeași structură poate avea simultan mai multe dintre ele (o sursă notează explicit că o structură poate aparține mai multor categorii deodată).</p>
+<div class="tbl-wrap"><table><thead><tr><th>Construcție</th><th>Omogenă sau eterogenă?</th><th>Dimensiune în C++</th><th>Cum se accesează o componentă</th></tr></thead><tbody><tr><td>vector</td><td>omogenă</td><td>fixă, cunoscută la compilare</td><td>după un indice</td></tr><tr><td>matrice</td><td>omogenă</td><td>fixă</td><td>după doi indici</td></tr><tr><td>text (<code>char[]</code>)</td><td>omogenă (toate sunt <code>char</code>)</td><td>fixă (lungimea declarată; textul real poate fi mai scurt)</td><td>după un indice</td></tr><tr><td><code>struct</code></td><td>eterogenă (posibil)</td><td>număr fix de câmpuri</td><td>după numele câmpului</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Sursele nu sunt consecvente între ele</strong><p>Definițiile criteriilor sunt, în general, de acord, dar exemplele diferă: unele pagini consideră stivele și cozile statice, altele, dinamice, după implementare; unele pagini numesc arborii și grafurile eterogene. De aceea, în M9 învățăm <strong>criteriile</strong> și le aplicăm pe cazuri concrete, nu memorăm liste de exemple. Criteriile static / dinamic și liniar / neliniar sunt aici doar numite; le vei dezvolta la structurile de date dinamice.</p></div></div>
+<h3 id="raport">1.8. Raportul dintre concepte: tabel-rezumat</h3>
+<p>Schema de la începutul secțiunii se citește prin trei întrebări pe care le poți pune oricărei date din program. Fiecare întrebare indică un singur concept, ceea ce te ajută să nu amesteci nivelurile.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Întrebarea</th><th>Conceptul</th><th>Exemplu: <code>int x = 7;</code></th><th>Exemplu: <code>double t[7];</code></th></tr></thead><tbody><tr><td>Ce valori poate avea și ce operații am pe ea?</td><td>tip</td><td><code>int</code></td><td><code>double</code> (tipul fiecărui element) și „tablou de 7 <code>double</code>” (tipul întregului)</td></tr><tr><td>Ce valoare concretă are acum?</td><td>valoare</td><td><code>7</code></td><td>cele 7 numere memorate</td></tr><tr><td>Cum se numește locul unde o păstrez?</td><td>variabilă</td><td><code>x</code></td><td><code>t</code>; fiecare element, <code>t[i]</code>, se comportă ca o variabilă</td></tr><tr><td>Cum grupez mai multe valori?</td><td>mod de construire a unui tip compus</td><td>nu este cazul (tip simplu)</td><td>vector</td></tr><tr><td>Cum sunt relaționate?</td><td>lanț</td><td>valoare → tip ← variabilă</td><td>tipul compus se construiește din tipul simplu <code>double</code></td></tr></tbody></table></div>
+<div class="callout ok"><span class="callout-icon">✅</span><div class="callout-body"><strong>Cum verifici că ai înțeles harta</strong><p>Ia orice declarație, de exemplu <code>char nume[3][20];</code>, și spune: care este tipul elementului de bază (<code>char</code>), ce moduri de construire s-au aplicat (de două ori vectorul), care este numele variabilei (<code>nume</code>) și ce este <code>nume[2]</code> (un text, adică un vector de <code>char</code>, element al variabilei). Dacă poți răspunde la toate patru, nivelurile sunt clare. Exercițiile din tabul Laborator te antrenează exact pe acest lucru.</p></div></div>
+<h2 id="reprezentare">2. De la realitate la reprezentare</h2>
+<p>Programul nu lucrează cu lucrurile din realitate, ci cu <strong>reprezentări</strong> ale lor: valori memorate în variabile, vectori, matrice sau, mai târziu, structuri. A reprezenta un lucru înseamnă să alegi, din tot ce se poate spune despre el, <em>ce informații păstrezi</em> și <em>în ce formă le memorezi</em>, astfel încât programul să poată răspunde la întrebarea pentru care a fost scris. Ce nu păstrezi, programul nu poate afla, iar ce se poate calcula din ce ai păstrat nu trebuie memorat încă o dată.</p>
+<p class="text-sm text-muted">Formulare didactică a autorului materialului, nu o definiție preluată dintr-o sursă.</p>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Modelul nu este realitatea</strong><p>Un elev real are sute de caracteristici: înălțime, culoarea ochilor, prieteni, hobby-uri. Pentru un catalog contează doar numele, clasa și notele. Ce este relevant se stabilește după <strong>întrebarea la care trebuie să răspundă programul</strong>, nu după lucrul în sine: pentru alt program (o echipă de fotbal, de exemplu), aceleași persoane ar fi descrise prin alte caracteristici.</p></div></div>
+<h3 id="pasi-reprezentare">2.1. Cinci pași de la realitate la reprezentare</h3>
+<ol class="algo-steps"><li><strong>Alege lucrul și întrebarea.</strong> Ce lucru din realitate descrii și la ce întrebare trebuie să răspundă programul (media clasei? locurile libere? elevul cu nota maximă?).</li><li><strong>Alege informațiile relevante.</strong> Păstrează numai ce trebuie ca să răspunzi la întrebare. Ce se poate calcula din alte informații (vârsta din data nașterii, media din note) nu se memorează separat.</li><li><strong>Alege tipul fiecărei informații.</strong> Pentru fiecare informație stabilește tipul simplu și domeniul valorilor (partea de <em>tip</em> din hartă): un număr de pagini este un întreg pozitiv, o notă este un întreg între 1 și 10, un număr de telefon este text.</li><li><strong>Alege forma de grupare.</strong> O singură informație: variabilă. Mai multe valori de același tip pe un rând: vector. Un tabel de valori de același tip: matrice. Informații de tipuri diferite despre același lucru: structură (Laboratorul 2). Mai multe astfel de lucruri: vector de structuri.</li><li><strong>Verifică.</strong> Poți răspunde la întrebare numai din ce ai reprezentat? Dacă nu, lipsește o informație; dacă păstrezi ceva ce nu folosești niciodată, scoate-l.</li></ol><h3 id="conventie">2.2. Reprezentarea include o convenție</h3>
+<p>Un vector nu spune singur ce înseamnă pozițiile lui: sensul îl dă modelul. Mai jos, notele unui elev la cinci teste sunt memorate într-un vector. Programul vede doar indicii 0 … 4, iar corespondența cu testele din realitate (numerotate de la 1) este o convenție a modelului.</p>
+<div class="vec-wrap"><div class="vname">note (notele unui elev la 5 teste)</div><div class="vec"><div class="vc"><div class="cell a">8</div><div class="ix">0</div></div><div class="vc"><div class="cell">10</div><div class="ix">1</div></div><div class="vc"><div class="cell">7</div><div class="ix">2</div></div><div class="vc"><div class="cell">9</div><div class="ix">3</div></div><div class="vc"><div class="cell">6</div><div class="ix">4</div></div></div><div class="vcap">Convenția acestui model: indicele <code>i</code> corespunde testului cu numărul <code>i + 1</code>. Nota la testul 1 este <code>note[0]</code> (evidențiată), iar nota la testul 5 este <code>note[4]</code>. Dacă modelul ar fi altul (de exemplu, indicele 0 neîntrebuințat și testele numerotate 1 … 5), toate programele care îl folosesc ar trebui scrise altfel.</div></div>
+<h3 id="exemple-reprezentare">2.3. Aceeași idee, cinci forme</h3>
+<div class="tbl-wrap"><table><thead><tr><th>Lucru din realitate</th><th>Ce păstrăm</th><th>Reprezentare</th><th>De ce această formă</th><th>Alternativă (cu dezavantaj)</th></tr></thead><tbody><tr><td>Temperatura de acum</td><td>o valoare reală</td><td>variabilă <code>double</code></td><td>o singură informație</td><td>—</td></tr><tr><td>Temperaturile de la prânz, în cele 7 zile ale unei săptămâni</td><td>7 valori reale</td><td>vector <code>double t[7]</code></td><td>valori de același tip, ordonate (ziua 1 … 7)</td><td>7 variabile: nu se pot parcurge cu un ciclu</td></tr><tr><td>Locurile dintr-o sală: 6 rânduri × 8 locuri</td><td>liber sau ocupat, pentru fiecare loc</td><td>matrice <code>bool loc[6][8]</code></td><td>două dimensiuni (rând, loc), același tip</td><td>vector de 48 de elemente, cu indice calculat: mai greu de citit</td></tr><tr><td>Un elev: nume, an, medie</td><td>3 informații de tipuri diferite</td><td>structură (Laboratorul 2)</td><td>valori eterogene care aparțin aceluiași lucru</td><td>trei variabile separate: nu se văd ca un tot</td></tr><tr><td>Toți elevii unei clase</td><td>mai multe fișe de același fel</td><td>vector de structuri (Laboratorul 2)</td><td>colecție de lucruri de același fel, fiecare cu mai multe informații</td><td>vectori paraleli: legătura dintre ei se poate pierde</td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Aceeași realitate, mai multe reprezentări corecte</strong><p>Nu există o singură reprezentare bună. O oră din zi poate fi memorată ca trei întregi (ore, minute, secunde) sau ca un singur întreg, numărul de secunde de la miezul nopții. Prima este comodă la afișare, a doua la comparații și diferențe. Alegi după ce faci mai des cu informația, dar nu le păstrezi pe ambele, pentru că s-ar putea desincroniza.</p></div></div>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Unde se potrivește reprezentarea în hartă</strong><p>Pasul 3 (tip și domeniu) este partea de <em>tip</em> din schemă, iar pasul 4 (forma de grupare) alege modul de construire a unui tip compus. Domeniul este un cuvânt nou pentru ce știi deja: mulțimea valorilor <em>cu sens</em> pentru informația ta, adică un subset al mulțimii tipului. O notă între 1 și 10 are domeniul <code>{1, …, 10}</code>, dar tipul <code>int</code> acceptă și <code>−5</code> sau <code>100</code>. Tipul singur nu apără domeniul; vei vedea în M9 cum se apără.</p></div></div>
+<h2 id="erori">3. Erori frecvente</h2>
+<h3>Eroarea 1 – Indice în afara vectorului</h3>
+<p>Pentru un vector cu 5 elemente, indicii valizi sunt 0 … 4. Accesarea lui <code>v[5]</code> este o greșeală în toate limbajele, dar fiecare reacționează diferit. În C++ programul se compilează și rulează; comportamentul este nedefinit, adică standardul nu promite niciun rezultat. În Java și în Python programul se oprește cu un mesaj clar.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">Java – la rulare</span></div><pre><code>Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 5 out of bounds for length 5
+	at IndexJava.main(IndexJava.java:4)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python – la rulare</span></div><pre><code>    print(v[5])
+          ~^^^
+IndexError: list index out of range</code></pre></div><p>În C++ nu apare niciun mesaj: citirea lui <code>v[5]</code> dă o valoare oarecare din memorie, iar o scriere la acel indice poate strica alte date sau poate opri programul. Tocmai pentru că nu există o avertizare, verificarea limitelor ține de programator: o buclă pentru <code>n</code> elemente are condiția <code>i &lt; n</code>, nu <code>i &lt;= n</code>.</p>
+<h3>Eroarea 2 – Vector local neinițializat</h3>
+<p>Un vector declarat în <code>main</code> fără valori (<code>int a[5];</code>) conține valori oarecare rămase în memorie. Când trebuie să pornească de la zero, de exemplu pentru contoare, scrie explicit <code>= {0}</code>.</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">C++ – corect și incorect</span></div><pre><code><span class="tp">int</span> a[<span class="nm">5</span>];          <span class="cm">// valori nedefinite: nu citi înainte să scrii</span>
+<span class="tp">int</span> b[<span class="nm">5</span>] <span class="op">=</span> {<span class="nm">0</span>};   <span class="cm">// toate elementele sunt 0</span></code></pre></div><h3>Eroarea 3 – Atribuirea unui vector întreg</h3>
+<p>Un vector nu se copiază cu <code>b = a;</code>; copierea se face element cu element, cu o buclă. Încercarea este refuzată la compilare. Mesajul real al lui <code>g++</code> 13.3:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">g++</span></div><pre><code>atrib.cpp:4:7: error: invalid array assignment</code></pre></div><h3>Eroarea 4 – Confuzia dintre indice și poziție</h3>
+<p>Când enunțul numără pozițiile de la 1, elementul de pe poziția <code>p</code> este <code>v[p − 1]</code>. Folosirea directă a lui <code>p</code> ca indice produce un rezultat greșit fără nicio eroare de compilare. Aceeași confuzie apare la reprezentare: dacă modelul spune „testul 1 este indicele 0”, orice program trebuie să respecte convenția.</p>
+<h2 id="comparatie">4. Comparație între limbaje</h2>
+<div class="tbl-wrap"><table><thead><tr><th>Concept</th><th>C++</th><th>Java</th><th>Python</th></tr></thead><tbody><tr><td>Fișier sursă</td><td><code>.cpp</code></td><td><code>.java</code>; clasa publică are numele fișierului</td><td><code>.py</code></td></tr><tr><td>Subprogram</td><td>funcție la nivelul fișierului</td><td>metodă <code>static</code> într-o clasă (aici)</td><td><code>def</code></td></tr><tr><td>Punct de intrare</td><td>funcția <code>main</code></td><td>metoda <code>main</code> a unei clase</td><td>prima instrucțiune din fișier</td></tr><tr><td>Afișare</td><td><code>cout &lt;&lt; x</code></td><td><code>System.out.println(x)</code></td><td><code>print(x)</code></td></tr><tr><td>Tipul unei variabile</td><td>se declară: <code>int x</code></td><td>se declară: <code>int x</code></td><td>nu se declară; tipul aparține valorii</td></tr><tr><td>Vector</td><td><code>int v[5];</code> (dimensiune constantă)</td><td><code>int[] v = new int[5];</code></td><td>listă: <code>v = [0] * 5</code></td></tr><tr><td>Matrice</td><td><code>int m[3][4];</code></td><td><code>int[][] m</code> (tablou de tablouri)</td><td>listă de liste</td></tr><tr><td>Text</td><td><code>char s[20]</code> (vector de <code>char</code>)</td><td><code>String</code></td><td><code>str</code></td></tr><tr><td>Verificarea indicilor</td><td>nu; comportament nedefinit</td><td>da: <code>ArrayIndexOutOfBoundsException</code></td><td>da: <code>IndexError</code></td></tr><tr><td>Indice negativ</td><td>acces în afara vectorului</td><td>eroare</td><td>valid: <code>v[-1]</code> este ultimul element</td></tr><tr><td>Afișarea lui <code>7.0</code></td><td><code>7</code></td><td><code>7.0</code></td><td><code>7.0</code></td></tr></tbody></table></div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Diferența de afișare pentru 7.0</strong><p>C++ afișează <code>7</code>, iar Java și Python afișează <code>7.0</code>. Valoarea din memorie este aceeași; diferă doar regulile de afișare ale fiecărui limbaj. Nu o confunda cu o diferență a datelor.</p></div></div>
+<h2 id="ce-urmeaza">5. Ce urmează?</h2>
+<p>Toate formele din acest laborator au o trăsătură comună: elementele lor sunt <strong>de același tip</strong>, iar sensul fiecărui element vine din poziția lui. Asta funcționează bine pentru o săptămână de temperaturi sau pentru o sală de locuri. Funcționează prost atunci când vrei să memorezi un <em>lucru</em> cu mai multe caracteristici de tipuri diferite, de exemplu un student cu nume (text) și notă (număr real). Cu ce știi acum, singura soluție este să ții un vector pentru nume și un vector pentru note și să te asiguri, în minte, că elementele cu același indice se referă la același student.</p>
+<p>Această soluție, a vectorilor „paraleli”, este fragilă: legătura dintre ei nu este scrisă nicăieri în program, iar o singură interschimbare uitată strică datele fără ca vreun compilator să protesteze. Laboratorul 2 pornește exact de aici. Nu va scrie cod mult; va exersa <strong>conceptual</strong> ideea de a grupa variabile eterogene într-un singur tot, cu un tip definit de tine: câte câmpuri are, ce tip are fiecare, ce domeniu au valorile și ce nu este câmp.</p>
+<div class="callout ok"><span class="callout-icon">✅</span><div class="callout-body"><strong>Înainte de Laboratorul 2</strong><p>Dacă poți face, fără să te uiți, schema din secțiunea 1 și cei cinci pași din secțiunea 2 pe un exemplu nou, ești pregătit. Verifică-te cu exercițiile din tabul Laborator și cu autoevaluarea.</p></div></div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="t1-exemple">
+        <div class="prose">
+<h2 id="exemple">Exemple rezolvate</h2>
+<p>Aplicăm metodologia din M6 (<strong>cerință</strong>, <strong>date</strong>, <strong>rezultat</strong>, <strong>proiectarea algoritmului</strong>, <strong>cod</strong>), la care adăugăm un pas nou: <strong>reprezentarea</strong>. Înainte de cod, fiecare exemplu spune ce informații păstrăm, de ce tip sunt și în ce formă le grupăm, adică exact cei cinci pași din secțiunea „De la realitate la reprezentare”. Primele patru exemple sunt scrise în cele trei limbaje, iar ultimele două, doar în C++. Toate ieșirile afișate sunt rezultatul real al rulării programelor.</p>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Temperaturile unei săptămâni (vector)<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Temperaturile de la prânz într-o săptămână sunt: 18, 21, 19, 24, 22, 20 și 17 grade. Afișează suma lor, ziua cea mai caldă (numărată de la 1) și câte zile au avut o temperatură strict mai mare decât media săptămânii.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare</div><ol class="algo-steps"><li><strong>Lucrul și întrebarea:</strong> temperaturile unei săptămâni; vrem o sumă, o zi și un număr de zile.</li><li><strong>Informații relevante:</strong> doar temperatura de la prânz, pentru fiecare dintre cele 7 zile. Media nu se memorează, se poate calcula.</li><li><strong>Tip și domeniu:</strong> întreg (grade întregi), pozitiv sau negativ; tipul <code>int</code>.</li><li><strong>Formă:</strong> 7 valori de același tip, ordonate după zi: vector <code>int t[7]</code>. Convenția: indicele <code>i</code> este ziua <code>i + 1</code>.</li><li><strong>Verificare:</strong> din vector se pot calcula suma, maximul cu poziție și numărul de valori peste medie; nu lipsește nimic.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list-ol"></i> Proiectarea algoritmului</div><ol class="algo-steps"><li>Suma se calculează cu un acumulator, ca în M6.</li><li>Ziua cea mai caldă se află cu tiparul „maxim cu poziție”: se reține <em>indicele</em> <code>poz</code>, iar ziua este <code>poz + 1</code>.</li><li>Media este <code>suma / 7</code>; pentru ca împărțirea să fie reală, se convertește <code>suma</code> la <code>double</code>. Se numără valorile strict mai mari decât media.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> t[<span class="nm">7</span>] <span class="op">=</span> {<span class="nm">18</span>, <span class="nm">21</span>, <span class="nm">19</span>, <span class="nm">24</span>, <span class="nm">22</span>, <span class="nm">20</span>, <span class="nm">17</span>};
+    <span class="tp">int</span> suma <span class="op">=</span> <span class="nm">0</span>, poz <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">7</span>; i<span class="op">++</span>) {
+        suma <span class="op">+=</span> t[i];
+        <span class="kw">if</span> (t[i] <span class="op">&gt;</span> t[poz]) {
+            poz <span class="op">=</span> i;
+        }
+    }
+    <span class="tp">double</span> media <span class="op">=</span> (<span class="tp">double</span>) suma <span class="op">/</span> <span class="nm">7</span>;
+    <span class="tp">int</span> peste <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">7</span>; i<span class="op">++</span>) {
+        <span class="kw">if</span> (t[i] <span class="op">&gt;</span> media) {
+            peste<span class="op">++</span>;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> <span class="st">"suma: "</span> <span class="op">&lt;&lt;</span> suma <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"ziua cea mai calda: "</span> <span class="op">&lt;&lt;</span> poz <span class="op">+</span> <span class="nm">1</span> <span class="op">&lt;&lt;</span> <span class="st">" ("</span> <span class="op">&lt;&lt;</span> t[poz] <span class="op">&lt;&lt;</span> <span class="st">")"</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="st">"zile peste medie: "</span> <span class="op">&lt;&lt;</span> peste <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Temperaturi {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">int</span>[] t <span class="op">=</span> {<span class="nm">18</span>, <span class="nm">21</span>, <span class="nm">19</span>, <span class="nm">24</span>, <span class="nm">22</span>, <span class="nm">20</span>, <span class="nm">17</span>};
+        <span class="tp">int</span> suma <span class="op">=</span> <span class="nm">0</span>, poz <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> t.length; i<span class="op">++</span>) {
+            suma <span class="op">+=</span> t[i];
+            <span class="kw">if</span> (t[i] <span class="op">&gt;</span> t[poz]) {
+                poz <span class="op">=</span> i;
+            }
+        }
+        <span class="tp">double</span> media <span class="op">=</span> (<span class="tp">double</span>) suma <span class="op">/</span> t.length;
+        <span class="tp">int</span> peste <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> t.length; i<span class="op">++</span>) {
+            <span class="kw">if</span> (t[i] <span class="op">&gt;</span> media) {
+                peste<span class="op">++</span>;
+            }
+        }
+        System.out.println(<span class="st">"suma: "</span> <span class="op">+</span> suma);
+        System.out.println(<span class="st">"ziua cea mai calda: "</span> <span class="op">+</span> (poz <span class="op">+</span> <span class="nm">1</span>) <span class="op">+</span> <span class="st">" ("</span> <span class="op">+</span> t[poz] <span class="op">+</span> <span class="st">")"</span>);
+        System.out.println(<span class="st">"zile peste medie: "</span> <span class="op">+</span> peste);
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copiază</button></div><pre><code>t <span class="op">=</span> [<span class="nm">18</span>, <span class="nm">21</span>, <span class="nm">19</span>, <span class="nm">24</span>, <span class="nm">22</span>, <span class="nm">20</span>, <span class="nm">17</span>]
+suma <span class="op">=</span> <span class="nm">0</span>
+poz <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="kw">len</span>(t))<span class="op">:</span>
+    suma <span class="op">+=</span> t[i]
+    <span class="kw">if</span> t[i] <span class="op">&gt;</span> t[poz]<span class="op">:</span>
+        poz <span class="op">=</span> i
+media <span class="op">=</span> suma <span class="op">/</span> <span class="kw">len</span>(t)
+peste <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="kw">len</span>(t))<span class="op">:</span>
+    <span class="kw">if</span> t[i] <span class="op">&gt;</span> media<span class="op">:</span>
+        peste <span class="op">+=</span> <span class="nm">1</span>
+<span class="kw">print</span>(<span class="st">"suma:"</span>, suma)
+<span class="kw">print</span>(<span class="st">"ziua cea mai calda:"</span>, poz <span class="op">+</span> <span class="nm">1</span>, <span class="st">"("</span> <span class="op">+</span> <span class="tp">str</span>(t[poz]) <span class="op">+</span> <span class="st">")"</span>)
+<span class="kw">print</span>(<span class="st">"zile peste medie:"</span>, peste)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – identic în cele trei limbaje</span></div><pre><code>suma: 141
+ziua cea mai calda: 4 (24)
+zile peste medie: 3</code></pre></div></div>
+</div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">2</div><div class="exercise-title">Locurile dintr-o sală (matrice)<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>O sală are 4 rânduri a câte 5 locuri. Pentru fiecare loc se știe dacă este ocupat. Afișează, pentru fiecare rând, câte locuri sunt libere, apoi totalul de locuri libere.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare</div><ol class="algo-steps"><li><strong>Lucrul și întrebarea:</strong> ocuparea sălii; vrem locuri libere pe rând și în total.</li><li><strong>Informații relevante:</strong> pentru fiecare loc, o singură informație: ocupat sau liber. Numărul de locuri libere se calculează, nu se memorează.</li><li><strong>Tip și domeniu:</strong> două valori posibile, deci <code>bool</code> (<code>true</code> = ocupat).</li><li><strong>Formă:</strong> un tabel de valori de același tip, cu două dimensiuni (rând, loc): matrice <code>bool ocupat[4][5]</code>. Convenția: primul indice este rândul, al doilea este locul.</li><li><strong>Verificare:</strong> din matrice se poate număra ce cere problema.</li></ol></div>
+<div class="vec-wrap"><div class="vname">ocupat (bool ocupat[4][5]; 1 = ocupat)</div><div class="mat" style="grid-template-columns: 28px repeat(5, 48px);"><div class="mc corner"></div><div class="mc ix">0</div><div class="mc ix">1</div><div class="mc ix">2</div><div class="mc ix">3</div><div class="mc ix">4</div><div class="mc ix">0</div><div class="mc cell">1</div><div class="mc cell">0</div><div class="mc cell">0</div><div class="mc cell">1</div><div class="mc cell">0</div><div class="mc ix">1</div><div class="mc cell g">0</div><div class="mc cell g">0</div><div class="mc cell g">0</div><div class="mc cell g">0</div><div class="mc cell g">0</div><div class="mc ix">2</div><div class="mc cell">1</div><div class="mc cell">1</div><div class="mc cell">1</div><div class="mc cell">1</div><div class="mc cell">1</div><div class="mc ix">3</div><div class="mc cell">0</div><div class="mc cell">1</div><div class="mc cell">0</div><div class="mc cell">0</div><div class="mc cell">1</div></div><div class="vcap">Rândul 1 (verde) este complet liber. Rândurile sunt numerotate de la 0 în program.</div></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">bool</span> ocupat[<span class="nm">4</span>][<span class="nm">5</span>] <span class="op">=</span> {
+        {<span class="kw">true</span>, <span class="kw">false</span>, <span class="kw">false</span>, <span class="kw">true</span>, <span class="kw">false</span>},
+        {<span class="kw">false</span>, <span class="kw">false</span>, <span class="kw">false</span>, <span class="kw">false</span>, <span class="kw">false</span>},
+        {<span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>},
+        {<span class="kw">false</span>, <span class="kw">true</span>, <span class="kw">false</span>, <span class="kw">false</span>, <span class="kw">true</span>}
+    };
+    <span class="tp">int</span> total <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">4</span>; i<span class="op">++</span>) {
+        <span class="tp">int</span> libere <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> <span class="nm">5</span>; j<span class="op">++</span>) {
+            <span class="kw">if</span> (<span class="op">!</span>ocupat[i][j]) {
+                libere<span class="op">++</span>;
+            }
+        }
+        cout <span class="op">&lt;&lt;</span> <span class="st">"randul "</span> <span class="op">&lt;&lt;</span> i <span class="op">+</span> <span class="nm">1</span> <span class="op">&lt;&lt;</span> <span class="st">": "</span> <span class="op">&lt;&lt;</span> libere <span class="op">&lt;&lt;</span> endl;
+        total <span class="op">+=</span> libere;
+    }
+    cout <span class="op">&lt;&lt;</span> <span class="st">"total: "</span> <span class="op">&lt;&lt;</span> total <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Sala {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">boolean</span>[][] ocupat <span class="op">=</span> {
+            {<span class="kw">true</span>, <span class="kw">false</span>, <span class="kw">false</span>, <span class="kw">true</span>, <span class="kw">false</span>},
+            {<span class="kw">false</span>, <span class="kw">false</span>, <span class="kw">false</span>, <span class="kw">false</span>, <span class="kw">false</span>},
+            {<span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>},
+            {<span class="kw">false</span>, <span class="kw">true</span>, <span class="kw">false</span>, <span class="kw">false</span>, <span class="kw">true</span>}
+        };
+        <span class="tp">int</span> total <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> ocupat.length; i<span class="op">++</span>) {
+            <span class="tp">int</span> libere <span class="op">=</span> <span class="nm">0</span>;
+            <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> ocupat[i].length; j<span class="op">++</span>) {
+                <span class="kw">if</span> (<span class="op">!</span>ocupat[i][j]) {
+                    libere<span class="op">++</span>;
+                }
+            }
+            System.out.println(<span class="st">"randul "</span> <span class="op">+</span> (i <span class="op">+</span> <span class="nm">1</span>) <span class="op">+</span> <span class="st">": "</span> <span class="op">+</span> libere);
+            total <span class="op">+=</span> libere;
+        }
+        System.out.println(<span class="st">"total: "</span> <span class="op">+</span> total);
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copiază</button></div><pre><code>ocupat <span class="op">=</span> [
+    [<span class="kw">True</span>, <span class="kw">False</span>, <span class="kw">False</span>, <span class="kw">True</span>, <span class="kw">False</span>],
+    [<span class="kw">False</span>, <span class="kw">False</span>, <span class="kw">False</span>, <span class="kw">False</span>, <span class="kw">False</span>],
+    [<span class="kw">True</span>, <span class="kw">True</span>, <span class="kw">True</span>, <span class="kw">True</span>, <span class="kw">True</span>],
+    [<span class="kw">False</span>, <span class="kw">True</span>, <span class="kw">False</span>, <span class="kw">False</span>, <span class="kw">True</span>],
+]
+total <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="kw">len</span>(ocupat))<span class="op">:</span>
+    libere <span class="op">=</span> <span class="nm">0</span>
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="kw">range</span>(<span class="kw">len</span>(ocupat[i]))<span class="op">:</span>
+        <span class="kw">if</span> <span class="kw">not</span> ocupat[i][j]<span class="op">:</span>
+            libere <span class="op">+=</span> <span class="nm">1</span>
+    <span class="kw">print</span>(<span class="st">"randul"</span>, i <span class="op">+</span> <span class="nm">1</span>, end<span class="op">=</span><span class="st">": "</span>)
+    <span class="kw">print</span>(libere)
+    total <span class="op">+=</span> libere
+<span class="kw">print</span>(<span class="st">"total:"</span>, total)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – identic în cele trei limbaje</span></div><pre><code>randul 1: 3
+randul 2: 5
+randul 3: 0
+randul 4: 3
+total: 11</code></pre></div></div>
+</div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">3</div><div class="exercise-title">Textul ca vector de caractere<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Numără vocalele din cuvântul „programare” (litere mici, fără diacritice).</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare</div><ol class="algo-steps"><li><strong>Lucrul și întrebarea:</strong> un cuvânt; câte vocale conține.</li><li><strong>Tip și formă:</strong> un șir de caractere, adică text. În C++ este un vector de <code>char</code> terminat cu <code>'\0'</code>; în Java este un <code>String</code>, iar în Python, un <code>str</code>.</li><li><strong>Parcurgere:</strong> în C++ se parcurge până la <code>'\0'</code> (sau până la <code>strlen</code>); în Java, până la <code>length()</code>; în Python, direct peste caractere.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">#include &lt;cstring&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">char</span> s[<span class="nm">20</span>] <span class="op">=</span> <span class="st">"programare"</span>;
+    <span class="tp">int</span> nr <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; s[i] <span class="op">!=</span> <span class="st">'\0'</span>; i<span class="op">++</span>) {
+        <span class="kw">if</span> (strchr(<span class="st">"aeiou"</span>, s[i]) <span class="op">!=</span> nullptr) {
+            nr<span class="op">++</span>;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> nr <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Java</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">public</span> <span class="kw">class</span> Vocale {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">String</span> s <span class="op">=</span> <span class="st">"programare"</span>;
+        <span class="tp">int</span> nr <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> s.length(); i<span class="op">++</span>) {
+            <span class="kw">if</span> (<span class="st">"aeiou"</span>.indexOf(s.charAt(i)) <span class="op">&gt;=</span> <span class="nm">0</span>) {
+                nr<span class="op">++</span>;
+            }
+        }
+        System.out.println(nr);
+    }
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Python</span><button class="code-copy">Copiază</button></div><pre><code>s <span class="op">=</span> <span class="st">"programare"</span>
+nr <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">for</span> c <span class="kw">in</span> s<span class="op">:</span>
+    <span class="kw">if</span> c <span class="kw">in</span> <span class="st">"aeiou"</span><span class="op">:</span>
+        nr <span class="op">+=</span> <span class="nm">1</span>
+<span class="kw">print</span>(nr)</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează – identic în cele trei limbaje</span></div><pre><code>4</code></pre></div></div>
+<p>Vocalele din „programare” sunt <code>o</code>, <code>a</code>, <code>a</code>, <code>e</code>, deci 4. Compararea cu <code>strchr("aeiou", s[i])</code> din C++ este corectă aici pentru că bucla se oprește înainte de <code>'\0'</code>; dacă ar fi ajuns și la terminator, <code>strchr</code> l-ar fi găsit în orice șir (terminatorul face parte din șir) și ar fi numărat o vocală în plus.</p></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">4</div><div class="exercise-title">Ora: două reprezentări posibile<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se dau două momente din aceeași zi, 08:45:30 și 11:20:15. Afișează durata dintre ele în ore, minute și secunde.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare: două variante pentru aceeași realitate</div><div class="tbl-wrap"><table><thead><tr><th></th><th>Varianta A: trei întregi</th><th>Varianta B: un întreg (secunde)</th></tr></thead><tbody><tr><td>Cum arată</td><td><code>int h, m, s;</code></td><td><code>int secunde;</code> (de la miezul nopții)</td></tr><tr><td>Afișare</td><td>directă: <code>h:m:s</code></td><td>cere conversie (împărțiri și resturi)</td></tr><tr><td>Diferența a două momente</td><td>greoaie: împrumuturi între secunde, minute, ore</td><td>o scădere</td></tr><tr><td>Risc</td><td>valori fără sens, de exemplu <code>m = 75</code></td><td>doar valori negative sau peste o zi</td></tr></tbody></table></div>
+</div>
+<p>Cum cererea principală este o <em>diferență</em>, alegem varianta B pentru calcul și revenim la forma <code>h:m:s</code> doar la afișare. Nu păstrăm ambele variante în același timp, ca să nu se desincronizeze.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> inSecunde(<span class="tp">int</span> h, <span class="tp">int</span> m, <span class="tp">int</span> s) {
+    <span class="kw">return</span> h <span class="op">*</span> <span class="nm">3600</span> <span class="op">+</span> m <span class="op">*</span> <span class="nm">60</span> <span class="op">+</span> s;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> a <span class="op">=</span> inSecunde(<span class="nm">8</span>, <span class="nm">45</span>, <span class="nm">30</span>);
+    <span class="tp">int</span> b <span class="op">=</span> inSecunde(<span class="nm">11</span>, <span class="nm">20</span>, <span class="nm">15</span>);
+    <span class="tp">int</span> d <span class="op">=</span> b <span class="op">-</span> a;
+    <span class="tp">int</span> ore <span class="op">=</span> d <span class="op">/</span> <span class="nm">3600</span>;
+    <span class="tp">int</span> minute <span class="op">=</span> (d <span class="op">%</span> <span class="nm">3600</span>) <span class="op">/</span> <span class="nm">60</span>;
+    <span class="tp">int</span> secunde <span class="op">=</span> d <span class="op">%</span> <span class="nm">60</span>;
+    cout <span class="op">&lt;&lt;</span> a <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> b <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> d <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> ore <span class="op">&lt;&lt;</span> <span class="st">":"</span> <span class="op">&lt;&lt;</span> minute <span class="op">&lt;&lt;</span> <span class="st">":"</span> <span class="op">&lt;&lt;</span> secunde <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>31530 40815 9285
+2:34:45</code></pre></div></div>
+<p>Verificare manuală: <code>8·3600 + 45·60 + 30 = 31530</code>, <code>11·3600 + 20·60 + 15 = 40815</code>, diferența este <code>9285</code> secunde, adică 2 ore (7200), 34 de minute (2040) și 45 de secunde.</p></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">5</div><div class="exercise-title">Notele elevilor: matrice și o limită<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Trei elevi, Ana, Bogdan și Cezar, au fiecare câte patru note: Ana 8, 9, 7, 10; Bogdan 6, 7, 8, 5; Cezar 10, 9, 9, 10. Afișează suma notelor fiecărui elev și numele elevului cu suma cea mai mare.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare</div><ol class="algo-steps"><li><strong>Lucrul și întrebarea:</strong> notele a trei elevi; vrem sume și un nume.</li><li><strong>Informații relevante:</strong> numele și cele patru note ale fiecărui elev. Suma nu se memorează, se calculează.</li><li><strong>Tip și domeniu:</strong> nota este un întreg între 1 și 10; numele este text.</li><li><strong>Formă:</strong> notele formează un tabel de valori de același tip: matrice <code>int nota[3][4]</code>, cu convenția „linia = elevul, coloana = testul”. Numele sunt un vector de texte: <code>char nume[3][20]</code>, cu convenția „<code>nume[i]</code> este elevul de pe linia <code>i</code>”.</li><li><strong>Verificare:</strong> putem răspunde la întrebare. Dar două structuri diferite (<code>nume</code> și <code>nota</code>) se leagă printr-o convenție care nu este scrisă nicăieri în program. Aceasta este limita pe care o vom depăși în Laboratorul 2.</li></ol></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-code"></i> Cod</div><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">char</span> nume[<span class="nm">3</span>][<span class="nm">20</span>] <span class="op">=</span> {<span class="st">"Ana"</span>, <span class="st">"Bogdan"</span>, <span class="st">"Cezar"</span>};
+    <span class="tp">int</span> nota[<span class="nm">3</span>][<span class="nm">4</span>] <span class="op">=</span> {{<span class="nm">8</span>, <span class="nm">9</span>, <span class="nm">7</span>, <span class="nm">10</span>}, {<span class="nm">6</span>, <span class="nm">7</span>, <span class="nm">8</span>, <span class="nm">5</span>}, {<span class="nm">10</span>, <span class="nm">9</span>, <span class="nm">9</span>, <span class="nm">10</span>}};
+    <span class="tp">int</span> best <span class="op">=</span> <span class="nm">0</span>, sumaBest <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">3</span>; i<span class="op">++</span>) {
+        <span class="tp">int</span> suma <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> <span class="nm">4</span>; j<span class="op">++</span>) {
+            suma <span class="op">+=</span> nota[i][j];
+        }
+        cout <span class="op">&lt;&lt;</span> nume[i] <span class="op">&lt;&lt;</span> <span class="st">": "</span> <span class="op">&lt;&lt;</span> suma <span class="op">&lt;&lt;</span> endl;
+        <span class="kw">if</span> (i <span class="op">==</span> <span class="nm">0</span> <span class="op">||</span> suma <span class="op">&gt;</span> sumaBest) {
+            sumaBest <span class="op">=</span> suma;
+            best <span class="op">=</span> i;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> <span class="st">"cel mai bun: "</span> <span class="op">&lt;&lt;</span> nume[best] <span class="op">&lt;&lt;</span> endl;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div><div class="code-block"><div class="code-header"><span class="code-lang">Se afișează</span></div><pre><code>Ana: 34
+Bogdan: 26
+Cezar: 38
+cel mai bun: Cezar</code></pre></div></div>
+<p>Dacă am sorta elevii după sumă, ar trebui să interschimbăm <strong>și linia din <code>nota</code>, și textul din <code>nume</code></strong>, în același timp. Uitarea unuia dintre cele două produce date false, fără nicio eroare de compilare: este problema „vectorilor paraleli”, cu care începe Laboratorul 2.</p></div></div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="t1-lab">
+        <div class="prose">
+<h2 id="introductive">Exerciții introductive (fără scriere de cod)</h2>
+<p>Rezolvă pe hârtie, apoi verifică cu răspunsul. Exercițiile sunt în ordinea crescătoare a dificultății și sunt propuse de autorul materialului; nu provin dintr-o sursă externă. Dacă o parte ți se pare dificilă, întoarce-te la secțiunea corespunzătoare din tabul Curs.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>În declarația <code>double nota = 9.5;</code> care este tipul, care este valoarea și care este variabila? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Tipul este <code>double</code> (mulțimea numerelor reale aproximate, cu operațiile lor), valoarea este <code>9.5</code>, iar variabila este <code>nota</code>. Atribuirea <code>nota = 8.0;</code> schimbă valoarea, dar nu schimbă tipul.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Care dintre operatorii <code>+</code>, <code>*</code>, <code>/</code>, <code>%</code> nu este definit pe tipul <code>double</code> în C++? Ce face compilatorul dacă îl folosești? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Operatorul <code>%</code>. Compilatorul refuză programul cu o eroare (vezi mesajul din secțiunea „Tipul de date”). Este un exemplu de operație care <em>nu aparține</em> tipului.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Ce valoare are <code>7 / 2</code> în C++? Dar <code>7.0 / 2</code>? De ce diferă? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><code>7 / 2</code> are valoarea <code>3</code> (împărțire întreagă, ambele valori sunt <code>int</code>), iar <code>7.0 / 2</code> are valoarea <code>3.5</code> (una dintre valori este <code>double</code>). Același simbol face lucruri diferite pe tipuri diferite, pentru că operația aparține tipului.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Care sunt primul și ultimul indice valid pentru <code>int v[8];</code>? Ce se întâmplă în C++ dacă scrii <code>v[8] = 1;</code>? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Primul indice este <code>0</code>, ultimul este <code>7</code>. <code>v[8]</code> este în afara vectorului: C++ nu verifică, programul se compilează, iar la rulare comportamentul este nedefinit.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">5</span>Câte elemente are <code>int m[3][4];</code>? Care este ultimul element? Ce este <code>m[1]</code>? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>12 elemente (3 linii × 4 coloane). Ultimul element este <code>m[2][3]</code>. <code>m[1]</code> este linia 1 întreagă, adică un vector de 4 <code>int</code>: matricea este un vector construit din vectori.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">6</span>Pentru <code>char nume[3][20];</code> spune ce sunt <code>nume</code>, <code>nume[1]</code> și <code>nume[1][0]</code>. Câte caractere vizibile încape într-un nume? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p><code>nume</code> este un vector de 3 texte; <code>nume[1]</code> este un text (un vector de 20 <code>char</code>); <code>nume[1][0]</code> este un singur caracter. Într-un text de 20 de locuri încap cel mult 19 caractere vizibile, pentru că unul este rezervat terminatorului <code>'\0'</code>.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">7</span>Pentru un catalog, de ce nu este bine să păstrezi atât data nașterii, cât și vârsta fiecărui elev? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Vârsta se poate calcula din data nașterii (și din data de azi), deci este informație <strong>derivată</strong>. Dacă o păstrezi separat, cele două pot ajunge în dezacord (de exemplu vârsta nu se actualizează). Regula din pasul 2 al reprezentării: ce se poate calcula, nu se memorează.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">8</span>Un program memorează ora ca trei întregi (<code>h</code>, <code>m</code>, <code>s</code>), iar altul ca un singur întreg (secunde de la miezul nopții). Care reprezentare e mai comodă pentru a afișa ora? Dar pentru a calcula diferența a două momente? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Trei întregi sunt mai comode pentru afișare; un singur întreg în secunde este mai comod pentru diferențe (o scădere). Nu există o reprezentare „corectă” în absolut: alegi după ce faci mai des.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">9</span>Notele a 30 de elevi la un test sunt memorate într-un vector <code>nota[30]</code>, iar numele lor într-un vector <code>nume[30][20]</code>. Ce legătură există între cei doi vectori și unde este ea înscrisă în program? <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Legătura este o <strong>convenție</strong>: <code>nume[i]</code> și <code>nota[i]</code> se referă la același elev. Ea nu este înscrisă nicăieri în program, ci doar în mintea programatorului; de aceea, dacă interschimbi doar notele, datele devin false fără nicio eroare. Despre asta este Laboratorul 2.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="tracing">Code Tracing – Exerciții</h2>
+<p>Urmărește execuția <strong>fără să rulezi programul</strong>. Notează valorile variabilelor și ale elementelor vectorilor la fiecare pas și ce se va afișa; apoi verifică rulând codul. Exercițiile sunt propuse de autor, iar soluțiile au fost verificate prin rulare.</p>
+<details><summary>Exercițiul 1 — două variabile</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> a <span class="op">=</span> <span class="nm">5</span>;
+<span class="tp">int</span> b <span class="op">=</span> a;
+a <span class="op">=</span> a <span class="op">+</span> <span class="nm">2</span>;
+cout <span class="op">&lt;&lt;</span> a <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> b;</code></pre></div><p><strong>Soluție:</strong> <code>b</code> primește o <em>copie</em> a valorii lui <code>a</code> (5). Apoi <code>a</code> devine 7, dar <code>b</code> rămâne 5: sunt două variabile distincte. Se afișează <code>7 5</code>.</p></details>
+<details><summary>Exercițiul 2 — sumă pe poziții impare</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> v[<span class="nm">6</span>] <span class="op">=</span> {<span class="nm">4</span>, <span class="nm">7</span>, <span class="nm">2</span>, <span class="nm">9</span>, <span class="nm">5</span>, <span class="nm">1</span>};
+<span class="tp">int</span> s <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">6</span>; i <span class="op">+=</span> <span class="nm">2</span>) {
+    s <span class="op">+=</span> v[i];
+}
+cout <span class="op">&lt;&lt;</span> s;</code></pre></div><p><strong>Soluție:</strong> <code>i</code> ia valorile 0, 2 și 4, deci se adună <code>v[0] + v[2] + v[4] = 4 + 2 + 5</code>. Atenție: indicii 0, 2, 4 sunt pozițiile 1, 3, 5. Se afișează <code>11</code>.</p></details>
+<details><summary>Exercițiul 3 — diagonala unei matrice</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> m[<span class="nm">2</span>][<span class="nm">3</span>] <span class="op">=</span> {{<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>}, {<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>}};
+<span class="tp">int</span> s <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> <span class="nm">2</span>; i<span class="op">++</span>) {
+    <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> <span class="nm">3</span>; j<span class="op">++</span>) {
+        <span class="kw">if</span> (i <span class="op">==</span> j) {
+            s <span class="op">+=</span> m[i][j];
+        }
+    }
+}
+cout <span class="op">&lt;&lt;</span> s <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> m[<span class="nm">1</span>][<span class="nm">2</span>];</code></pre></div><p><strong>Soluție:</strong> Se adună doar elementele cu indicii egali: <code>m[0][0] = 1</code> și <code>m[1][1] = 5</code>, deci <code>s = 6</code>. Al doilea număr este <code>m[1][2]</code>, adică linia 1, coloana 2, valoarea 6. Se afișează <code>6 6</code>.</p></details>
+<details><summary>Exercițiul 4 — modificarea unui text</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">char</span> s[<span class="nm">20</span>] <span class="op">=</span> <span class="st">"abc"</span>;
+s[<span class="nm">1</span>] <span class="op">=</span> <span class="st">'X'</span>;
+cout <span class="op">&lt;&lt;</span> s <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> strlen(s);</code></pre></div><p><strong>Soluție:</strong> Un text C++ este un vector de <code>char</code>, deci se poate modifica pe loc: <code>s[1]</code> devine <code>X</code>. Lungimea rămâne 3, pentru că terminatorul <code>'\0'</code> este tot pe poziția 3. Se afișează <code>aXc 3</code>.</p></details>
+<details><summary>Exercițiul 5 — maxim cu poziție și egalități</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> v[<span class="nm">5</span>] <span class="op">=</span> {<span class="nm">3</span>, <span class="nm">5</span>, <span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">1</span>};
+<span class="tp">int</span> poz <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> <span class="nm">5</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span> (v[i] <span class="op">&gt;=</span> v[poz]) {
+        poz <span class="op">=</span> i;
+    }
+}
+cout <span class="op">&lt;&lt;</span> poz <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> v[poz];</code></pre></div><p><strong>Soluție:</strong> Cu <code>&gt;=</code> indicele se actualizează și la egalitate, deci rămâne <em>ultima</em> apariție a maximului (indicele 3). Cu <code>&gt;</code> ar rămâne prima (indicele 1). Tipul de comparație face parte din specificația problemei. Se afișează <code>3 5</code>.</p></details>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="lab-repr">Laborator – Aplicații de reprezentare (fără cod)</h2>
+<p>Pentru fiecare situație răspunde la patru întrebări, în ordine: <strong>(1)</strong> ce informații păstrezi (și pe care nu le păstrezi), <strong>(2)</strong> ce tip și ce domeniu are fiecare, <strong>(3)</strong> ce formă de grupare alegi (variabilă, vector, matrice, sau „nu ajunge nimic din ce știu acum”) și <strong>(4)</strong> ce convenție fixezi (ce înseamnă un indice). Nu scrie cod. La unele situații sunt posibile mai multe răspunsuri corecte; contează justificarea. Aplicațiile sunt propuse de autor.</p>
+<div class="callout info"><span class="callout-icon">💡</span><div class="callout-body"><strong>Șablon de răspuns</strong><p><strong>Păstrez:</strong> … · <strong>Nu păstrez (se calculează):</strong> … · <strong>Tip și domeniu:</strong> … · <strong>Formă:</strong> … · <strong>Convenție:</strong> … · <strong>De ce:</strong> …</p></div></div>
+<div class="quiz-item"><p><span class="qnum">R1</span>Temperatura maximă din fiecare zi a lunii noiembrie (30 de zile). Se vrea ziua cea mai rece. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Păstrez: temperatura maximă a fiecărei zile. Nu păstrez: ziua cea mai rece (se află cu „minim cu poziție”). Tip și domeniu: număr întreg (grade) sau real, dacă interesează zecimalele. Formă: vector de 30 de valori (<code>int t[30]</code>). Convenție: indicele <code>i</code> este ziua <code>i + 1</code>.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">R2</span>Prezența a 25 de elevi la 10 ore de curs (prezent / absent). Se vrea numărul total de absențe. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Păstrez: pentru fiecare pereche (elev, oră), prezent sau absent. Tip și domeniu: două valori, <code>bool</code>. Formă: matrice <code>bool prezent[25][10]</code>. Convenție: linia este elevul, coloana este ora. Numărul total de absențe se calculează, nu se păstrează.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">R3</span>Prețul unui produs, exprimat în lei și bani (de exemplu 12,50 lei). <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>O variantă este <code>double</code> (12.5), dar numerele reale sunt aproximate, iar la sume repetate pot apărea mici erori. O variantă mai sigură este un <code>int</code> cu prețul în <strong>bani</strong> (1250). Alegerea este o decizie de reprezentare; domeniul este „număr întreg nenegativ”. Forma: o singură variabilă.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">R4</span>Numărul de telefon al unui elev (de exemplu 0722 123 456). <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Tip: <strong>text</strong>, nu <code>int</code>. Motive: începe cu <code>0</code> (un întreg l-ar pierde), nu facem operații aritmetice cu el, iar lungimea nu încape într-un <code>int</code> obișnuit. Domeniu: 10 cifre. Formă: un text (<code>char tel[11]</code> în C++, cu loc pentru terminator).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">R5</span>Vânzările lunare ale trei magazine într-un an (12 luni). Se vrea totalul anual al fiecărui magazin. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Păstrez: vânzarea fiecărui magazin în fiecare lună. Tip: număr întreg (lei) sau real. Formă: matrice 3 × 12 (<code>int vanzari[3][12]</code>). Convenție: linia este magazinul, coloana este luna (indicele 0 = ianuarie). Totalul anual se calculează.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">R6</span>Tabla de X și 0 (3 × 3): fiecare celulă este goală, are X sau are 0. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Domeniu: trei valori. Tip: <code>char</code> cu convenția <code>'X'</code>, <code>'0'</code>, <code>' '</code>, sau un <code>int</code> cu convenția 0 = gol, 1 = X, 2 = 0. Formă: matrice 3 × 3. Atenție: tipul acceptă mai multe valori decât domeniul (orice <code>char</code>), iar tipul singur nu apără domeniul.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">R7</span>Culoarea curentă a unui semafor (roșu, galben, verde). <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Domeniu: trei valori. Cu ce știm acum se poate folosi un <code>int</code> cu convenția 0, 1, 2, dar tipul acceptă și valori fără sens, de exemplu 7: domeniul este mai mic decât tipul. Formă: o variabilă. (Există și alte tipuri care exprimă mai bine un set mic de valori; nu le tratăm aici.)</p></details></div>
+<div class="quiz-item"><p><span class="qnum">R8</span>Ora de începere a unui meci, de comparat cu ora altui meci. Alege între „trei întregi” și „secunde de la miezul nopții”. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Pentru comparație, <strong>secundele</strong> (un singur <code>int</code>) sunt mai comode: compari două numere. Trei întregi sunt mai comode la afișare. Răspunsul depinde de ce faci mai des; nu le păstrezi pe ambele.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">R9</span>Un elev: nume, clasă, medie. Se vrea să afli care dintre ei are media cea mai mare. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Informațiile sunt de <strong>tipuri diferite</strong> (text, text sau întreg, real) și aparțin aceluiași lucru. Un vector nu poate păstra un elev întreg, pentru că elementele lui au același tip. Cu ce știm acum, nu există o formă potrivită pentru <em>un</em> elev: este exact situația în care apare structura (Laboratorul 2).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">R10</span>Numele și media a 25 de elevi. Un coleg propune doi vectori: <code>nume[25][20]</code> și <code>media[25]</code>. <span class="text-sm text-muted">(propus de autor)</span></p><details><summary>Vezi răspunsul</summary><p>Soluția funcționează dacă ții minte că <code>nume[i]</code> și <code>media[i]</code> se referă la același elev, dar legătura este doar o convenție. La o sortare după medie, trebuie mutate <em>ambele</em> structuri, iar uitarea uneia dă date false fără nicio eroare. Este soluția „vectorilor paraleli”, fragilă, de la care pornește Laboratorul 2.</p></details></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="lab">Laborator – Aplicații de rezolvat</h2>
+<p>Pentru fiecare problemă: răspunde mai întâi, pe hârtie, la întrebările de reprezentare (ce păstrezi, ce tip, ce formă), apoi scrie programul complet în C++ și testează-l cu cel puțin două seturi de date, inclusiv cazuri limită. Soluțiile din „Vezi soluția” sunt scrise de autor și au fost compilate și rulate pe exemplul dat. Dacă vrei, rescrie aceleași programe în Java sau Python, ca exercițiu de comparare.</p>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">1</div><div class="exercise-title">Amplitudinea temperaturilor<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citește un număr natural <code>n</code>, apoi <code>n</code> temperaturi întregi. Afișează cea mai mică, cea mai mare și diferența dintre ele (amplitudinea).</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Programul citește <code>n</code>, apoi <code>n</code> numere întregi.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Trei numere separate prin spațiu: minimul, maximul și diferența.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ n ≤ 100</code></li><li>temperaturile încap în <code>int</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>6
+4 9 1 7 3 10</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>1 10 9</pre></div></div><p class="judge-explicatie"><em>Explicație:</em> Cea mai mică valoare este 1, cea mai mare este 10, iar 10 − 1 = 9.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p>Temperaturile: valori de același tip, ordonate după citire → vector. Minimul și maximul se calculează din vector; nu se păstrează separat decât ca rezultate.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> v[<span class="nm">100</span>], n;
+    cin <span class="op">&gt;&gt;</span> n;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        cin <span class="op">&gt;&gt;</span> v[i];
+    }
+    <span class="tp">int</span> mn <span class="op">=</span> v[<span class="nm">0</span>], mx <span class="op">=</span> v[<span class="nm">0</span>];
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">1</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+        <span class="kw">if</span> (v[i] <span class="op">&lt;</span> mn) mn <span class="op">=</span> v[i];
+        <span class="kw">if</span> (v[i] <span class="op">&gt;</span> mx) mx <span class="op">=</span> v[i];
+    }
+    cout <span class="op">&lt;&lt;</span> mn <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> mx <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> mx <span class="op">-</span> mn;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num warm">2</div><div class="exercise-title">Suma pe coloane<span class="diff-badge usoara">Ușoară</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citesc două numere <code>l</code> și <code>c</code>, apoi o matrice cu <code>l</code> linii și <code>c</code> coloane de numere întregi. Afișează suma fiecărei coloane.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Programul citește <code>l</code> și <code>c</code>, apoi elementele matricei, linie cu linie.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Cele <code>c</code> sume, separate prin spațiu.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ l, c ≤ 20</code></li><li>valorile încap în <code>int</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>2 3
+1 2 3
+4 5 6</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>5 7 9</pre></div></div><p class="judge-explicatie"><em>Explicație:</em> Coloanele sunt (1, 4), (2, 5) și (3, 6), cu sumele 5, 7 și 9.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p>Tabelul de valori de același tip, cu două dimensiuni → matrice. Convenție: primul indice este linia, al doilea este coloana. Atenție la ordinea buclelor: pentru sumele pe coloane, coloana este bucla exterioară (sau se folosește un vector de sume).</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> m[<span class="nm">20</span>][<span class="nm">20</span>], l, c;
+    cin <span class="op">&gt;&gt;</span> l <span class="op">&gt;&gt;</span> c;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> l; i<span class="op">++</span>) {
+        <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> c; j<span class="op">++</span>) {
+            cin <span class="op">&gt;&gt;</span> m[i][j];
+        }
+    }
+    <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> c; j<span class="op">++</span>) {
+        <span class="tp">int</span> s <span class="op">=</span> <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> l; i<span class="op">++</span>) {
+            s <span class="op">+=</span> m[i][j];
+        }
+        cout <span class="op">&lt;&lt;</span> s <span class="op">&lt;&lt;</span> <span class="st">" "</span>;
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">3</div><div class="exercise-title">Cuvânt: lungime și palindrom<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citește un cuvânt. Afișează lungimea lui și <code>DA</code> dacă este palindrom (se citește la fel în ambele sensuri) sau <code>NU</code> dacă nu.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Programul citește un cuvânt de cel mult 99 de litere mici.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Lungimea și <code>DA</code> / <code>NU</code>, separate prin spațiu.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li>cuvântul nu conține spații</li><li>se folosește <code>char s[100]</code> și <code>strlen</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>ana</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>3 DA</pre></div></div><p class="judge-explicatie"><em>Explicație:</em> „ana” are 3 litere și se citește la fel în ambele sensuri.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p>Un text este un vector de <code>char</code>. Simetricul caracterului de indice <code>i</code> este cel de indice <code>lungime − 1 − i</code>; se compară doar prima jumătate.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">#include &lt;cstring&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">char</span> s[<span class="nm">100</span>];
+    cin <span class="op">&gt;&gt;</span> s;
+    <span class="tp">int</span> n <span class="op">=</span> strlen(s);
+    <span class="tp">bool</span> pal <span class="op">=</span> <span class="kw">true</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> n <span class="op">/</span> <span class="nm">2</span>; i<span class="op">++</span>) {
+        <span class="kw">if</span> (s[i] <span class="op">!=</span> s[n <span class="op">-</span> <span class="nm">1</span> <span class="op">-</span> i]) {
+            pal <span class="op">=</span> <span class="kw">false</span>;
+            <span class="kw">break</span>;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> n <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> (pal <span class="op">?</span> <span class="st">"DA"</span> <span class="op">:</span> <span class="st">"NU"</span>);
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num apply">4</div><div class="exercise-title">Primul rând liber<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>O sală are <code>r</code> rânduri a câte <code>c</code> locuri. Pentru fiecare loc se dă 1 (ocupat) sau 0 (liber). Afișează numărul primului rând (numărat de la 1) în care <strong>toate</strong> locurile sunt libere, sau <code>0</code> dacă nu există.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Programul citește <code>r</code> și <code>c</code>, apoi matricea de 0 și 1, rând cu rând.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Un număr.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>1 ≤ r, c ≤ 20</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>3 4
+1 0 0 1
+0 0 0 0
+1 1 1 1</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>2</pre></div></div><p class="judge-explicatie"><em>Explicație:</em> Rândul 1 are locuri ocupate, rândul 2 este complet liber, rândul 3 este complet ocupat.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p>Matrice de valori cu două stări. Convenție: linia este rândul, coloana este locul; rezultatul este numărat de la 1, deci indicele liniei plus 1. Proprietatea „toate locurile sunt libere” se verifică cu un indicator care pornește de la <code>true</code>.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> o[<span class="nm">20</span>][<span class="nm">20</span>], r, c;
+    cin <span class="op">&gt;&gt;</span> r <span class="op">&gt;&gt;</span> c;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> r; i<span class="op">++</span>) {
+        <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> c; j<span class="op">++</span>) {
+            cin <span class="op">&gt;&gt;</span> o[i][j];
+        }
+    }
+    <span class="tp">int</span> rez <span class="op">=</span> <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> r; i<span class="op">++</span>) {
+        <span class="tp">bool</span> liber <span class="op">=</span> <span class="kw">true</span>;
+        <span class="kw">for</span> (<span class="tp">int</span> j <span class="op">=</span> <span class="nm">0</span>; j <span class="op">&lt;</span> c; j<span class="op">++</span>) {
+            <span class="kw">if</span> (o[i][j] <span class="op">==</span> <span class="nm">1</span>) {
+                liber <span class="op">=</span> <span class="kw">false</span>;
+                <span class="kw">break</span>;
+            }
+        }
+        <span class="kw">if</span> (liber) {
+            rez <span class="op">=</span> i <span class="op">+</span> <span class="nm">1</span>;
+            <span class="kw">break</span>;
+        }
+    }
+    cout <span class="op">&lt;&lt;</span> rez;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<div class="exercise"><div class="exercise-header"><div class="exercise-num combine">5</div><div class="exercise-title">Durata dintre două momente<span class="diff-badge medie">Medie</span></div></div><div class="exercise-body"><p class="cerinta">Cerință</p><p>Se citesc două momente din aceeași zi, fiecare ca ore, minute, secunde, al doilea fiind mai târziu decât primul. Afișează durata dintre ele în ore, minute și secunde. Folosește un subprogram care transformă un moment în secunde.</p><div class="method-block"><div class="method-label"><i class="fa-solid fa-file-import"></i> Date de intrare</div><p>Programul citește șase numere: <code>h1 m1 s1 h2 m2 s2</code>.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-file-export"></i> Date de ieșire</div><p>Trei numere: ore, minute, secunde.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-list"></i> Restricții și precizări</div><ul class="restrictii-list"><li><code>0 ≤ h ≤ 23</code>, <code>0 ≤ m, s ≤ 59</code></li></ul></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-flask"></i> Exemplu</div><div class="judge-example"><div class="judge-ex-col"><div class="judge-ex-title">Se citește</div><pre>8 45 30
+11 20 15</pre></div><div class="judge-ex-col"><div class="judge-ex-title">Se afișează</div><pre>2 34 45</pre></div></div><p class="judge-explicatie"><em>Explicație:</em> Diferența este de 9285 de secunde, adică 2 ore, 34 de minute și 45 de secunde.</p></div>
+<div class="method-block"><div class="method-label"><i class="fa-solid fa-diagram-project"></i> Reprezentare (de gândit înainte de cod)</div><p>Alege reprezentarea după operația cerută: pentru o diferență, secundele de la miezul nopții (un <code>int</code>) sunt mai comode decât trei întregi. Convertești la intrare și la ieșire.</p></div>
+<details><summary>Vezi soluția</summary><div class="code-block"><div class="code-header"><span class="code-lang">C++</span><button class="code-copy">Copiază</button></div><pre><code><span class="kw">#include &lt;iostream&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="tp">int</span> inSecunde(<span class="tp">int</span> h, <span class="tp">int</span> m, <span class="tp">int</span> s) {
+    <span class="kw">return</span> h <span class="op">*</span> <span class="nm">3600</span> <span class="op">+</span> m <span class="op">*</span> <span class="nm">60</span> <span class="op">+</span> s;
+}
+
+<span class="tp">int</span> main() {
+    <span class="tp">int</span> h1, m1, s1, h2, m2, s2;
+    cin <span class="op">&gt;&gt;</span> h1 <span class="op">&gt;&gt;</span> m1 <span class="op">&gt;&gt;</span> s1 <span class="op">&gt;&gt;</span> h2 <span class="op">&gt;&gt;</span> m2 <span class="op">&gt;&gt;</span> s2;
+    <span class="tp">int</span> d <span class="op">=</span> inSecunde(h2, m2, s2) <span class="op">-</span> inSecunde(h1, m1, s1);
+    cout <span class="op">&lt;&lt;</span> d <span class="op">/</span> <span class="nm">3600</span> <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> (d <span class="op">%</span> <span class="nm">3600</span>) <span class="op">/</span> <span class="nm">60</span> <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> d <span class="op">%</span> <span class="nm">60</span>;
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</code></pre></div></details></div></div>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h3 id="mcq">Întrebări cu alegere multiplă</h3>
+<p>O singură variantă este corectă la fiecare întrebare.</p>
+<div class="quiz-item"><p><span class="qnum">1</span>În declarația <code>int x = 7;</code>, ce este <code>x</code>?</p><ul class="choices"><li>a) un tip</li><li>b) o valoare</li><li>c) o variabilă</li><li>d) un vector</li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – <code>x</code> este variabila; <code>int</code> este tipul, iar <code>7</code> este valoarea.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">2</span>Care afirmație despre tipul de date este corectă?</p><ul class="choices"><li>a) este o valoare concretă din memorie</li><li>b) este o mulțime de valori împreună cu operațiile permise pe ele</li><li>c) este numele unui loc din memorie</li><li>d) este același lucru cu o variabilă</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – definiția de curs: mulțime de valori și operații. a) descrie o valoare, c) o variabilă; d) amestecă nivelurile.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">3</span>Care dintre următoarele este un tip compus în sensul din manuale?</p><ul class="choices"><li>a) <code>int</code></li><li>b) <code>bool</code></li><li>c) <code>int v[5]</code></li><li>d) <code>char</code></li></ul><details><summary>Vezi răspunsul</summary><p><strong>c)</strong> – un vector este construit din mai multe elemente de același tip. Celelalte sunt tipuri simple. (Standardul C++ folosește „compus” într-un sens mai larg.)</p></details></div>
+<div class="quiz-item"><p><span class="qnum">4</span>Ce se afișează?</p><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> v[<span class="nm">5</span>] <span class="op">=</span> {<span class="nm">2</span>, <span class="nm">4</span>, <span class="nm">6</span>, <span class="nm">8</span>, <span class="nm">10</span>};
+cout <span class="op">&lt;&lt;</span> v[<span class="nm">1</span>] <span class="op">+</span> v[<span class="nm">3</span>];</code></pre></div><ul class="choices"><li>a) 4</li><li>b) 6</li><li>c) 12</li><li>d) 14</li></ul><details><summary>Vezi răspunsul</summary><p><strong>c) 12</strong> – <code>v[1] = 4</code> și <code>v[3] = 8</code>. Varianta a) ar fi suma indicilor, nu a valorilor.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">5</span>Ce se afișează?</p><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> m[<span class="nm">2</span>][<span class="nm">3</span>] <span class="op">=</span> {{<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>}, {<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>}};
+cout <span class="op">&lt;&lt;</span> m[<span class="nm">1</span>][<span class="nm">0</span>] <span class="op">&lt;&lt;</span> m[<span class="nm">0</span>][<span class="nm">2</span>];</code></pre></div><ul class="choices"><li>a) 43</li><li>b) 16</li><li>c) 34</li><li>d) 61</li></ul><details><summary>Vezi răspunsul</summary><p><strong>a) 43</strong> – <code>m[1][0]</code> este linia 1, coloana 0 (valoarea 4), iar <code>m[0][2]</code> este linia 0, coloana 2 (valoarea 3).</p></details></div>
+<div class="quiz-item"><p><span class="qnum">6</span>Pentru <code>char nume[3][20];</code>, ce este <code>nume[2]</code>?</p><ul class="choices"><li>a) un caracter</li><li>b) un text (un vector de 20 <code>char</code>)</li><li>c) un număr întreg</li><li>d) toată matricea</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – primul indice alege un text din vectorul de 3 texte; al doilea indice (<code>nume[2][0]</code>) ar alege un caracter.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">7</span>Ce se afișează?</p><div class="code-block"><div class="code-header"><span class="code-lang">C++</span></div><pre><code><span class="tp">int</span> a <span class="op">=</span> <span class="nm">7</span> <span class="op">/</span> <span class="nm">2</span>;
+<span class="tp">double</span> b <span class="op">=</span> <span class="nm">7.0</span> <span class="op">/</span> <span class="nm">2</span>;
+cout <span class="op">&lt;&lt;</span> a <span class="op">&lt;&lt;</span> <span class="st">" "</span> <span class="op">&lt;&lt;</span> b;</code></pre></div><ul class="choices"><li>a) 3.5 3.5</li><li>b) 3 3.5</li><li>c) 3 3</li><li>d) 4 3.5</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b) 3 3.5</strong> – <code>7 / 2</code> este împărțire întreagă; <code>7.0 / 2</code> este împărțire reală. Operația depinde de tipul operanzilor.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">8</span>Un program memorează numărul de telefon 0722123456 într-un <code>int</code>. Care este problema principală?</p><ul class="choices"><li>a) <code>int</code> nu poate păstra cifre</li><li>b) zeroul inițial se pierde și tipul nu se potrivește cu domeniul (nu facem operații aritmetice)</li><li>c) telefonul trebuie un <code>bool</code></li><li>d) nu există nicio problemă</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – un număr întreg nu păstrează zeroul de la început, iar telefonul nu este o cantitate asupra căreia se fac operații aritmetice: domeniul cere un text. În plus, valoarea poate depăși intervalul unui <code>int</code>.</p></details></div>
+<div class="quiz-item"><p><span class="qnum">9</span>Doi vectori <code>nume[25]</code> și <code>media[25]</code> sunt interschimbați doar pe <code>media</code> la o sortare. Care este consecința?</p><ul class="choices"><li>a) eroare de compilare</li><li>b) datele devin false, fără nicio eroare</li><li>c) programul se oprește la rulare</li><li>d) nu se întâmplă nimic</li></ul><details><summary>Vezi răspunsul</summary><p><strong>b)</strong> – legătura dintre vectori este doar o convenție în mintea programatorului; după interschimbare, mediile nu mai corespund numelor, iar programul rulează fără nicio avertizare.</p></details></div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="t1-cheat">
+        <div class="prose">
+<h2 id="cheat">Fișă rapidă – Laborator 1</h2>
+<p>Referință compactă pentru folosit în laborator.</p>
+<div class="cheat-grid">
+<div class="cheat-card"><div class="cheat-card-header">Tip · valoare · variabila</div><pre>tip       = multime de valori + operatii
+valoare   = un element al tipului (7)
+variabila = obiect denumit, de un tip,
+            care tine o valoare
+
+int x = 7;   // tip: int, valoare: 7,
+             // variabila: x
+x = 9;       // se schimba valoarea,
+             // nu tipul
+7 / 2 -&gt; 3     7.0 / 2 -&gt; 3.5</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Tipuri simple (C++)</div><pre>int     numere intregi (interval finit)
+double  numere reale (aproximate)
+bool    false / true
+char    un caracter (si intreg mic)
+
+% exista doar pe tipuri intregi
+double % int  -&gt; eroare de compilare</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Vector</div><pre>int v[5];                // v[0] ... v[4]
+int w[5] = {1, 2};       // 1 2 0 0 0
+int z[50] = {0};         // toate 0
+
+for (int i = 0; i &lt; n; i++) {
+    // v[i]
+}
+Indici valizi: 0 ... n-1
+In afara lor: comportament nedefinit.
+b = a;  nu copiaza un vector.</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Matrice</div><pre>int m[3][4];       // 3 linii, 4 coloane
+m[i][j]            // linia i, coloana j
+
+for (int i = 0; i &lt; l; i++)
+    for (int j = 0; j &lt; c; j++)
+        // m[i][j]
+
+m[i] este o linie = un vector de 4 int.</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Text (C++)</div><pre>char s[20] = "Ana";   // max 19 caractere
+strlen(s)            // 3  (&lt;cstring&gt;)
+s[0]                 // 'A'
+s[1] = 'X';          // modificabil
+s = "Bob";           // NU: se foloseste
+strcpy(s, "Bob");    // strcpy
+
+char nume[3][20];    // 3 texte
+nume[1]  -&gt; text,  nume[1][0] -&gt; char</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Cei 5 pasi ai reprezentarii</div><pre>1. lucrul + intrebarea
+2. informatii relevante
+   (ce se calculeaza, nu se memoreaza)
+3. tip + domeniu pentru fiecare
+4. forma de grupare
+5. verificare: raspund la intrebare?
+
+Conventia (ce inseamna un indice)
+face parte din reprezentare.</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Ce forma aleg?</div><pre>o informatie                  -&gt; variabila
+valori de acelasi tip, pe un rand -&gt; vector
+tabel de valori de acelasi tip   -&gt; matrice
+text                             -&gt; vector de char
+informatii de tipuri diferite
+  despre acelasi lucru           -&gt; nu ajunge
+  nimic din ce stii -&gt; Laborator 2</pre></div>
+<div class="cheat-card"><div class="cheat-card-header">Capcane de retinut</div><pre>i &lt;= n           -&gt; depasire (v[n])
+poz folosit ca indice -&gt; poz - 1
+vector local fara = {0}
+                   -&gt; valori oarecare
+text fara loc pentru '\0'
+                   -&gt; text trunchiat/stricat
+ora ca h,m,s SI ca secunde
+                   -&gt; se pot desincroniza
+doi vectori "paraleli"
+                   -&gt; legatura e doar o
+                      conventie</pre></div>
+</div>
+<h3>Comparație rapidă C++ · Java · Python</h3>
+<div class="tbl-wrap"><table><thead><tr><th></th><th>C++</th><th>Java</th><th>Python</th></tr></thead><tbody><tr><td>Declarare vector</td><td><code>int v[5];</code></td><td><code>int[] v = new int[5];</code></td><td><code>v = [0] * 5</code></td></tr><tr><td>Număr de elemente</td><td>variabila <code>n</code></td><td><code>v.length</code></td><td><code>len(v)</code></td></tr><tr><td>Matrice</td><td><code>int m[3][4];</code></td><td><code>int[][] m</code></td><td>listă de liste</td></tr><tr><td>Text</td><td><code>char s[20]</code></td><td><code>String</code></td><td><code>str</code></td></tr><tr><td>Acces în afara limitelor</td><td>comportament nedefinit</td><td><code>ArrayIndexOutOfBoundsException</code></td><td><code>IndexError</code></td></tr><tr><td>Afișarea lui <code>7.0</code></td><td><code>7</code></td><td><code>7.0</code></td><td><code>7.0</code></td></tr></tbody></table></div>
+
+        </div>
+      </div>
+
+      <div class="tab-pane" id="t1-autoevaluare">
+        <div class="prose">
+<h2 id="verificare">Întrebări de autoevaluare</h2>
+<details><summary>1. Ce este un tip de date? Dă o definiție și un exemplu de operație care nu aparține unui tip.</summary><p>Un tip de date este o mulțime de valori împreună cu operațiile definite pe ea. Exemplu: <code>%</code> nu este definit pe <code>double</code>, iar <code>g++</code> refuză programul care îl folosește.</p></details>
+<details><summary>2. Care este diferența dintre un tip, o valoare și o variabilă? Explică pe <code>int x = 7;</code>.</summary><p><code>int</code> este tipul (mulțimea de valori și operații), <code>7</code> este o valoare din acea mulțime, iar <code>x</code> este variabila: un obiect denumit, de tipul <code>int</code>, care ține în acest moment valoarea 7. Variabila își poate schimba valoarea; tipul nu se schimbă.</p></details>
+<details><summary>3. Ce este un tip simplu și ce este un tip compus? Dă câte două exemple.</summary><p>Un tip simplu este un element de bază al limbajului (<code>int</code>, <code>double</code>, <code>bool</code>, <code>char</code>) și are o singură valoare. Un tip compus este construit din alte tipuri (vector, matrice, text). În sensul standardului C++, „compus” are un sens mai larg decât în manuale.</p></details>
+<details><summary>4. Cum se construiesc vectorul, matricea și textul din tipuri mai simple?</summary><p>Vectorul grupează <em>n</em> elemente de același tip, accesate printr-un indice. Matricea este un vector ale cărui elemente sunt la rândul lor vectori (accesată cu doi indici). Textul este, în C++, un vector de <code>char</code> terminat cu <code>'\0'</code>. Toate sunt cazuri ale aceleiași reguli: un tip compus se construiește din alte tipuri, recursiv.</p></details>
+<details><summary>5. Ce înseamnă că omogen / eterogen, static / dinamic și liniar / neliniar sunt proprietăți, nu categorii?</summary><p>Sunt criterii independente, care descriu o structură din puncte de vedere diferite; aceeași structură poate avea mai multe dintre ele simultan. Un vector C++ este, de exemplu, omogen și de dimensiune fixă. Nu sunt categorii de același rang cu „vector” sau „struct”, care sunt moduri de construire.</p></details>
+<details><summary>6. Spune cei cinci pași pentru a trece de la un lucru din realitate la o reprezentare.</summary><p>1) lucrul și întrebarea; 2) informațiile relevante (ce se calculează nu se memorează); 3) tipul și domeniul fiecărei informații; 4) forma de grupare (variabilă, vector, matrice, ...); 5) verificarea: poți răspunde la întrebare din ce ai reprezentat?</p></details>
+<details><summary>7. Ce este o convenție de reprezentare? Dă un exemplu.</summary><p>Este regula care spune ce înseamnă o poziție dintr-un vector sau o matrice. Exemplu: în <code>note[5]</code>, indicele <code>i</code> corespunde testului cu numărul <code>i + 1</code>; într-o matrice de prezență, linia este elevul, iar coloana este ora. Convenția nu apare în cod, de aceea trebuie respectată peste tot.</p></details>
+<details><summary>8. De ce nu se memorează o informație care se poate calcula?</summary><p>Pentru că, dacă o păstrezi separat, poate ajunge în dezacord cu informațiile din care se calculează (de exemplu vârsta față de data nașterii) și programul devine inconsistent.</p></details>
+<details><summary>9. Prin ce diferă domeniul unei informații de tipul ei? Dă un exemplu.</summary><p>Tipul este mulțimea tuturor valorilor pe care le acceptă limbajul; domeniul este mulțimea valorilor <em>cu sens</em> pentru informația respectivă. O notă are domeniul <code>{1, …, 10}</code>, dar tipul <code>int</code> acceptă și <code>−5</code> sau <code>100</code>. Tipul singur nu apără domeniul.</p></details>
+<details><summary>10. De ce ora poate fi reprezentată în două feluri? Când alegi unul sau celălalt?</summary><p>Pentru că aceeași realitate admite mai multe reprezentări corecte. Trei întregi (ore, minute, secunde) sunt comode la afișare; un singur întreg (secunde de la miezul nopții) este comod la comparații și diferențe. Alegi după operația mai frecventă și nu le păstrezi pe ambele.</p></details>
+<details><summary>11. Ce eroare apare în C++ la <code>v[5]</code> pentru un vector cu 5 elemente? Cum reacționează Java și Python?</summary><p>În C++ nu apare nicio eroare de compilare și nicio verificare la rulare: comportamentul este nedefinit. Java oprește programul cu <code>ArrayIndexOutOfBoundsException</code>, iar Python, cu <code>IndexError</code>.</p></details>
+<details><summary>12. De ce nu ajung vectorii și matricele pentru a reprezenta un student cu nume și notă?</summary><p>Pentru că elementele lor sunt de același tip, iar un student are informații de tipuri diferite. Soluția cu doi vectori paraleli (<code>nume[i]</code> și <code>nota[i]</code>) merge doar prin convenția că același indice înseamnă același student; legătura nu este înscrisă în program și se strică ușor. Laboratorul 2 introduce un tip care grupează aceste informații.</p></details>
+<hr style="margin:2rem 0;border-color:var(--border);">
+<h2 id="rezumat">Rezumat – De reținut</h2>
+<div class="callout ok"><span class="callout-icon">✅</span><div class="callout-body"><strong>Cele mai importante idei din acest laborator</strong><p>Citește lista de mai jos după ce ai rezolvat exercițiile; fiecare punct trimite la o secțiune din tabul Curs.</p></div></div>
+<ol>
+<li><strong>Tipul</strong> este o mulțime de valori împreună cu operațiile permise; <strong>valoarea</strong> este un element al lui; <strong>variabila</strong> este un obiect denumit, de un tip, care ține o valoare. Sunt trei niveluri diferite.</li>
+<li>Tipurile <strong>simple</strong> (<code>int</code>, <code>double</code>, <code>bool</code>, <code>char</code>) au o singură valoare; tipurile <strong>compuse</strong> se construiesc din alte tipuri.</li>
+<li><strong>Vectorul</strong>, <strong>matricea</strong> și <strong>textul</strong> sunt moduri de a construi un tip compus din elemente de același tip. Matricea este un vector de vectori, iar un text este un vector de <code>char</code>.</li>
+<li>Compunerea este <strong>recursivă</strong>: elementele unui vector pot fi vectori sau texte (<code>char nume[3][20]</code>). Vectorul de structuri și structura cu vector urmează în Laboratorul 2.</li>
+<li>Omogen / eterogen, static / dinamic, liniar / neliniar sunt <strong>proprietăți</strong> ale unei structuri, nu categorii de același rang cu vectorul sau structura.</li>
+<li>Cei cinci pași ai reprezentării: lucrul și întrebarea, informațiile relevante, tip și domeniu, formă de grupare, verificare. Ce se poate calcula nu se memorează.</li>
+<li>O reprezentare include o <strong>convenție</strong> (ce înseamnă un indice) și poate avea alternative corecte; alegi după ce faci mai des cu informația.</li>
+<li>Domeniul unei informații poate fi mai mic decât tipul ei; tipul singur nu apără domeniul.</li>
+<li>C++ nu verifică indicii: <code>v[n]</code> este comportament nedefinit; Java și Python semnalează eroare.</li>
+<li>Când informațiile unui lucru au <strong>tipuri diferite</strong>, vectorii și matricele nu mai ajung; doi vectori paraleli sunt o soluție fragilă. Aici începe Laboratorul 2.</li>
+</ol>
+<h2 id="glosar">Glosar</h2>
+<div class="tbl-wrap"><table><thead><tr><th>Termen</th><th>Definiție</th></tr></thead><tbody><tr><td><strong>Tip de date</strong></td><td>Mulțime de valori împreună cu operațiile definite pe ea</td></tr><tr><td><strong>Valoare</strong></td><td>Un element al mulțimii unui tip</td></tr><tr><td><strong>Variabilă</strong></td><td>Obiect denumit, de un tip, care ține o valoare ce se poate schimba (formulare didactică)</td></tr><tr><td><strong>Tip simplu (primitiv)</strong></td><td>Tip de bază al limbajului, cu o singură valoare (<code>int</code>, <code>double</code>, <code>bool</code>, <code>char</code>)</td></tr><tr><td><strong>Tip compus</strong></td><td>Tip construit din alte tipuri (în sensul din manuale: vector, matrice, text, structură)</td></tr><tr><td><strong>Vector (tablou unidimensional)</strong></td><td>Colecție de elemente de același tip, memorate consecutiv și accesate prin indice</td></tr><tr><td><strong>Matrice</strong></td><td>Tablou cu doi indici: un vector de vectori</td></tr><tr><td><strong>Text</strong></td><td>Șir de caractere; în C++ un vector de <code>char</code> terminat cu <code>'\0'</code></td></tr><tr><td><strong>Indice</strong></td><td>Numărul de ordine al unui element, numărat de la 0</td></tr><tr><td><strong>Omogen / eterogen</strong></td><td>Toate componentele au același tip / pot avea tipuri diferite</td></tr><tr><td><strong>Domeniu</strong></td><td>Mulțimea valorilor cu sens pentru o informație; poate fi mai mică decât tipul</td></tr><tr><td><strong>Reprezentare</strong></td><td>Alegerea informațiilor păstrate despre un lucru și a formei în care sunt memorate (formulare didactică)</td></tr><tr><td><strong>Convenție</strong></td><td>Regula care spune ce înseamnă o poziție sau un indice într-o reprezentare</td></tr><tr><td><strong>Informație derivată</strong></td><td>Informație care se poate calcula din altele și, de aceea, nu se memorează separat</td></tr><tr><td><strong>Comportament nedefinit</strong></td><td>Situație în care standardul nu garantează niciun rezultat (de exemplu accesul în afara unui vector)</td></tr><tr><td><strong>Vectori paraleli</strong></td><td>Vectori ale căror elemente cu același indice se referă la același lucru; legătura există doar ca convenție</td></tr></tbody></table></div>
+<h2 id="surse">Surse</h2>
+<p>Afirmațiile teoretice din acest laborator se sprijină pe sursele de mai jos. Pentru cele marcate „rezumat”, în pregătirea materialului au fost consultate doar rezumatul, cuprinsul sau o prezentare de curs, nu textul integral; citatele la nivel de pagină sau secțiune trebuie confirmate din original înainte de a fi trecute în curs.</p>
+<ul>
+<li>Minea, M. <em>Types</em>, prezentare de curs, UPT (definiția „mulțime de valori + operații”): <a href="https://staff.cs.upt.ro/~marius/curs/plda/2012/lect3.pdf">staff.cs.upt.ro</a></li>
+<li>Cardelli, L., Wegner, P. (1985). <em>On Understanding Types, Data Abstraction, and Polymorphism</em>. ACM Computing Surveys 17(4), 471–522, DOI 10.1145/6041.6042: <a href="https://www.eecis.udel.edu/~lliao/cis670/on_understanding_types.pdf">PDF</a> (consultat parțial, tipuri ca mulțimi de valori și protecția reprezentării)</li>
+<li>Wirth, N. <em>Algorithms and Data Structures</em> (structuri fundamentale: înregistrare, tablou, mulțime; legătura dintre algoritmi și structurile de date): <a href="https://informatika-21.ru/ADen/AD2012.pdf">PDF</a> (rezumat și cuprins)</li>
+<li>Knuth, D.E. <em>The Art of Computer Programming</em>, vol. 1, ed. a 3-a, Addison-Wesley (descrierea editurii pentru capitolul „Information Structures”): <a href="https://pearson.com/store/p/art-of-computer-programming-the-volume-1-fundamental-algorithms/P200000000378/9780201896831">Pearson</a> (rezumat)</li>
+<li>ISO C++ working draft, [basic.types.general] și [dcl.array] (tipuri fundamentale / compuse, definiția tabloului): <a href="https://eel.is/c++draft/basic.types.general">eel.is/c++draft</a> (consultat printr-o oglindă, nu textul ISO plătit)</li>
+<li>cppreference, <a href="https://cppreference.com/cpp/types/is_compound"><code>std::is_compound</code></a> și <a href="https://cppreference.net/cpp/types/is_fundamental.html"><code>std::is_fundamental</code></a></li>
+<li>Microsoft Learn, <a href="https://learn.microsoft.com/en-gb/cpp/cpp/cpp-type-system-modern-cpp?view=msvc-170">The C++ type system</a></li>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Data_type">Data type</a>, <a href="https://en.wikipedia.org/wiki/Composite_data_type">Composite data type</a>, <a href="https://en.wikipedia.org/wiki/Primitive_data_type">Primitive data type</a> (sursă enciclopedică; definiții pentru tipuri simple și compuse)</li>
+<li>Popa, M., Ciurea, C., Doinea, M., Zamfiroiu, A. (2023). <em>Structuri de date. Teorie și practică</em>, Editura ASE, București: <a href="https://new.neverland.ro/pub/media/documents/81458/1689591961.107.pdf">cuprins</a> (terminologia „structuri neomogene”, „masive de date”)</li>
+<li>cs-fyi, <a href="https://cs-fyi.pages.dev/guide/what-are-datastructures">What are data structures</a> (criteriile de clasificare; o structură poate aparține mai multor categorii) și <a href="https://www.slideshare.net/slideshow/introduction-to-data-structures-and-algorithms/281457385">material de curs</a> (sursă secundară)</li>
+</ul>
+<p class="text-sm text-muted">Convenția textului C++ terminat cu <code>'\0'</code> și imutabilitatea lui <code>String</code> / <code>str</code> sunt prezentate ca reguli cunoscute ale limbajelor, fără citat. Definiția variabilei și formularea „reprezentare” sunt formulări didactice ale autorului. Exercițiile sunt propuse de autor, iar programele au fost compilate și rulate cu <code>g++</code> 13.3, JDK 21 și Python 3.13.</p>
+
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="page-footer">
+      <span>M9 · Lab 1 – Datele și reprezentarea lor</span>
+      <div class="footer-nav">
+        <a href="lab-0b.html" class="footer-link">← Lab 0b – Recapitulare: subprograme</a>
+        <a href="lab-2.html" class="footer-link">Lab 2 – Structura: modelarea datelor →</a>
+
+      </div>
+    </footer>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+/* Linkurile din sidebar către secțiuni aflate în alt tab: se deschide întâi tab-ul potrivit. */
+(function () {
+  document.querySelectorAll('.sidebar-link[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      var pane = el.closest('.tab-pane');
+      if (pane && !pane.classList.contains('active')) {
+        var btn = document.querySelector('.tab-btn[data-tab="' + pane.id + '"]');
+        if (btn) btn.click();
+      }
+      ev.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
